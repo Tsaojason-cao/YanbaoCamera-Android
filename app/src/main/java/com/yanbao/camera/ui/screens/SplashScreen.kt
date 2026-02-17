@@ -23,7 +23,9 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.yanbao.camera.ui.components.KuromiPlaceholder
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import com.yanbao.camera.R
 import com.yanbao.camera.ui.theme.GradientEnd
 import com.yanbao.camera.ui.theme.GradientMiddle
 import com.yanbao.camera.ui.theme.GradientStart
@@ -97,10 +99,13 @@ fun SplashScreen(onSplashFinished: () -> Unit) {
             // 顶部空间
             Box(modifier = Modifier.weight(1f))
             
-            // 库洛米角色（中央）
-            KuromiPlaceholder(
-                modifier = Modifier.scale(kuromiScale.value),
-                size = 120.dp
+            // Logo图像（中央）
+            Image(
+                painter = painterResource(id = R.drawable.app_logo),
+                contentDescription = "YanBao AI Logo",
+                modifier = Modifier
+                    .scale(kuromiScale.value)
+                    .fillMaxWidth(0.6f)
             )
             
             // 标题文字
