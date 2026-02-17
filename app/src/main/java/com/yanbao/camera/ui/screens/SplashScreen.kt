@@ -9,8 +9,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,18 +26,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 
 /**
- * Splash 屏幕 - 应用启动画面
+ * Splash 屏幕 - 应用启动画面（与设计图一致）
  * 
  * 设计规范：
  * - 背景：粉紫渐变（#A78BFA → #EC4899 → #F9A8D4）
  * - 中央：库洛米角色（缩放动画，0.8→1.0，1秒）
+ * - 装饰：金色星星和毛玻璃光晕
  * - 文字：白色"Yanbao Camera"标题（淡入动画）
+ * - 进度条：粉色渐变进度条（3秒线性增长）
  * - 自动跳转：3秒后跳转首页
  */
 @Composable
@@ -41,6 +50,9 @@ fun SplashScreen(onSplashFinished: () -> Unit) {
     
     // 标题透明度动画
     val titleAlpha = remember { Animatable(0f) }
+    
+    // 进度条进度
+    val progressValue = remember { Animatable(0f) }
     
     LaunchedEffect(Unit) {
         try {
@@ -54,6 +66,12 @@ fun SplashScreen(onSplashFinished: () -> Unit) {
             titleAlpha.animateTo(
                 targetValue = 1f,
                 animationSpec = tween(durationMillis = 500, easing = LinearEasing)
+            )
+            
+            // 进度条加载动画：0 → 1（3秒）
+            progressValue.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(durationMillis = 3000, easing = LinearEasing)
             )
             
             // 3秒后自动跳转
@@ -77,9 +95,49 @@ fun SplashScreen(onSplashFinished: () -> Unit) {
                         Color(0xFFF9A8D4)   // 浅粉色
                     )
                 )
-            ),
-        contentAlignment = Alignment.Center
+            )
     ) {
+        // 背景星星装饰 - 左上
+        Icon(
+            imageVector = Icons.Filled.Star,
+            contentDescription = "Star",
+            tint = Color(0xFFFFD700).copy(alpha = 0.8f),
+            modifier = Modifier
+                .offset(x = 40.dp, y = 80.dp)
+                .size(20.dp)
+        )
+        
+        // 背景星星装饰 - 右上
+        Icon(
+            imageVector = Icons.Filled.Star,
+            contentDescription = "Star",
+            tint = Color(0xFFFFD700).copy(alpha = 0.7f),
+            modifier = Modifier
+                .offset(x = 320.dp, y = 60.dp)
+                .size(24.dp)
+        )
+        
+        // 背景星星装饰 - 左下
+        Icon(
+            imageVector = Icons.Filled.Star,
+            contentDescription = "Star",
+            tint = Color(0xFFFFD700).copy(alpha = 0.75f),
+            modifier = Modifier
+                .offset(x = 60.dp, y = 650.dp)
+                .size(18.dp)
+        )
+        
+        // 背景星星装饰 - 右下
+        Icon(
+            imageVector = Icons.Filled.Star,
+            contentDescription = "Star",
+            tint = Color(0xFFFFD700).copy(alpha = 0.8f),
+            modifier = Modifier
+                .offset(x = 300.dp, y = 680.dp)
+                .size(22.dp)
+        )
+        
+        // 中央内容
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -89,23 +147,22 @@ fun SplashScreen(onSplashFinished: () -> Unit) {
             // 顶部空间
             Box(modifier = Modifier.weight(1f))
             
-            // 简化的Logo显示 - 使用纯色框代替图片
+            // 库洛米角色 - 中央
             Box(
                 modifier = Modifier
                     .scale(kuromiScale.value)
-                    .fillMaxWidth(0.6f)
-                    .height(200.dp)
+                    .size(180.dp)
                     .background(
-                        color = Color.White.copy(alpha = 0.2f),
-                        shape = RoundedCornerShape(24.dp)
+                        color = Color.White.copy(alpha = 0.15f),
+                        shape = RoundedCornerShape(50.dp)
                     ),
                 contentAlignment = Alignment.Center
             ) {
+                // 库洛米角色简化表示
                 Text(
-                    text = "YanBao AI",
-                    color = Color.White,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
+                    text = "🎀",
+                    fontSize = 80.sp,
+                    modifier = Modifier.align(Alignment.Center)
                 )
             }
             
@@ -121,17 +178,17 @@ fun SplashScreen(onSplashFinished: () -> Unit) {
             // 底部空间
             Box(modifier = Modifier.weight(1f))
             
-            // 简化的进度指示器
-            Box(
+            // 进度条
+            LinearProgressIndicator(
+                progress = progressValue.value,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(4.dp)
+                    .height(6.dp)
                     .padding(horizontal = 48.dp)
-                    .padding(bottom = 48.dp)
-                    .background(
-                        color = Color.White.copy(alpha = 0.3f),
-                        shape = RoundedCornerShape(2.dp)
-                    )
+                    .padding(bottom = 48.dp),
+                color = Color(0xFFEC4899),  // 粉红色
+                trackColor = Color(0xFFC06FFF).copy(alpha = 0.3f),  // 紫色
+                strokeCap = StrokeCap.Round
             )
         }
     }
