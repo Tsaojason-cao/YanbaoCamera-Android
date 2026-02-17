@@ -102,6 +102,11 @@ dependencies {
     implementation("org.tensorflow:tensorflow-lite:2.13.0")
     implementation("org.tensorflow:tensorflow-lite-gpu:2.13.0")
     
+    // Performance Optimization
+    implementation("androidx.profileinstaller:profileinstaller:1.3.1")
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
+    implementation("androidx.startup:startup-runtime:1.1.1")
+    
     // JSON
     implementation("com.google.code.gson:gson:2.10.1")
     
