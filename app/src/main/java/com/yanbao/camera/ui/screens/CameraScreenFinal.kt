@@ -72,7 +72,7 @@ fun CameraScreenFinal(
     
     // 初始化相机
     LaunchedEffect(Unit) {
-        if (cameraPermissionState.hasPermission) {
+        if (cameraPermissionState.status.isGranted) {
             cameraManager.initializeCamera(previewView)
         } else {
             cameraPermissionState.launchPermissionRequest()
@@ -100,7 +100,7 @@ fun CameraScreenFinal(
             )
     ) {
         // 相机预览
-        if (cameraPermissionState.hasPermission) {
+        if (cameraPermissionState.status.isGranted) {
             AndroidView(
                 factory = { previewView },
                 modifier = Modifier
@@ -145,7 +145,7 @@ fun CameraScreenFinal(
             currentMode = currentMode,
             onModeChange = { currentMode = it },
             onTakePhoto = {
-                if (storagePermissionState.hasPermission && cameraPermissionState.hasPermission) {
+                if (storagePermissionState.status.isGranted && cameraPermissionState.status.isGranted) {
                     isCapturing = true
                     val photoFile = createImageFile(context)
                     cameraManager.takePhoto(

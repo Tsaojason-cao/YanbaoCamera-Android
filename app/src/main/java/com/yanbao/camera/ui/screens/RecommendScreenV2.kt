@@ -105,7 +105,8 @@ fun RecommendScreenV2(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(filteredPosts) { post ->
+                items(filteredPosts.size) { index ->
+                    val post = filteredPosts[index]
                     RecommendPostCard(
                         post = post,
                         isLiked = likedPosts.contains(post.id),
@@ -212,7 +213,7 @@ fun RecommendPostCard(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = post.author.take(1),
+                        text = post.userName.take(1),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
                         color = TextWhite
@@ -225,14 +226,14 @@ fun RecommendPostCard(
                         .padding(start = 12.dp)
                 ) {
                     Text(
-                        text = post.author,
+                        text = post.userName,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         color = TextWhite
                     )
                     
                     Text(
-                        text = post.timestamp,
+                        text = java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault()).format(post.timestamp),
                         fontSize = 10.sp,
                         color = Color.Gray
                     )
