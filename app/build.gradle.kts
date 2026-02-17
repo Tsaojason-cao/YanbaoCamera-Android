@@ -113,6 +113,10 @@ dependencies {
     
     // Permissions
     implementation("androidx.compose.material:material:1.6.0")
+    implementation("com.google.accompanist:accompanist-permissions:0.33.2-alpha")
+    
+    // Compose Layout
+    implementation("androidx.compose.foundation:foundation-layout:1.6.0")
     
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")

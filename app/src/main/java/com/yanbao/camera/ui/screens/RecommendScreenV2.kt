@@ -46,7 +46,7 @@ import com.yanbao.camera.ui.theme.GradientMiddle
 import com.yanbao.camera.ui.theme.GradientStart
 import com.yanbao.camera.ui.theme.ProgressPrimary
 import com.yanbao.camera.ui.theme.TextWhite
-import com.yanbao.camera.ui.theme.glassEffect
+import com.yanbao.camera.ui.components.glassEffect
 
 /**
  * 推荐屏幕 - 完整实现版本
