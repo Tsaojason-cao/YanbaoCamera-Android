@@ -13,9 +13,10 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
-sealed class BottomNavItem(val route: String, val label: String, val icon: androidx.compose.material.icons.Icons.Filled) {
+sealed class BottomNavItem(val route: String, val label: String, val icon: ImageVector) {
     object Home : BottomNavItem("home", "首页", Icons.Filled.Home)
     object Camera : BottomNavItem("camera", "相机", Icons.Filled.PhotoCamera)
     object Gallery : BottomNavItem("gallery", "相册", Icons.Filled.Collections)

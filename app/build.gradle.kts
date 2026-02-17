@@ -100,6 +100,10 @@ dependencies {
     // JSON
     implementation("com.google.code.gson:gson:2.10.1")
     
+    // Image Loading
+    implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation("io.coil-kt:coil:2.5.0")
+    
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")

@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.yanbao.camera.ui.theme.AccentPink
 import com.yanbao.camera.ui.theme.TextWhite
@@ -99,7 +100,7 @@ fun AnimatedLikeButton(
 fun AnimatedNavIcon(
     isSelected: Boolean = false,
     onClick: () -> Unit = {},
-    icon: androidx.compose.material.icons.Icons,
+    icon: ImageVector,
     contentDescription: String = "",
     modifier: Modifier = Modifier
 ) {
