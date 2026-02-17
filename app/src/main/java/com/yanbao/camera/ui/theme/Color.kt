@@ -26,8 +26,7 @@ val TextDark = Color(0xFF333333)           // 深色文字
 val TextGray = Color(0xFF999999)           // 灰色文字
 
 // ===== 背景色 =====
-val BackgroundLight = Color(0xFFFAFAFA)    // 浅色背景
-val BackgroundDark = Color(0xFF1A1A1A)     // 深色背景
+// 注: BackgroundLight 和 BackgroundDark 在 Colors.kt 中定义（Material Design标准）
 
 // ===== 卡片色 =====
 val CardBackground = Color(0xFFFFFFFF)     // 卡片背景 (白色)
@@ -43,6 +42,8 @@ val ButtonSecondary = Color(0xFFC06FFF)    // 次按钮 (紫色)
 val ButtonDisabled = Color(0xFFCCCCCC)     // 禁用按钮
 
 // ===== 状态色 =====
+// 注: ErrorLight, ErrorDark 等在 Colors.kt 中定义（Material Design标准）
+// 以下是自定义的额外状态颜色
 val SuccessGreen = Color(0xFF4CAF50)       // 成功绿色
 val WarningOrange = Color(0xFFFFA500)      // 警告橙色
 val ErrorRed = Color(0xFFFF6B6B)           // 错误红色
