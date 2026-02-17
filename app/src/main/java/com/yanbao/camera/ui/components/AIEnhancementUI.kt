@@ -319,7 +319,7 @@ fun AIProcessingIndicator(
 fun AIFeatureCard(
     title: String,
     description: String,
-    icon: androidx.compose.material.icons.Icons,
+    icon: ImageVector,
     modifier: Modifier = Modifier
 ) {
     Row(
