@@ -29,6 +29,9 @@ android {
             )
             signingConfig = signingConfigs.getByName("debug")
         }
+        debug {
+            isDebuggable = true
+        }
     }
 
     compileOptions {
@@ -58,6 +61,7 @@ android {
     lint {
         disable.add("MissingTranslation")
         disable.add("ExtraTranslation")
+        disable.add("MissingDimensionBaseline")
     }
 }
 
