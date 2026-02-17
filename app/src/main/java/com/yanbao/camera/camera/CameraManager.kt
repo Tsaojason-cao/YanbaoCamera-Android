@@ -40,7 +40,7 @@ class CameraManager(
         
         cameraProviderFuture.addListener({
             try {
-                cameraProvider = cameraProviderFuture.result
+                cameraProvider = cameraProviderFuture.get()
                 bindCameraUseCases(previewView)
             } catch (exc: Exception) {
                 Log.e(TAG, "Camera initialization failed", exc)

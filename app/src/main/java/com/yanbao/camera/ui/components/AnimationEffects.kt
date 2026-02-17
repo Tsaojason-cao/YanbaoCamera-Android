@@ -24,10 +24,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import com.yanbao.camera.ui.theme.AccentPink
 import com.yanbao.camera.ui.theme.TextWhite
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.LaunchedEffect
 
 /**
  * 带动画效果的点赞按钮
@@ -264,7 +267,3 @@ fun Modifier.graphicsLayer(
     )
 }
 
-// 导入必要的函数
-import androidx.compose.ui.graphics.graphicsLayer
-import kotlinx.coroutines.launch
-import androidx.compose.runtime.LaunchedEffect

@@ -348,7 +348,6 @@ private fun BottomNavigationBar(
         modifier = modifier
             .fillMaxWidth()
             .height(80.dp)
-            .align(Alignment.BottomCenter)
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
@@ -438,7 +437,7 @@ private fun BottomNavigationBar(
  */
 @Composable
 private fun BottomNavItem(
-    icon: androidx.compose.material.icons.materialIcon,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
     label: String,
     isSelected: Boolean,
     onClick: () -> Unit
@@ -452,7 +451,7 @@ private fun BottomNavItem(
         verticalArrangement = Arrangement.Center
     ) {
         Icon(
-            icon,
+            imageVector = icon,
             contentDescription = label,
             tint = if (isSelected) Color.White else Color.White.copy(alpha = 0.6f),
             modifier = Modifier.size(24.dp)

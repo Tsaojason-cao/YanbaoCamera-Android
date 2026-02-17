@@ -264,7 +264,6 @@ private fun BottomGalleryBar(
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
-            .align(Alignment.BottomCenter)
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(

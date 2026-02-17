@@ -151,7 +151,7 @@ fun ProfileScreen() {
 }
 
 @Composable
-fun StatItem(label: String, value: String) {
+private fun StatItem(label: String, value: String) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {

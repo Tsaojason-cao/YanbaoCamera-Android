@@ -93,9 +93,9 @@ object ImageLoadingOptimization {
         return ImageLoader.Builder(context)
             // 内存缓存优化
             .memoryCache {
-                MemoryCache(
-                    maxSizePercent = 0.25 // 使用25%堆内存
-                )
+                MemoryCache.Builder()
+                    .maxSizePercent(context, 0.25) // 使用25%堆内存
+                    .build()
             }
             // 磁盘缓存优化
             .diskCache {
@@ -131,7 +131,7 @@ class ResourceReleaseManager(private val context: Context) {
      */
     fun releaseUnusedResources() {
         // 清空图片缓存
-        Coil.imageLoader.memoryCache?.clear()
+        coil.ImageLoader(context).memoryCache?.clear()
         
         // 释放Bitmap池
         bitmapPool.clear()

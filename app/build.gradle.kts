@@ -104,6 +104,9 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.5.0")
     implementation("io.coil-kt:coil:2.5.0")
     
+    // Google Play Services
+    implementation("com.google.android.gms:play-services-tasks:18.0.2")
+    
     // ML Kit (AI Features)
     implementation("com.google.mlkit:face-detection:16.1.5")
     implementation("com.google.mlkit:text-recognition:16.0.0")

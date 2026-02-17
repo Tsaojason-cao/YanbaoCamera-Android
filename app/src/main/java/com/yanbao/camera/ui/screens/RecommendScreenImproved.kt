@@ -303,7 +303,6 @@ private fun BottomMapPreview(
         modifier = Modifier
             .fillMaxWidth()
             .height(120.dp)
-            .align(Alignment.BottomCenter)
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(

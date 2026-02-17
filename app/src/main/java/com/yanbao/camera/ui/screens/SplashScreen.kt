@@ -100,7 +100,7 @@ fun SplashScreen(onSplashFinished: () -> Unit) {
             // 库洛米角色（中央）
             KuromiPlaceholder(
                 modifier = Modifier.scale(kuromiScale.value),
-                size = 120
+                size = 120.dp
             )
             
             // 标题文字
@@ -117,7 +117,7 @@ fun SplashScreen(onSplashFinished: () -> Unit) {
             
             // 进度条
             LinearProgressIndicator(
-                progress = { progressValue.value },
+                progress = progressValue.value,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(6.dp)

@@ -12,6 +12,11 @@ val GradientStart = Color(0xFFA78BFA)      // 渐变起点 (紫色)
 val GradientMiddle = Color(0xFFEC4899)     // 渐变中点 (粉红色)
 val GradientEnd = Color(0xFFF9A8D4)        // 渐变终点 (浅粉色)
 
+// ===== 渐变画笔 =====
+val PrimaryGradient = androidx.compose.ui.graphics.Brush.verticalGradient(
+    colors = listOf(GradientStart, GradientMiddle, GradientEnd)
+)
+
 // ===== 毛玻璃效果色系 =====
 val GlassWhite = Color(0xFFFFFFFF)         // 白色 (用于毛玻璃)
 val GlassAlpha = 0.2f                      // 毛玻璃透明度 20%

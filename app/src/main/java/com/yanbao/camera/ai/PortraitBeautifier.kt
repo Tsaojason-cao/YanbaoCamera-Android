@@ -10,6 +10,7 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceDetection
 import com.google.mlkit.vision.face.FaceDetector
 import com.google.mlkit.vision.face.FaceDetectorOptions
+import com.google.android.gms.tasks.Tasks
 import kotlin.math.sqrt
 
 /**
@@ -53,16 +54,17 @@ class PortraitBeautifier {
         return try {
             // 1. 检测人脸
             val inputImage = InputImage.fromBitmap(bitmap, 0)
-            val faces = faceDetector.process(inputImage)
+            val task = faceDetector.process(inputImage)
+            val faceList = Tasks.await(task)
             
-            if (faces.faces.isEmpty()) {
+            if (faceList.isEmpty()) {
                 return bitmap // 没有检测到人脸，返回原图
             }
             
             var result = bitmap.copy(bitmap.config, true)
             
             // 2. 对每个检测到的人脸进行美化
-            for (face in faces.faces) {
+            for (face in faceList) {
                 // 磨皮
                 if (skinSmoothing > 0) {
                     result = applySkinSmoothing(result, face, skinSmoothing)

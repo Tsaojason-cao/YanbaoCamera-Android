@@ -66,14 +66,13 @@ fun RecommendScreenV2(
     var searchQuery by remember { mutableStateOf("") }
     var likedPosts by remember { mutableStateOf(setOf<String>()) }
     
-    val mockRepository = MockDataRepository()
-    val allPosts = mockRepository.generateMockPosts(10)
+    val allPosts = MockDataRepository.getRecommendedPosts(0, 10)
     val filteredPosts = if (searchQuery.isEmpty()) {
         allPosts
     } else {
-        allPosts.filter { 
-            it.title.contains(searchQuery, ignoreCase = true) ||
-            it.location.contains(searchQuery, ignoreCase = true)
+        allPosts.filter { post ->
+            post.title.contains(searchQuery, ignoreCase = true) ||
+            post.location.contains(searchQuery, ignoreCase = true)
         }
     }
     

@@ -265,7 +265,6 @@ private fun BottomCameraBar(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .align(Alignment.BottomCenter)
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(

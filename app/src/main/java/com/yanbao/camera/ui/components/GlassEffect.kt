@@ -27,7 +27,7 @@ fun Modifier.glassEffect(
     alpha: Float = GlassAlpha
 ): Modifier {
     return this
-        .blur(radiusPx = blurRadius.dp)
+        .blur(radius = blurRadius.dp)
         .background(
             color = GlassWhite.copy(alpha = alpha),
             shape = RoundedCornerShape(cornerRadius.dp)
