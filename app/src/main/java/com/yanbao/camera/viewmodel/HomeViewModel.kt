@@ -38,21 +38,37 @@ class HomeViewModel : ViewModel() {
      */
     private fun loadInitialData() {
         viewModelScope.launch {
-            _isLoading.value = true
-            
-            // 加载推荐流
-            val posts = MockDataRepository.getRecommendedPosts(0, 10)
-            _posts.value = posts
-            
-            // 加载推荐位置
-            val locations = MockDataRepository.getRecommendedLocations()
-            _locations.value = locations
-            
-            // 加载推荐用户
-            val users = MockDataRepository.getRecommendedUsers()
-            _recommendedUsers.value = users
-            
-            _isLoading.value = false
+            try {
+                _isLoading.value = true
+                
+                // 加载推荐流
+                val posts = try {
+                    MockDataRepository.getRecommendedPosts(0, 10)
+                } catch (e: Exception) {
+                    emptyList()
+                }
+                _posts.value = posts
+                
+                // 加载推荐位置
+                val locations = try {
+                    MockDataRepository.getRecommendedLocations()
+                } catch (e: Exception) {
+                    emptyList()
+                }
+                _locations.value = locations
+                
+                // 加载推荐用户
+                val users = try {
+                    MockDataRepository.getRecommendedUsers()
+                } catch (e: Exception) {
+                    emptyList()
+                }
+                _recommendedUsers.value = users
+                
+                _isLoading.value = false
+            } catch (e: Exception) {
+                _isLoading.value = false
+            }
         }
     }
 
