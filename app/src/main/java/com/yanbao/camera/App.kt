@@ -24,7 +24,7 @@ import com.yanbao.camera.ui.screens.RecommendScreenImproved
 import com.yanbao.camera.ui.screens.SplashScreen
 
 @Composable
-fun YanbaoApp() {
+fun YanbaoAppContent() {
     val navController = rememberNavController()
     val showSplash = remember { mutableStateOf(true) }
 
@@ -79,7 +79,7 @@ fun YanbaoApp() {
                         ProfileScreenImproved()
                     }
                     composable(NavRoutes.EDIT) {
-                        EditScreenImproved(onBack = {
+                        EditScreenImproved(onNavigateBack = {
                             navController.popBackStack()
                         })
                     }

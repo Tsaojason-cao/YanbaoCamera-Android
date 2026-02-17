@@ -77,25 +77,7 @@ data class CameraParameters(
     val zoomLevel: Float = 1.0f            // 缩放级别
 )
 
-/**
- * 白平衡模式
- */
-enum class WhiteBalance {
-    AUTO,        // 自动
-    DAYLIGHT,    // 日光
-    CLOUDY,      // 阴天
-    TUNGSTEN,    // 钨丝灯
-    FLUORESCENT  // 荧光灯
-}
-
-/**
- * 对焦模式
- */
-enum class FocusMode {
-    AUTO,      // 自动对焦
-    MANUAL,    // 手动对焦
-    CONTINUOUS // 连续对焦
-}
+// WhiteBalance and FocusMode are defined in CameraSettings.kt
 
 /**
  * 拍照模式
