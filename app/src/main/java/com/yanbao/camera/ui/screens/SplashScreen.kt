@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -19,19 +19,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.Image
-import androidx.compose.ui.res.painterResource
-import com.yanbao.camera.R
-import com.yanbao.camera.ui.theme.GradientEnd
-import com.yanbao.camera.ui.theme.GradientMiddle
-import com.yanbao.camera.ui.theme.GradientStart
-import com.yanbao.camera.ui.theme.ProgressPrimary
-import com.yanbao.camera.ui.theme.ProgressSecondary
-import com.yanbao.camera.ui.theme.TextWhite
 import kotlinx.coroutines.delay
 
 /**
@@ -41,7 +32,6 @@ import kotlinx.coroutines.delay
  * - 背景：粉紫渐变（#A78BFA → #EC4899 → #F9A8D4）
  * - 中央：库洛米角色（缩放动画，0.8→1.0，1秒）
  * - 文字：白色"Yanbao Camera"标题（淡入动画）
- * - 进度条：粉色渐变进度条（3秒线性增长）
  * - 自动跳转：3秒后跳转首页
  */
 @Composable
@@ -52,31 +42,27 @@ fun SplashScreen(onSplashFinished: () -> Unit) {
     // 标题透明度动画
     val titleAlpha = remember { Animatable(0f) }
     
-    // 进度条进度
-    val progressValue = remember { Animatable(0f) }
-    
     LaunchedEffect(Unit) {
-        // 库洛米缩放动画：0.8 → 1.0（1秒）
-        kuromiScale.animateTo(
-            targetValue = 1.0f,
-            animationSpec = tween(durationMillis = 1000, easing = LinearEasing)
-        )
-        
-        // 标题淡入动画：0 → 1（0.5秒）
-        titleAlpha.animateTo(
-            targetValue = 1f,
-            animationSpec = tween(durationMillis = 500, easing = LinearEasing)
-        )
-        
-        // 进度条加载动画：0 → 1（3秒）
-        progressValue.animateTo(
-            targetValue = 1f,
-            animationSpec = tween(durationMillis = 3000, easing = LinearEasing)
-        )
-        
-        // 3秒后自动跳转
-        delay(3000)
-        onSplashFinished()
+        try {
+            // 库洛米缩放动画：0.8 → 1.0（1秒）
+            kuromiScale.animateTo(
+                targetValue = 1.0f,
+                animationSpec = tween(durationMillis = 1000, easing = LinearEasing)
+            )
+            
+            // 标题淡入动画：0 → 1（0.5秒）
+            titleAlpha.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(durationMillis = 500, easing = LinearEasing)
+            )
+            
+            // 3秒后自动跳转
+            delay(3000)
+            onSplashFinished()
+        } catch (e: Exception) {
+            // 如果动画出错，直接跳转
+            onSplashFinished()
+        }
     }
     
     // 粉紫渐变背景
@@ -85,7 +71,11 @@ fun SplashScreen(onSplashFinished: () -> Unit) {
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(GradientStart, GradientMiddle, GradientEnd)
+                    colors = listOf(
+                        Color(0xFFA78BFA),  // 紫色
+                        Color(0xFFEC4899),  // 粉红色
+                        Color(0xFFF9A8D4)   // 浅粉色
+                    )
                 )
             ),
         contentAlignment = Alignment.Center
@@ -99,19 +89,30 @@ fun SplashScreen(onSplashFinished: () -> Unit) {
             // 顶部空间
             Box(modifier = Modifier.weight(1f))
             
-            // Logo图像（中央）
-            Image(
-                painter = painterResource(id = R.drawable.app_logo),
-                contentDescription = "YanBao AI Logo",
+            // 简化的Logo显示 - 使用纯色框代替图片
+            Box(
                 modifier = Modifier
                     .scale(kuromiScale.value)
                     .fillMaxWidth(0.6f)
-            )
+                    .height(200.dp)
+                    .background(
+                        color = Color.White.copy(alpha = 0.2f),
+                        shape = RoundedCornerShape(24.dp)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "YanBao AI",
+                    color = Color.White,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
             
             // 标题文字
             Text(
                 text = "Yanbao Camera",
-                color = TextWhite.copy(alpha = titleAlpha.value),
+                color = Color.White.copy(alpha = titleAlpha.value),
                 fontSize = 36.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(top = 32.dp)
@@ -120,17 +121,17 @@ fun SplashScreen(onSplashFinished: () -> Unit) {
             // 底部空间
             Box(modifier = Modifier.weight(1f))
             
-            // 进度条
-            LinearProgressIndicator(
-                progress = progressValue.value,
+            // 简化的进度指示器
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(6.dp)
+                    .height(4.dp)
                     .padding(horizontal = 48.dp)
-                    .padding(bottom = 48.dp),
-                color = ProgressPrimary,
-                trackColor = ProgressSecondary.copy(alpha = 0.3f),
-                strokeCap = StrokeCap.Round
+                    .padding(bottom = 48.dp)
+                    .background(
+                        color = Color.White.copy(alpha = 0.3f),
+                        shape = RoundedCornerShape(2.dp)
+                    )
             )
         }
     }
