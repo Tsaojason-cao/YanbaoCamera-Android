@@ -93,6 +93,15 @@ dependencies {
     implementation("com.google.android.gms:play-services-maps:18.2.0")
     implementation("com.google.android.gms:play-services-location:21.2.0")
     
+    // ML Kit for AI Features
+    implementation("com.google.mlkit:vision-common:17.3.0")
+    implementation("com.google.mlkit:face-detection:16.1.5")
+    implementation("com.google.mlkit:image-labeling:17.0.7")
+    
+    // TensorFlow Lite for Image Processing
+    implementation("org.tensorflow:tensorflow-lite:2.13.0")
+    implementation("org.tensorflow:tensorflow-lite-gpu:2.13.0")
+    
     // JSON
     implementation("com.google.code.gson:gson:2.10.1")
     
