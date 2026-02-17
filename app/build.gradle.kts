@@ -65,6 +65,8 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics:1.6.0")
     implementation("androidx.compose.ui:ui-tooling-preview:1.6.0")
     implementation("androidx.compose.material3:material3:1.1.2")
+    implementation("androidx.compose.material:material-icons-extended:1.6.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
     
     // Navigation
     implementation("androidx.navigation:navigation-compose:2.7.6")
@@ -76,8 +78,23 @@ dependencies {
     implementation("androidx.camera:camera-view:1.3.0")
     implementation("androidx.camera:camera-extensions:1.3.0")
     
-    // Image Loading
+    // Image Loading & Processing
     implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation("jp.co.cyberagent.android:gpuimage:2.1.0")
+    
+    // Paging
+    implementation("androidx.paging:paging-compose:3.2.1")
+    implementation("androidx.paging:paging-runtime-ktx:3.2.1")
+    
+    // Permissions
+    implementation("com.google.accompanist:accompanist-permissions:0.33.2-alpha")
+    
+    // JSON
+    implementation("com.google.code.gson:gson:2.10.1")
+    
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     
     // Testing
     testImplementation("junit:junit:4.13.2")
