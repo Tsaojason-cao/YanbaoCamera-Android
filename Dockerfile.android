@@ -1,0 +1,61 @@
+# 使用官方Android构建镜像
+FROM ubuntu:22.04
+
+# 设置环境变量
+ENV DEBIAN_FRONTEND=noninteractive
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+ENV ANDROID_SDK_ROOT=/opt/android-sdk
+ENV ANDROID_HOME=/opt/android-sdk
+ENV PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools
+
+# 安装依赖
+RUN apt-get update && apt-get install -y \
+    openjdk-17-jdk \
+    gradle \
+    git \
+    wget \
+    unzip \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# 创建Android SDK目录
+RUN mkdir -p /opt/android-sdk
+
+# 下载Android SDK命令行工具
+RUN cd /opt/android-sdk && \
+    wget -q https://dl.google.com/android/repository/commandlinetools-linux-10406996_latest.zip && \
+    unzip -q commandlinetools-linux-10406996_latest.zip && \
+    rm commandlinetools-linux-10406996_latest.zip && \
+    mkdir -p cmdline-tools/latest && \
+    mv cmdline-tools/* cmdline-tools/latest/ 2>/dev/null || true
+
+# 接受Android许可证
+RUN yes | sdkmanager --licenses
+
+# 安装Android SDK组件
+RUN sdkmanager "platforms;android-34" \
+    "build-tools;34.0.0" \
+    "ndk;25.1.8937393" \
+    "system-images;android-34;google_apis;x86_64" \
+    "emulator"
+
+# 复制项目代码
+COPY . /app
+WORKDIR /app
+
+# 构建Debug APK
+RUN ./gradlew assembleDebug --no-daemon
+
+# 构建Release APK
+RUN ./gradlew assembleRelease --no-daemon
+
+# 创建输出目录
+RUN mkdir -p /app/output
+
+# 复制APK到输出目录
+RUN cp app/build/outputs/apk/debug/app-debug.apk /app/output/ && \
+    cp app/build/outputs/apk/release/app-release.apk /app/output/ && \
+    cp app/build/outputs/bundle/release/app-release.aab /app/output/
+
+# 设置默认命令
+CMD ["bash", "-c", "echo '=== APK构建完成 ===' && ls -lh /app/output/"]
