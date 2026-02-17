@@ -15,12 +15,12 @@ import androidx.navigation.compose.rememberNavController
 import com.yanbao.camera.ui.components.YanbaoBottomNavigation
 import com.yanbao.camera.ui.components.bottomNavItems
 import com.yanbao.camera.ui.navigation.NavRoutes
-import com.yanbao.camera.ui.screens.CameraScreen
-import com.yanbao.camera.ui.screens.EditScreen
-import com.yanbao.camera.ui.screens.GalleryScreen
-import com.yanbao.camera.ui.screens.HomeScreen
-import com.yanbao.camera.ui.screens.ProfileScreen
-import com.yanbao.camera.ui.screens.RecommendScreen
+import com.yanbao.camera.ui.screens.CameraScreenFinal
+import com.yanbao.camera.ui.screens.EditScreenImproved
+import com.yanbao.camera.ui.screens.GalleryScreenImproved
+import com.yanbao.camera.ui.screens.HomeScreenImproved
+import com.yanbao.camera.ui.screens.ProfileScreenImproved
+import com.yanbao.camera.ui.screens.RecommendScreenImproved
 import com.yanbao.camera.ui.screens.SplashScreen
 
 @Composable
@@ -64,22 +64,22 @@ fun YanbaoApp() {
                     startDestination = NavRoutes.HOME
                 ) {
                     composable(NavRoutes.HOME) {
-                        HomeScreen()
+                        HomeScreenImproved()
                     }
                     composable(NavRoutes.CAMERA) {
-                        CameraScreen()
+                        CameraScreenFinal()
                     }
                     composable(NavRoutes.GALLERY) {
-                        GalleryScreen()
+                        GalleryScreenImproved()
                     }
                     composable(NavRoutes.RECOMMEND) {
-                        RecommendScreen()
+                        RecommendScreenImproved()
                     }
                     composable(NavRoutes.PROFILE) {
-                        ProfileScreen()
+                        ProfileScreenImproved()
                     }
                     composable(NavRoutes.EDIT) {
-                        EditScreen(onBack = {
+                        EditScreenImproved(onBack = {
                             navController.popBackStack()
                         })
                     }
