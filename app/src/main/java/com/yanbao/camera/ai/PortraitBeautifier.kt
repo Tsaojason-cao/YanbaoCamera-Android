@@ -153,7 +153,7 @@ class PortraitBeautifier {
         val centerY = faceBounds.centerY()
         
         // 应用液化效果实现瘦脸
-        return applyLiquidWarp(bitmap, centerX, centerY, faceBounds.width() * 0.3f, strength)
+        return applyLiquidWarp(bitmap, centerX.toFloat(), centerY.toFloat(), faceBounds.width() * 0.3f, strength)
     }
     
     /**

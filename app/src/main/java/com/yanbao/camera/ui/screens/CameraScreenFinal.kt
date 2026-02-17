@@ -27,6 +27,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.LifecycleOwner
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.isGranted
 import com.yanbao.camera.camera.CameraManager
 import com.yanbao.camera.ui.components.KuromiCorners
 import com.yanbao.camera.ui.theme.*
