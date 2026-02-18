@@ -4,6 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import androidx.navigation.NavType
+import android.net.Uri
 import com.yanbao.camera.ui.screens.SplashScreen
 import com.yanbao.camera.ui.screens.HomeScreen
 import com.yanbao.camera.ui.screens.CameraScreen
@@ -13,6 +16,7 @@ import com.yanbao.camera.ui.screens.RecommendScreen
 import com.yanbao.camera.ui.screens.ProfileScreen
 import com.yanbao.camera.ui.screens.LoginScreen
 import com.yanbao.camera.ui.screens.RegisterScreen
+import com.yanbao.camera.ui.screens.UploadScreen
 
 /**
  * 应用导航路由定义
@@ -27,6 +31,8 @@ object NavRoutes {
     const val GALLERY = "gallery"
     const val RECOMMEND = "recommend"
     const val PROFILE = "profile"
+    const val UPLOAD = "upload"
+    const val UPLOAD_WITH_URI = "upload/{imageUri}"
 }
 
 /**
@@ -110,6 +116,17 @@ fun NavGraph(
                     restoreState = true
                 }
             })
+        }
+        composable(
+            NavRoutes.UPLOAD_WITH_URI,
+            arguments = listOf(
+                navArgument("imageUri") {
+                    type = NavType.StringType
+                }
+            )
+        ) { backStackEntry ->
+            val imageUri = backStackEntry.arguments?.getString("imageUri") ?: ""
+            UploadScreen(navController, imageUri = Uri.decode(imageUri))
         }
     }
 }
