@@ -125,6 +125,20 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     
+    // Room Database
+    implementation("androidx.room:room-runtime:2.6.1")
+    implementation("androidx.room:room-ktx:2.6.1")
+    annotationProcessor("androidx.room:room-compiler:2.6.1")
+    
+    // Data Store
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+    
+    // Timber Logging
+    implementation("com.jakewharton.timber:timber:5.0.1")
+    
+    // Splash Screen
+    implementation("androidx.core:core-splashscreen:1.0.1")
+    
     // Testing
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

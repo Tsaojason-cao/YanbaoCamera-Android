@@ -4,15 +4,14 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,188 +25,151 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.yanbao.camera.ui.components.DesignSpec
 import kotlinx.coroutines.delay
 
 /**
- * Splash 屏幕 - 应用启动画面（稳定版本）
+ * 启动屏幕 - 1:1精确还原设计图
  * 
  * 设计规范：
  * - 背景：粉紫渐变（#A78BFA → #EC4899 → #F9A8D4）
- * - 中央：库洛米角色（缩放动画，0.8→1.0，1秒）
- * - 装饰：金色星星点缀
- * - 文字：白色"Yanbao Camera"标题（淡入动画）
- * - 进度指示：简化的圆形进度指示器
- * - 自动跳转：3秒后跳转首页
+ * - 中央：库洛米角色在深灰色圆角方框内（200x200dp）
+ * - 标题："Yanbao Camera"（白色，粗体，32sp）
+ * - 副标题："AI智能相机"（白色，细体，16sp）
+ * - 进度条：粉红色渐变，显示百分比（0%-100%）
+ * - 动画：库洛米缩放0.8→1.0（1秒）+ 标题淡入 + 进度条填充（3秒）
+ * - 3秒后自动跳转到首页
  */
 @Composable
 fun SplashScreen(onSplashFinished: () -> Unit) {
-    // 库洛米缩放动画
-    val kuromiScale = remember { Animatable(0.8f) }
-    
-    // 标题透明度动画
-    val titleAlpha = remember { Animatable(0f) }
-    
-    // 进度指示器动画
-    val progressRotation = remember { Animatable(0f) }
-    
+    val scaleAnimation = remember { Animatable(0.8f) }
+    val alphaAnimation = remember { Animatable(0f) }
+    val progressAnimation = remember { Animatable(0f) }
+
     LaunchedEffect(Unit) {
         try {
-            // 库洛米缩放动画：0.8 → 1.0（1秒）
-            kuromiScale.animateTo(
+            // 库洛米缩放：0.8 → 1.0（1秒）
+            scaleAnimation.animateTo(
                 targetValue = 1.0f,
                 animationSpec = tween(durationMillis = 1000, easing = LinearEasing)
             )
             
-            // 标题淡入动画：0 → 1（0.5秒）
-            titleAlpha.animateTo(
+            // 标题淡入：0 → 1（0.5秒）
+            alphaAnimation.animateTo(
                 targetValue = 1f,
                 animationSpec = tween(durationMillis = 500, easing = LinearEasing)
             )
             
-            // 进度指示器旋转动画：0 → 360（3秒）
-            progressRotation.animateTo(
-                targetValue = 360f,
+            // 进度条：0 → 1（3秒）
+            progressAnimation.animateTo(
+                targetValue = 1f,
                 animationSpec = tween(durationMillis = 3000, easing = LinearEasing)
             )
             
-            // 3秒后自动跳转
-            delay(3000)
+            delay(500)
             onSplashFinished()
         } catch (e: Exception) {
-            // 如果动画出错，直接跳转
             onSplashFinished()
         }
     }
-    
-    // 粉紫渐变背景
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFFA78BFA),  // 紫色
-                        Color(0xFFEC4899),  // 粉红色
-                        Color(0xFFF9A8D4)   // 浅粉色
-                    )
+                    colors = DesignSpec.GradientBackground
                 )
             )
     ) {
-        // 左上星星
-        Box(
-            modifier = Modifier
-                .offset(x = 40.dp, y = 80.dp)
-                .size(16.dp)
-                .background(
-                    color = Color(0xFFFFD700).copy(alpha = 0.8f),
-                    shape = CircleShape
-                )
-        )
-        
-        // 右上星星
-        Box(
-            modifier = Modifier
-                .offset(x = 320.dp, y = 60.dp)
-                .size(20.dp)
-                .background(
-                    color = Color(0xFFFFD700).copy(alpha = 0.7f),
-                    shape = CircleShape
-                )
-        )
-        
-        // 左下星星
-        Box(
-            modifier = Modifier
-                .offset(x = 60.dp, y = 650.dp)
-                .size(14.dp)
-                .background(
-                    color = Color(0xFFFFD700).copy(alpha = 0.75f),
-                    shape = CircleShape
-                )
-        )
-        
-        // 右下星星
-        Box(
-            modifier = Modifier
-                .offset(x = 300.dp, y = 680.dp)
-                .size(18.dp)
-                .background(
-                    color = Color(0xFFFFD700).copy(alpha = 0.8f),
-                    shape = CircleShape
-                )
-        )
-        
-        // 中央内容
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 32.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             // 顶部空间
             Box(modifier = Modifier.weight(1f))
             
-            // 库洛米角色 - 中央（毛玻璃效果）
+            // 中央库洛米角色（在深灰色圆角方框内）
             Box(
                 modifier = Modifier
-                    .scale(kuromiScale.value)
-                    .size(160.dp)
+                    .size(200.dp)
+                    .scale(scaleAnimation.value)
                     .background(
-                        color = Color.White.copy(alpha = 0.15f),
-                        shape = RoundedCornerShape(48.dp)
+                        color = Color(0xFF2C2C2C),  // 深灰色
+                        shape = RoundedCornerShape(48.dp)  // 大圆角
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                // 库洛米角色 - 使用纯文本代替emoji
+                // 库洛米角色 - 使用emoji表示
                 Text(
-                    text = "YB",
-                    color = Color.White,
-                    fontSize = 64.sp,
-                    fontWeight = FontWeight.Bold
+                    text = "🐰",
+                    fontSize = 120.sp
                 )
             }
             
-            // 标题文字
+            // 中间空间
+            Box(modifier = Modifier.height(40.dp))
+            
+            // 标题
             Text(
                 text = "Yanbao Camera",
-                color = Color.White.copy(alpha = titleAlpha.value),
+                color = Color.White.copy(alpha = alphaAnimation.value),
                 fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(top = 32.dp)
+                fontWeight = FontWeight.Bold
             )
             
-            // 底部空间
+            // 副标题
+            Text(
+                text = "AI智能相机",
+                color = Color.White.copy(alpha = alphaAnimation.value),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Normal,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+            
+            // 标题和进度条之间的空间
             Box(modifier = Modifier.weight(1f))
             
-            // 简化的进度指示器 - 使用纯色圆形
+            // 进度百分比文字
+            Text(
+                text = "${(progressAnimation.value * 100).toInt()}%",
+                color = Color.White,
+                fontSize = 14.sp,
+                modifier = Modifier.padding(bottom = 12.dp)
+            )
+            
+            // 进度条容器（外层）
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(60.dp)
-                    .padding(horizontal = 120.dp)
-                    .padding(bottom = 48.dp),
-                contentAlignment = Alignment.Center
+                    .height(4.dp)
+                    .background(
+                        color = Color.White.copy(alpha = 0.3f),
+                        shape = RoundedCornerShape(2.dp)
+                    )
             ) {
-                // 背景圆形
+                // 进度条前景（内层填充）
                 Box(
                     modifier = Modifier
-                        .size(40.dp)
+                        .fillMaxWidth(progressAnimation.value)
+                        .height(4.dp)
                         .background(
-                            color = Color(0xFFC06FFF).copy(alpha = 0.3f),
-                            shape = CircleShape
-                        )
-                )
-                
-                // 前景圆形
-                Box(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .background(
-                            color = Color(0xFFEC4899),
-                            shape = CircleShape
+                            brush = Brush.horizontalGradient(
+                                colors = listOf(
+                                    DesignSpec.PrimaryPink,
+                                    DesignSpec.PurpleLight
+                                )
+                            ),
+                            shape = RoundedCornerShape(2.dp)
                         )
                 )
             }
+            
+            // 底部空间
+            Box(modifier = Modifier.weight(1f))
         }
     }
 }

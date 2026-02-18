@@ -4,6 +4,13 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.yanbao.camera.ui.screens.SplashScreen
+import com.yanbao.camera.ui.screens.HomeScreen
+import com.yanbao.camera.ui.screens.CameraScreen
+import com.yanbao.camera.ui.screens.EditScreen
+import com.yanbao.camera.ui.screens.GalleryScreen
+import com.yanbao.camera.ui.screens.RecommendScreen
+import com.yanbao.camera.ui.screens.ProfileScreen
 
 /**
  * 应用导航路由定义
@@ -24,32 +31,75 @@ object NavRoutes {
 @Composable
 fun NavGraph(
     navController: NavHostController,
-    startDestination: String = NavRoutes.SPLASH
+    startDestination: String = NavRoutes.SPLASH,
+    onRouteChanged: (String) -> Unit = {}
 ) {
     NavHost(
         navController = navController,
         startDestination = startDestination
     ) {
         composable(NavRoutes.SPLASH) {
-            // SplashScreen()
+            SplashScreen(
+                onSplashFinished = {
+                    navController.navigate(NavRoutes.HOME) {
+                        popUpTo(NavRoutes.SPLASH) { inclusive = true }
+                    }
+                }
+            )
         }
         composable(NavRoutes.HOME) {
-            // HomeScreen()
+            HomeScreen(onNavigate = { route ->
+                navController.navigate(route) {
+                    popUpTo(NavRoutes.HOME) { saveState = true }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            })
         }
         composable(NavRoutes.CAMERA) {
-            // CameraScreen()
+            CameraScreen(onNavigate = { route ->
+                navController.navigate(route) {
+                    popUpTo(NavRoutes.HOME) { saveState = true }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            })
         }
         composable(NavRoutes.EDIT) {
-            // EditScreen()
+            EditScreen(onNavigate = { route ->
+                navController.navigate(route) {
+                    popUpTo(NavRoutes.HOME) { saveState = true }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            })
         }
         composable(NavRoutes.GALLERY) {
-            // GalleryScreen()
+            GalleryScreen(onNavigate = { route ->
+                navController.navigate(route) {
+                    popUpTo(NavRoutes.HOME) { saveState = true }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            })
         }
         composable(NavRoutes.RECOMMEND) {
-            // RecommendScreen()
+            RecommendScreen(onNavigate = { route ->
+                navController.navigate(route) {
+                    popUpTo(NavRoutes.HOME) { saveState = true }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            })
         }
         composable(NavRoutes.PROFILE) {
-            // ProfileScreen()
+            ProfileScreen(onNavigate = { route ->
+                navController.navigate(route) {
+                    popUpTo(NavRoutes.HOME) { saveState = true }
+                    launchSingleTop = true
+                    restoreState = true
+                }
+            })
         }
     }
 }
