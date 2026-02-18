@@ -11,12 +11,16 @@ import com.yanbao.camera.ui.screens.EditScreen
 import com.yanbao.camera.ui.screens.GalleryScreen
 import com.yanbao.camera.ui.screens.RecommendScreen
 import com.yanbao.camera.ui.screens.ProfileScreen
+import com.yanbao.camera.ui.screens.LoginScreen
+import com.yanbao.camera.ui.screens.RegisterScreen
 
 /**
  * 应用导航路由定义
  */
 object NavRoutes {
     const val SPLASH = "splash"
+    const val LOGIN = "login"
+    const val REGISTER = "register"
     const val HOME = "home"
     const val CAMERA = "camera"
     const val EDIT = "edit"
@@ -38,6 +42,12 @@ fun NavGraph(
         navController = navController,
         startDestination = startDestination
     ) {
+        composable(NavRoutes.LOGIN) {
+            LoginScreen(navController)
+        }
+        composable(NavRoutes.REGISTER) {
+            RegisterScreen(navController)
+        }
         composable(NavRoutes.SPLASH) {
             SplashScreen(
                 onSplashFinished = {
