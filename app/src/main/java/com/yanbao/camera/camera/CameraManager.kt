@@ -1,163 +1,311 @@
 package com.yanbao.camera.camera
 
+import android.content.ContentValues
 import android.content.Context
+import android.hardware.camera2.CameraCharacteristics
+import android.hardware.camera2.CameraManager as AndroidCameraManager
+import android.os.Build
+import android.provider.MediaStore
 import android.util.Log
-import androidx.camera.core.*
+import androidx.camera.core.Camera
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.FocusMeteringAction
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.Preview
+import androidx.camera.core.SurfaceOrientedMeteringPointFactory
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
-import com.google.common.util.concurrent.ListenableFuture
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import java.text.SimpleDateFormat
+import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import javax.inject.Inject
+import javax.inject.Singleton
 
 /**
- * CameraManager - 管理相机功能
- * 负责相机预览、拍照、切换摄像头等功能
+ * 相机管理器
+ * 封装 CameraX 的相机预览、拍照、切换摄像头、闪光灯控制等功能
+ * 同时提供 Camera2 API 查询相机硬件参数
  */
-class CameraManager(
-    private val context: Context,
-    private val lifecycleOwner: LifecycleOwner
+@Singleton
+class CameraManager @Inject constructor(
+    @ApplicationContext private val context: Context
 ) {
-    private var camera: Camera? = null
+    private val TAG = "YanbaoCameraManager"
+
+    // Camera2 系统服务（用于查询硬件参数）
+    private val androidCameraManager = context.getSystemService(Context.CAMERA_SERVICE) as AndroidCameraManager
+
+    // CameraX 核心组件
     private var cameraProvider: ProcessCameraProvider? = null
+    private var camera: Camera? = null
     private var imageCapture: ImageCapture? = null
     private var preview: Preview? = null
-    private var cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
-    
-    private var currentLensFacing = CameraSelector.LENS_FACING_BACK
-    private var flashMode = ImageCapture.FLASH_MODE_OFF
-    
-    companion object {
-        private const val TAG = "CameraManager"
-    }
-    
+
+    // 相机执行器（后台线程）
+    private val cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
+
+    // 当前状态
+    private val _cameraState = MutableStateFlow(CameraState())
+    val cameraState: StateFlow<CameraState> = _cameraState
+
+    // 当前镜头方向
+    private var lensFacing = CameraSelector.LENS_FACING_BACK
+
     /**
-     * 初始化相机
+     * 绑定相机到生命周期，启动预览
+     * @param lifecycleOwner Activity/Fragment 的生命周期
+     * @param previewView 预览 View
      */
-    fun initializeCamera(previewView: PreviewView) {
+    fun startCamera(lifecycleOwner: LifecycleOwner, previewView: PreviewView) {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
-        
+
         cameraProviderFuture.addListener({
+            cameraProvider = cameraProviderFuture.get()
+
+            // 构建预览用例
+            preview = Preview.Builder()
+                .build()
+                .also { it.setSurfaceProvider(previewView.surfaceProvider) }
+
+            // 构建拍照用例
+            imageCapture = ImageCapture.Builder()
+                .setCaptureMode(ImageCapture.CAPTURE_MODE_MAXIMIZE_QUALITY)
+                .setFlashMode(flashModeToImageCaptureFlashMode(_cameraState.value.flashMode))
+                .build()
+
+            // 选择摄像头
+            val cameraSelector = CameraSelector.Builder()
+                .requireLensFacing(lensFacing)
+                .build()
+
             try {
-                cameraProvider = cameraProviderFuture.get()
-                bindCameraUseCases(previewView)
+                // 解绑所有已绑定的用例
+                cameraProvider?.unbindAll()
+
+                // 重新绑定
+                camera = cameraProvider?.bindToLifecycle(
+                    lifecycleOwner,
+                    cameraSelector,
+                    preview,
+                    imageCapture
+                )
+
+                Log.d(TAG, "相机启动成功，镜头: ${if (lensFacing == CameraSelector.LENS_FACING_BACK) "后置" else "前置"}")
+
             } catch (exc: Exception) {
-                Log.e(TAG, "Camera initialization failed", exc)
+                Log.e(TAG, "相机绑定失败: ${exc.message}", exc)
             }
         }, ContextCompat.getMainExecutor(context))
     }
-    
+
     /**
-     * 绑定相机用例
-     */
-    private fun bindCameraUseCases(previewView: PreviewView) {
-        val cameraProvider = cameraProvider ?: return
-        
-        // 创建Preview用例
-        preview = Preview.Builder()
-            .setTargetAspectRatio(AspectRatio.RATIO_4_3)
-            .setTargetRotation(previewView.display.rotation)
-            .build()
-        
-        // 创建ImageCapture用例
-        imageCapture = ImageCapture.Builder()
-            .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-            .setFlashMode(flashMode)
-            .setTargetAspectRatio(AspectRatio.RATIO_4_3)
-            .setTargetRotation(previewView.display.rotation)
-            .build()
-        
-        // 创建CameraSelector
-        val cameraSelector = CameraSelector.Builder()
-            .requireLensFacing(currentLensFacing)
-            .build()
-        
-        try {
-            // 解绑所有用例
-            cameraProvider.unbindAll()
-            
-            // 绑定用例到生命周期
-            camera = cameraProvider.bindToLifecycle(
-                lifecycleOwner,
-                cameraSelector,
-                preview,
-                imageCapture
-            )
-            
-            // 连接预览
-            preview?.setSurfaceProvider(previewView.surfaceProvider)
-            
-            Log.d(TAG, "Camera binding successful")
-        } catch (exc: Exception) {
-            Log.e(TAG, "Camera binding failed", exc)
-        }
-    }
-    
-    /**
-     * 拍照
+     * 拍照并保存到系统相册
+     * @param onSuccess 保存成功回调，返回保存路径
+     * @param onError 失败回调
      */
     fun takePhoto(
-        outputFile: java.io.File,
         onSuccess: (String) -> Unit,
-        onError: (Exception) -> Unit
+        onError: (String) -> Unit
     ) {
-        val imageCapture = imageCapture ?: return
-        
-        val outputOptions = ImageCapture.OutputFileOptions.Builder(outputFile).build()
-        
+        val imageCapture = imageCapture ?: run {
+            onError("相机未就绪，请稍候")
+            return
+        }
+
+        // 生成文件名（时间戳）
+        val name = SimpleDateFormat("yyyyMMdd_HHmmss_SSS", Locale.CHINA)
+            .format(System.currentTimeMillis())
+
+        // 使用 MediaStore 保存到系统相册
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, "YANBAO_$name")
+            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
+                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/YanbaoAI")
+            }
+        }
+
+        val outputOptions = ImageCapture.OutputFileOptions.Builder(
+            context.contentResolver,
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+            contentValues
+        ).build()
+
+        // 执行拍照
         imageCapture.takePicture(
             outputOptions,
-            cameraExecutor,
+            ContextCompat.getMainExecutor(context),
             object : ImageCapture.OnImageSavedCallback {
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
-                    Log.d(TAG, "Photo saved: ${output.savedUri}")
-                    onSuccess(output.savedUri?.toString() ?: outputFile.absolutePath)
+                    val savedUri = output.savedUri?.toString() ?: "相册/YanbaoAI"
+                    Log.d(TAG, "照片保存成功: $savedUri")
+                    onSuccess(savedUri)
                 }
-                
-                override fun onError(exc: ImageCaptureException) {
-                    Log.e(TAG, "Photo capture failed", exc)
-                    onError(exc)
+
+                override fun onError(exception: ImageCaptureException) {
+                    val errorMsg = "拍照失败: ${exception.message}"
+                    Log.e(TAG, errorMsg, exception)
+                    onError(errorMsg)
                 }
             }
         )
     }
-    
+
     /**
-     * 切换摄像头
+     * 切换前后摄像头
      */
-    fun switchCamera(previewView: PreviewView) {
-        currentLensFacing = if (currentLensFacing == CameraSelector.LENS_FACING_BACK) {
+    fun flipCamera(lifecycleOwner: LifecycleOwner, previewView: PreviewView) {
+        lensFacing = if (lensFacing == CameraSelector.LENS_FACING_BACK) {
             CameraSelector.LENS_FACING_FRONT
         } else {
             CameraSelector.LENS_FACING_BACK
         }
-        bindCameraUseCases(previewView)
+
+        val isFront = lensFacing == CameraSelector.LENS_FACING_FRONT
+        _cameraState.value = _cameraState.value.copy(isFrontCamera = isFront)
+
+        Log.d(TAG, "切换到${if (isFront) "前置" else "后置"}摄像头")
+        startCamera(lifecycleOwner, previewView)
     }
-    
+
     /**
      * 设置闪光灯模式
+     * @param mode FlashMode 枚举
      */
-    fun setFlashMode(mode: Int) {
-        flashMode = mode
-        imageCapture?.flashMode = mode
+    fun setFlashMode(mode: FlashMode) {
+        _cameraState.value = _cameraState.value.copy(flashMode = mode)
+        imageCapture?.flashMode = flashModeToImageCaptureFlashMode(mode)
+        Log.d(TAG, "闪光灯模式: $mode")
     }
-    
+
     /**
-     * 获取当前闪光灯模式
+     * 设置变焦
+     * @param zoomRatio 变焦比例（1.0 = 无变焦）
      */
-    fun getFlashMode(): Int = flashMode
-    
+    fun setZoom(zoomRatio: Float) {
+        camera?.cameraControl?.setZoomRatio(zoomRatio)
+        _cameraState.value = _cameraState.value.copy(zoomRatio = zoomRatio)
+    }
+
     /**
-     * 获取当前摄像头方向
+     * 点击对焦
+     * @param x 触摸点 X 坐标（归一化 0-1）
+     * @param y 触摸点 Y 坐标（归一化 0-1）
      */
-    fun getCurrentLensFacing(): Int = currentLensFacing
-    
+    fun tapToFocus(x: Float, y: Float, width: Float, height: Float) {
+        val factory = SurfaceOrientedMeteringPointFactory(width, height)
+        val point = factory.createPoint(x, y)
+        val action = FocusMeteringAction.Builder(point).build()
+        camera?.cameraControl?.startFocusAndMetering(action)
+        Log.d(TAG, "点击对焦: ($x, $y)")
+    }
+
+    /**
+     * 查询后置摄像头ID（Camera2 API）
+     */
+    fun getBackCameraId(): String? {
+        return androidCameraManager.cameraIdList.firstOrNull { id ->
+            val chars = androidCameraManager.getCameraCharacteristics(id)
+            chars.get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_BACK
+        }
+    }
+
+    /**
+     * 查询前置摄像头ID（Camera2 API）
+     */
+    fun getFrontCameraId(): String? {
+        return androidCameraManager.cameraIdList.firstOrNull { id ->
+            val chars = androidCameraManager.getCameraCharacteristics(id)
+            chars.get(CameraCharacteristics.LENS_FACING) == CameraCharacteristics.LENS_FACING_FRONT
+        }
+    }
+
+    /**
+     * 查询ISO范围（Camera2 API）
+     */
+    fun getIsoRange(cameraId: String): IntRange {
+        val chars = androidCameraManager.getCameraCharacteristics(cameraId)
+        val range = chars.get(CameraCharacteristics.SENSOR_INFO_SENSITIVITY_RANGE)
+        return if (range != null) IntRange(range.lower, range.upper) else IntRange(100, 3200)
+    }
+
+    /**
+     * 查询曝光时间范围（Camera2 API）
+     */
+    fun getExposureTimeRange(cameraId: String): LongRange {
+        val chars = androidCameraManager.getCameraCharacteristics(cameraId)
+        val range = chars.get(CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE)
+        return if (range != null) LongRange(range.lower, range.upper) else LongRange(1_000_000L, 30_000_000_000L)
+    }
+
+    /**
+     * 查询最大变焦倍数（Camera2 API）
+     */
+    fun getMaxZoom(cameraId: String): Float {
+        val chars = androidCameraManager.getCameraCharacteristics(cameraId)
+        return chars.get(CameraCharacteristics.SCALER_AVAILABLE_MAX_DIGITAL_ZOOM) ?: 4f
+    }
+
+    /**
+     * 是否支持闪光灯（Camera2 API）
+     */
+    fun isFlashSupported(cameraId: String): Boolean {
+        val chars = androidCameraManager.getCameraCharacteristics(cameraId)
+        return chars.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) ?: false
+    }
+
     /**
      * 释放资源
      */
-    fun release() {
+    fun shutdown() {
         cameraExecutor.shutdown()
         cameraProvider?.unbindAll()
     }
+
+    // 将 FlashMode 枚举转换为 CameraX 的 ImageCapture.FLASH_MODE_*
+    private fun flashModeToImageCaptureFlashMode(mode: FlashMode): Int {
+        return when (mode) {
+            FlashMode.AUTO -> ImageCapture.FLASH_MODE_AUTO
+            FlashMode.ON -> ImageCapture.FLASH_MODE_ON
+            FlashMode.OFF -> ImageCapture.FLASH_MODE_OFF
+        }
+    }
+}
+
+/**
+ * 闪光灯模式枚举
+ */
+enum class FlashMode {
+    AUTO, ON, OFF
+}
+
+/**
+ * 相机状态数据类
+ */
+data class CameraState(
+    val isFrontCamera: Boolean = false,
+    val flashMode: FlashMode = FlashMode.AUTO,
+    val zoomRatio: Float = 1.0f,
+    val isRecording: Boolean = false,
+    val currentMode: CameraMode = CameraMode.PHOTO
+)
+
+/**
+ * 拍摄模式枚举
+ */
+enum class CameraMode(val displayName: String) {
+    PHOTO("拍照"),
+    VIDEO("录像"),
+    PORTRAIT("人像"),
+    NIGHT("夜景"),
+    PRO("专业"),
+    PANORAMA("全景"),
+    TIMELAPSE("延时")
 }
