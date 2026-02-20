@@ -24,6 +24,9 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import kotlin.math.sin
 import kotlin.random.Random
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import com.yanbao.camera.R
 
 /**
  * 启动页 - 1:1 还原设计图
@@ -106,11 +109,13 @@ fun SplashScreen(onFinish: () -> Unit) {
                     )
             )
             
-            // 库洛米角色（使用 emoji）
-            Text(
-                text = "🐰",
-                fontSize = 120.sp,
-                modifier = Modifier.align(Alignment.Center)
+            // 库洛米角色（使用真实 PNG 图片）
+            Image(
+                painter = painterResource(id = R.drawable.kuromi),
+                contentDescription = "Kuromi",
+                modifier = Modifier
+                    .size(200.dp)
+                    .align(Alignment.Center)
             )
             
             // 黄色星星（6个，分布在角色周围）
