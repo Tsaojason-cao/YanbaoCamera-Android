@@ -67,23 +67,23 @@ object AuditLogger {
         Log.d(TAG_CAMERA, "=== CAPTURE COMPLETED ===")
         
         // 审计关键参数：ISO
-        val iso = result.get(CaptureRequest.SENSOR_SENSITIVITY)
+        val iso = result.get(CaptureResult.SENSOR_SENSITIVITY)
         Log.d(TAG_CAMERA, "HARDWARE_ISO: $iso")
         
         // 审计关键参数：曝光时间
-        val exposureTime = result.get(CaptureRequest.SENSOR_EXPOSURE_TIME)
+        val exposureTime = result.get(CaptureResult.SENSOR_EXPOSURE_TIME)
         Log.d(TAG_CAMERA, "HARDWARE_EXPOSURE_TIME: ${exposureTime}ns")
         
         // 审计关键参数：白平衡
-        val awbMode = result.get(CaptureRequest.CONTROL_AWB_MODE)
+        val awbMode = result.get(CaptureResult.CONTROL_AWB_MODE)
         Log.d(TAG_CAMERA, "HARDWARE_AWB_MODE: $awbMode")
         
         // 审计关键参数：对焦距离
-        val focusDistance = result.get(CaptureRequest.LENS_FOCUS_DISTANCE)
+        val focusDistance = result.get(CaptureResult.LENS_FOCUS_DISTANCE)
         Log.d(TAG_CAMERA, "HARDWARE_FOCUS_DISTANCE: $focusDistance")
         
         // 审计关键参数：闪光灯
-        val flashMode = result.get(CaptureRequest.FLASH_MODE)
+        val flashMode = result.get(CaptureResult.FLASH_MODE)
         Log.d(TAG_CAMERA, "HARDWARE_FLASH_MODE: $flashMode")
         
         Log.d(TAG_CAMERA, "Timestamp: ${System.currentTimeMillis()}")
