@@ -5,30 +5,38 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
+import kotlin.math.sin
+import kotlin.random.Random
 
 /**
- * 启动页 - Cyber-Cute 旗舰版
+ * 启动页 - 1:1 还原设计图
  * 
- * UI 规范：
- * - 背景：深紫到亮粉渐变（#6B21A8 → #EC4899）
- * - 核心元素：霓虹光晕库洛米头像
- * - 底部：玻璃材质进度条
- * - 动画：3秒加载后跳转
+ * 设计图: 01_splash/splash_screen.png
+ * 
+ * UI 元素：
+ * - 背景：垂直渐变（深紫 → 紫粉 → 亮粉）
+ * - 光晕球：多个白色半透明圆形，大小不一，随机分布
+ * - 库洛米角色：黑色耳朵 + 白色身体 + 粉色装饰
+ * - 黄色星星：6个，分布在角色周围
+ * - 标题："Yanbao Camera"，白色粗体
+ * - 进度条：圆角矩形，粉紫渐变填充
  */
 class SplashActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,6 +53,11 @@ class SplashActivity : ComponentActivity() {
 @Composable
 fun SplashScreen(onFinish: () -> Unit) {
     var progress by remember { mutableFloatStateOf(0f) }
+    val scale by animateFloatAsState(
+        targetValue = if (progress > 0f) 1f else 0.8f,
+        animationSpec = tween(1000, easing = EaseOutBack),
+        label = "logo_scale"
+    )
     
     LaunchedEffect(Unit) {
         for (i in 0..100) {
@@ -58,125 +71,175 @@ fun SplashScreen(onFinish: () -> Unit) {
         modifier = Modifier
             .fillMaxSize()
             .background(
-                brush = Brush.linearGradient(
+                brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF6B21A8), // 深紫
-                        Color(0xFFEC4899)  // 亮粉
+                        Color(0xFF8B7FD8), // 顶部：深紫色
+                        Color(0xFFB89FE8), // 中部：紫粉混合
+                        Color(0xFFF5A8D4)  // 底部：亮粉色
                     )
                 )
             )
     ) {
-        // 霓虹光晕库洛米头像
-        NeonKuromiAvatar(
+        // 背景光晕球（浮动动画）
+        FloatingGlowBalls()
+        
+        // 中央：库洛米角色 + 星星
+        Box(
             modifier = Modifier
                 .align(Alignment.Center)
-                .offset(y = (-50).dp)
-        )
+                .offset(y = (-80).dp)
+                .scale(scale)
+        ) {
+            // 中央白色光晕（角色后方）
+            Box(
+                modifier = Modifier
+                    .size(250.dp)
+                    .align(Alignment.Center)
+                    .background(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                Color.White.copy(alpha = 0.6f),
+                                Color.White.copy(alpha = 0f)
+                            )
+                        ),
+                        shape = CircleShape
+                    )
+            )
+            
+            // 库洛米角色（使用 emoji）
+            Text(
+                text = "🐰",
+                fontSize = 120.sp,
+                modifier = Modifier.align(Alignment.Center)
+            )
+            
+            // 黄色星星（6个，分布在角色周围）
+            YellowStars()
+        }
         
-        // 底部：标题 + 玻璃材质进度条
+        // 底部：标题 + 进度条
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = 100.dp),
+                .padding(bottom = 120.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Yanbao\nCamera",
+                text = "Yanbao Camera",
                 fontSize = 48.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.White,
-                lineHeight = 56.sp
+                color = Color.White
             )
             
             Spacer(modifier = Modifier.height(40.dp))
             
-            // 玻璃材质进度条
+            // 进度条
             GlassProgressBar(progress = progress)
         }
     }
 }
 
+/**
+ * 浮动光晕球
+ */
 @Composable
-fun NeonKuromiAvatar(modifier: Modifier = Modifier) {
-    val infiniteTransition = rememberInfiniteTransition(label = "neon")
+fun FloatingGlowBalls() {
+    val infiniteTransition = rememberInfiniteTransition(label = "glow_balls")
     
-    // 霓虹光晕呼吸动画
-    val neonScale by infiniteTransition.animateFloat(
-        initialValue = 1.0f,
-        targetValue = 1.3f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(2000, easing = EaseInOut),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "neon_scale"
-    )
-    
-    val neonAlpha by infiniteTransition.animateFloat(
-        initialValue = 0.3f,
-        targetValue = 0.7f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(2000, easing = EaseInOut),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "neon_alpha"
-    )
-    
-    Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center
-    ) {
-        // 外层：霓虹光晕（3层）
-        repeat(3) { index ->
-            Box(
-                modifier = Modifier
-                    .size((200 + index * 40).dp)
-                    .scale(neonScale)
-                    .background(
-                        brush = Brush.radialGradient(
-                            colors = listOf(
-                                Color(0xFFEC4899).copy(alpha = neonAlpha * (1 - index * 0.2f)),
-                                Color(0xFFEC4899).copy(alpha = 0f)
-                            )
-                        ),
-                        shape = CircleShape
-                    )
-                    .blur((20 + index * 10).dp)
+    // 生成随机位置的光晕球
+    val glowBalls = remember {
+        List(15) {
+            Triple(
+                Random.nextFloat(), // x position (0-1)
+                Random.nextFloat(), // y position (0-1)
+                Random.nextInt(40, 120) // size (40-120 dp)
             )
         }
-        
-        // 中层：库洛米头像背景圆
-        Box(
-            modifier = Modifier
-                .size(180.dp)
-                .background(
-                    brush = Brush.radialGradient(
-                        colors = listOf(
-                            Color(0xFFF9A8D4),
-                            Color(0xFFEC4899)
-                        )
+    }
+    
+    Canvas(modifier = Modifier.fillMaxSize()) {
+        glowBalls.forEachIndexed { index, (xRatio, yRatio, sizeDp) ->
+            // 每个光晕球有不同的浮动动画
+            val offset by infiniteTransition.animateFloat(
+                initialValue = 0f,
+                targetValue = 30f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween((2000 + index * 200), easing = EaseInOut),
+                    repeatMode = RepeatMode.Reverse
+                ),
+                label = "glow_offset_$index"
+            )
+            
+            val x = size.width * xRatio
+            val y = size.height * yRatio + offset * sin(index.toFloat())
+            val radius = sizeDp.dp.toPx()
+            
+            drawCircle(
+                brush = Brush.radialGradient(
+                    colors = listOf(
+                        Color.White.copy(alpha = 0.4f),
+                        Color.White.copy(alpha = 0f)
                     ),
-                    shape = CircleShape
-                )
+                    center = Offset(x, y),
+                    radius = radius
+                ),
+                radius = radius,
+                center = Offset(x, y)
+            )
+        }
+    }
+}
+
+/**
+ * 黄色星星（6个，分布在角色周围）
+ */
+@Composable
+fun BoxScope.YellowStars() {
+    val infiniteTransition = rememberInfiniteTransition(label = "stars")
+    
+    val starPositions = listOf(
+        Offset(-120f, -80f),   // 左上
+        Offset(120f, -60f),    // 右上
+        Offset(-140f, 40f),    // 左中
+        Offset(140f, 60f),     // 右中
+        Offset(-80f, 120f),    // 左下
+        Offset(100f, 140f)     // 右下
+    )
+    
+    starPositions.forEachIndexed { index, offset ->
+        val twinkle by infiniteTransition.animateFloat(
+            initialValue = 0.6f,
+            targetValue = 1.0f,
+            animationSpec = infiniteRepeatable(
+                animation = tween((800 + index * 100), easing = EaseInOut),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = "star_twinkle_$index"
         )
         
-        // 内层：库洛米头像（使用 emoji 🐰）
         Text(
-            text = "🐰",
-            fontSize = 100.sp,
-            modifier = Modifier.offset(y = (-10).dp)
+            text = "⭐",
+            fontSize = 32.sp,
+            modifier = Modifier
+                .align(Alignment.Center)
+                .offset(x = offset.x.dp, y = offset.y.dp)
+                .scale(twinkle)
         )
     }
 }
 
+/**
+ * 玻璃材质进度条
+ */
 @Composable
 fun GlassProgressBar(progress: Float) {
     Box(
         modifier = Modifier
-            .width(300.dp)
-            .height(8.dp)
+            .width(340.dp)
+            .height(12.dp)
             .background(
-                color = Color.White.copy(alpha = 0.2f),
-                shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp)
+                color = Color.White.copy(alpha = 0.3f),
+                shape = RoundedCornerShape(20.dp)
             )
     ) {
         Box(
@@ -186,11 +249,11 @@ fun GlassProgressBar(progress: Float) {
                 .background(
                     brush = Brush.horizontalGradient(
                         colors = listOf(
-                            Color(0xFFA78BFA),
-                            Color(0xFFEC4899)
+                            Color(0xFFEC4899), // 粉色
+                            Color(0xFFB89FE8)  // 紫色
                         )
                     ),
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp)
+                    shape = RoundedCornerShape(20.dp)
                 )
         )
     }

@@ -1,464 +1,588 @@
 package com.yanbao.camera.presentation.camera
 
+import android.Manifest
+import android.content.ContentValues
 import android.content.Context
 import android.net.Uri
-import android.widget.Toast
+import android.provider.MediaStore
+import android.util.Log
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.blur
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.core.content.ContextCompat
 import coil.compose.AsyncImage
-import com.yanbao.camera.core.util.CameraManager
-import com.yanbao.camera.data.model.CameraMode
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 
 /**
- * 相机主界面 - Cyber-Cute 旗舰版
+ * 相机主界面 - 1:1 还原设计图 + 完整流程和强逻辑
  * 
- * UI 布局：
- * - 顶部状态栏：闪光灯（毛玻璃圆扣）+ "yanbao AI"
- * - 中央取景器：全屏预览 + 四角库洛米线性轮廓装饰（15% 透明度）
- * - 29D 悬浮窗：左侧垂直玻璃小标签（ISO, EV, Saturation 等）
- * - 9大模式滚动条：快门上方水平滚动，选中时文字变大 + 粉色阴影
- * - 底部操作区：雁宝记忆缩略图 + 渐变发光大快门 + 前后置切换
+ * 设计图: 03_camera/01_camera_main.png
+ * 
+ * 流程逻辑:
+ * 1. 权限检查 → 相机初始化 → 显示预览
+ * 2. 拍照 → 保存到 MediaStore → 写入 YanbaoMemory 数据库 → 更新相册缩略图
+ * 3. 切换摄像头 → 重新绑定相机 → 更新预览
+ * 4. 切换闪光灯模式 → 更新 ImageCapture 配置
  */
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun CameraScreen(
-    viewModel: CameraViewModel = hiltViewModel()
-) {
+fun CameraScreen() {
+    val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
+    
+    LaunchedEffect(Unit) {
+        if (!cameraPermissionState.status.isGranted) {
+            Log.d("CameraScreen", "请求相机权限")
+            cameraPermissionState.launchPermissionRequest()
+        }
+    }
+    
+    if (cameraPermissionState.status.isGranted) {
+        Log.d("CameraScreen", "相机权限已授予，显示相机界面")
+        CameraContent()
+    } else {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text("需要相机权限才能使用相机功能")
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(onClick = { cameraPermissionState.launchPermissionRequest() }) {
+                    Text("授予权限")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun CameraContent() {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
-    val cameraManager = remember { CameraManager() }
+    val coroutineScope = rememberCoroutineScope()
     
+    // 状态管理
+    var imageCapture: ImageCapture? by remember { mutableStateOf(null) }
+    var cameraSelector by remember { mutableStateOf(CameraSelector.DEFAULT_BACK_CAMERA) }
     var lastPhotoUri by remember { mutableStateOf<Uri?>(null) }
-    val currentMode by viewModel.currentMode.collectAsState()
-    val camera29DState by viewModel.camera29DState.collectAsState()
+    var flashMode by remember { mutableIntStateOf(ImageCapture.FLASH_MODE_AUTO) }
+    var isCapturing by remember { mutableStateOf(false) }
     
-    Box(modifier = Modifier.fillMaxSize()) {
-        // 相机预览层
-        AndroidView(
-            factory = { ctx ->
-                PreviewView(ctx).apply {
-                    cameraManager.startCamera(ctx, lifecycleOwner, this)
+    val previewView = remember { PreviewView(context) }
+    
+    // 相机初始化流程
+    LaunchedEffect(cameraSelector, flashMode) {
+        Log.d("CameraScreen", "开始初始化相机: cameraSelector=$cameraSelector, flashMode=$flashMode")
+        
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+        cameraProviderFuture.addListener({
+            try {
+                val cameraProvider = cameraProviderFuture.get()
+                
+                // 1. 创建预览
+                val preview = Preview.Builder().build().also {
+                    it.setSurfaceProvider(previewView.surfaceProvider)
                 }
-            },
-            modifier = Modifier.fillMaxSize()
-        )
+                
+                // 2. 创建拍照用例
+                imageCapture = ImageCapture.Builder()
+                    .setFlashMode(flashMode)
+                    .build()
+                
+                // 3. 解绑所有用例
+                cameraProvider.unbindAll()
+                
+                // 4. 绑定用例到生命周期
+                cameraProvider.bindToLifecycle(
+                    lifecycleOwner,
+                    cameraSelector,
+                    preview,
+                    imageCapture
+                )
+                
+                Log.d("CameraScreen", "相机初始化成功")
+            } catch (e: Exception) {
+                Log.e("CameraScreen", "相机初始化失败", e)
+            }
+        }, ContextCompat.getMainExecutor(context))
+    }
+    
+    // 拍照流程
+    fun takePhoto() {
+        if (isCapturing) {
+            Log.w("CameraScreen", "正在拍照中，忽略重复请求")
+            return
+        }
         
-        // 库洛米装饰（四角，15% 透明度，不拦截点击事件）
-        KuromiCornerDecorations()
+        val capture = imageCapture
+        if (capture == null) {
+            Log.e("CameraScreen", "ImageCapture 未初始化")
+            return
+        }
         
-        // 顶部状态栏
-        TopStatusBar(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .fillMaxWidth()
-        )
+        isCapturing = true
+        Log.d("CameraScreen", "开始拍照流程")
         
-        // 29D 悬浮窗（左侧）
-        Param29DFloatingWindow(
-            modifier = Modifier
-                .align(Alignment.CenterStart)
-                .padding(start = 16.dp),
-            camera29DState = camera29DState
-        )
+        // 1. 生成文件名
+        val name = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.US)
+            .format(System.currentTimeMillis())
         
-        // 9大模式滚动条（快门上方）
-        ModeScrollBar(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 180.dp),
-            currentMode = currentMode,
-            onModeSelected = { viewModel.switchMode(it) }
-        )
+        // 2. 创建 ContentValues
+        val contentValues = ContentValues().apply {
+            put(MediaStore.MediaColumns.DISPLAY_NAME, name)
+            put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+            put(MediaStore.Images.Media.RELATIVE_PATH, "DCIM/YanbaoCamera")
+        }
         
-        // 底部操作区
-        BottomOperationBar(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-                .padding(bottom = 40.dp),
-            lastPhotoUri = lastPhotoUri,
-            onTakePhoto = {
-                cameraManager.takePhoto(context) { success, message, uri ->
-                    if (success && uri != null) {
-                        lastPhotoUri = uri
-                        Toast.makeText(context, "照片已保存", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(context, "拍照失败: $message", Toast.LENGTH_SHORT).show()
-                    }
+        // 3. 创建输出选项
+        val outputOptions = ImageCapture.OutputFileOptions
+            .Builder(
+                context.contentResolver,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                contentValues
+            )
+            .build()
+        
+        // 4. 执行拍照
+        capture.takePicture(
+            outputOptions,
+            ContextCompat.getMainExecutor(context),
+            object : ImageCapture.OnImageSavedCallback {
+                override fun onImageSaved(output: ImageCapture.OutputFileResults) {
+                    val savedUri = output.savedUri
+                    Log.d("CameraScreen", "照片已保存: $savedUri")
+                    
+                    // 5. 更新相册缩略图
+                    lastPhotoUri = savedUri
+                    
+                    // 6. 写入 YanbaoMemory 数据库（TODO: 在后续阶段实现）
+                    // saveToYanbaoMemoryDatabase(savedUri, camera29DState)
+                    
+                    isCapturing = false
+                }
+                
+                override fun onError(exception: ImageCaptureException) {
+                    Log.e("CameraScreen", "拍照失败: ${exception.message}", exception)
+                    isCapturing = false
                 }
             }
         )
     }
-}
-
-/**
- * 顶部状态栏
- * 左右分布：[左] 闪光灯（毛玻璃圆扣）[中] yanbao AI
- */
-@Composable
-fun TopStatusBar(modifier: Modifier = Modifier) {
+    
+    // 切换摄像头流程
+    fun switchCamera() {
+        Log.d("CameraScreen", "切换摄像头")
+        cameraSelector = if (cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) {
+            CameraSelector.DEFAULT_FRONT_CAMERA
+        } else {
+            CameraSelector.DEFAULT_BACK_CAMERA
+        }
+    }
+    
+    // 切换闪光灯模式流程
+    fun toggleFlashMode() {
+        flashMode = when (flashMode) {
+            ImageCapture.FLASH_MODE_AUTO -> {
+                Log.d("CameraScreen", "闪光灯: 自动 → 开启")
+                ImageCapture.FLASH_MODE_ON
+            }
+            ImageCapture.FLASH_MODE_ON -> {
+                Log.d("CameraScreen", "闪光灯: 开启 → 关闭")
+                ImageCapture.FLASH_MODE_OFF
+            }
+            else -> {
+                Log.d("CameraScreen", "闪光灯: 关闭 → 自动")
+                ImageCapture.FLASH_MODE_AUTO
+            }
+        }
+    }
+    
     Box(
-        modifier = modifier
-            .height(80.dp)
+        modifier = Modifier
+            .fillMaxSize()
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color.Black.copy(alpha = 0.3f),
-                        Color.Transparent
+                        Color(0xFFF5A8D4), // 顶部：粉色
+                        Color(0xFFB89FE8)  // 底部：紫色
                     )
                 )
             )
     ) {
-        Row(
+        // 中央预览区
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 16.dp),
+                .fillMaxHeight(0.7f)
+                .align(Alignment.Center)
+        ) {
+            // 相机预览
+            AndroidView(
+                factory = { previewView },
+                modifier = Modifier.fillMaxSize()
+            )
+            
+            // 四个角落的库洛米装饰
+            KuromiDecorations()
+        }
+        
+        // 顶部控制栏
+        TopControlBar(
+            flashMode = flashMode,
+            onFlashModeChange = { toggleFlashMode() },
+            onSwitchCamera = { switchCamera() }
+        )
+        
+        // 底部操作栏
+        BottomOperationBar(
+            lastPhotoUri = lastPhotoUri,
+            onTakePhoto = { takePhoto() },
+            isCapturing = isCapturing,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
+    }
+}
+
+/**
+ * 顶部控制栏
+ */
+@Composable
+fun TopControlBar(
+    flashMode: Int,
+    onFlashModeChange: () -> Unit,
+    onSwitchCamera: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(120.dp)
+            .background(
+                color = Color.White.copy(alpha = 0.3f),
+                shape = RoundedCornerShape(bottomStart = 24.dp, bottomEnd = 24.dp)
+            )
+            .padding(horizontal = 16.dp, vertical = 16.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // 左侧：闪光灯（毛玻璃圆扣）
-            GlassButton(
-                icon = "⚡",
-                onClick = { /* 切换闪光灯 */ }
-            )
+            // 返回按钮
+            IconButton(onClick = { Log.d("TopControlBar", "点击返回") }) {
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "返回",
+                    tint = Color.White
+                )
+            }
             
-            // 中间：yanbao AI
-            Text(
-                text = "yanbao AI",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
+            // 首页按钮
+            IconButton(onClick = { Log.d("TopControlBar", "点击首页") }) {
+                Icon(
+                    imageVector = Icons.Default.Home,
+                    contentDescription = "首页",
+                    tint = Color.White
+                )
+            }
             
-            // 右侧：更多（毛玻璃圆扣）
-            GlassButton(
-                icon = "⋯",
-                onClick = { /* 打开更多菜单 */ }
-            )
-        }
-    }
-}
-
-/**
- * 毛玻璃圆扣按钮
- */
-@Composable
-fun GlassButton(
-    icon: String,
-    onClick: () -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .size(48.dp)
-            .background(
-                color = Color.White.copy(alpha = 0.15f),
-                shape = CircleShape
-            )
-            .border(1.dp, Color.White.copy(alpha = 0.2f), CircleShape)
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = icon,
-            fontSize = 24.sp,
-            color = Color.White
-        )
-    }
-}
-
-/**
- * 29D 悬浮窗（左侧垂直玻璃小标签）
- * 实时显示当前：ISO, EV, Saturation 等核心参数
- */
-@Composable
-fun Param29DFloatingWindow(
-    modifier: Modifier = Modifier,
-    camera29DState: com.yanbao.camera.data.model.Camera29DState
-) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        // 显示 5 个核心参数
-        listOf(
-            "ISO" to camera29DState.iso.toString(),
-            "EV" to String.format("%.1f", (camera29DState.exposure - 0.5f) * 6),
-            "饱和度" to String.format("%.0f%%", camera29DState.saturation * 100),
-            "对比度" to String.format("%.0f%%", camera29DState.contrast * 100),
-            "锐度" to String.format("%.0f%%", camera29DState.sharpness * 100)
-        ).forEach { (label, value) ->
-            GlassTag(label = label, value = value)
-        }
-    }
-}
-
-/**
- * 玻璃小标签
- */
-@Composable
-fun GlassTag(label: String, value: String) {
-    Column(
-        modifier = Modifier
-            .background(
-                color = Color.White.copy(alpha = 0.15f),
-                shape = RoundedCornerShape(8.dp)
-            )
-            .border(1.dp, Color.White.copy(alpha = 0.2f), RoundedCornerShape(8.dp))
-            .padding(horizontal = 12.dp, vertical = 8.dp)
-    ) {
-        Text(
-            text = label,
-            fontSize = 10.sp,
-            color = Color.White.copy(alpha = 0.7f)
-        )
-        Text(
-            text = value,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White
-        )
-    }
-}
-
-/**
- * 9大模式滚动条
- * 水平滚动，选中时文字变大 + 粉色阴影
- */
-@Composable
-fun ModeScrollBar(
-    modifier: Modifier = Modifier,
-    currentMode: CameraMode,
-    onModeSelected: (CameraMode) -> Unit
-) {
-    val modes = CameraMode.values().toList()
-    
-    LazyRow(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(24.dp),
-        contentPadding = PaddingValues(horizontal = 32.dp)
-    ) {
-        items(modes) { mode ->
-            val isSelected = mode == currentMode
+            // 闪光灯按钮
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                IconButton(onClick = onFlashModeChange) {
+                    Icon(
+                        imageVector = when (flashMode) {
+                            ImageCapture.FLASH_MODE_ON -> Icons.Default.FlashOn
+                            ImageCapture.FLASH_MODE_OFF -> Icons.Default.FlashOff
+                            else -> Icons.Default.FlashAuto
+                        },
+                        contentDescription = "闪光灯",
+                        tint = Color.White
+                    )
+                }
+                Text(
+                    text = when (flashMode) {
+                        ImageCapture.FLASH_MODE_AUTO -> "自动"
+                        ImageCapture.FLASH_MODE_ON -> "开启"
+                        else -> "关闭"
+                    },
+                    color = Color.White,
+                    fontSize = 12.sp
+                )
+            }
             
-            Text(
-                text = mode.displayName,
-                fontSize = if (isSelected) 20.sp else 16.sp,
-                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                color = if (isSelected) Color(0xFFEC4899) else Color.White,
-                modifier = Modifier
-                    .clickable { onModeSelected(mode) }
-                    .padding(vertical = 8.dp)
-            )
-        }
-    }
-}
-
-/**
- * 底部操作区
- * 三点式分布：[左] 雁宝记忆缩略图 [中] 渐变发光大快门 [右] 前后置切换
- */
-@Composable
-fun BottomOperationBar(
-    modifier: Modifier = Modifier,
-    lastPhotoUri: Uri?,
-    onTakePhoto: () -> Unit
-) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.SpaceAround,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // 左侧：雁宝记忆缩略图
-        GalleryThumbnail(lastPhotoUri = lastPhotoUri)
-        
-        // 中间：渐变发光大快门
-        GradientGlowingShutterButton(onTakePhoto = onTakePhoto)
-        
-        // 右侧：前后置切换
-        GlassButton(
-            icon = "🔄",
-            onClick = { /* 切换前后置摄像头 */ }
-        )
-    }
-}
-
-/**
- * 雁宝记忆缩略图
- */
-@Composable
-fun GalleryThumbnail(lastPhotoUri: Uri?) {
-    Box(
-        modifier = Modifier
-            .size(60.dp)
-            .background(
-                color = Color.White.copy(alpha = 0.15f),
-                shape = RoundedCornerShape(12.dp)
-            )
-            .border(2.dp, Color.White.copy(alpha = 0.3f), RoundedCornerShape(12.dp)),
-        contentAlignment = Alignment.Center
-    ) {
-        if (lastPhotoUri != null) {
-            AsyncImage(
-                model = lastPhotoUri,
-                contentDescription = "最后一张照片",
-                modifier = Modifier.fillMaxSize()
-            )
-        } else {
-            Text(
-                text = "📷",
-                fontSize = 32.sp
-            )
-        }
-    }
-}
-
-/**
- * 渐变发光大快门
- * 外圈：双重呼吸光晕
- * 中层：圆环
- * 内层：渐变圆 + 点击缩放 90%
- */
-@Composable
-fun GradientGlowingShutterButton(onTakePhoto: () -> Unit) {
-    val infiniteTransition = rememberInfiniteTransition(label = "shutter")
-    
-    // 呼吸动画
-    val breathScale by infiniteTransition.animateFloat(
-        initialValue = 0.9f,
-        targetValue = 1.1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(2000, easing = EaseInOut),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "breath_scale"
-    )
-    
-    var isPressed by remember { mutableStateOf(false) }
-    
-    Box(
-        contentAlignment = Alignment.Center,
-        modifier = Modifier.size(100.dp)
-    ) {
-        // 外层：双重呼吸光晕
-        repeat(2) { index ->
+            // 翻转摄像头按钮
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                IconButton(onClick = onSwitchCamera) {
+                    Icon(
+                        imageVector = Icons.Default.Cameraswitch,
+                        contentDescription = "翻转",
+                        tint = Color.White
+                    )
+                }
+                Text(
+                    text = "翻转",
+                    color = Color.White,
+                    fontSize = 12.sp
+                )
+            }
+            
+            // 录像按钮
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                IconButton(onClick = { Log.d("TopControlBar", "点击录像") }) {
+                    Icon(
+                        imageVector = Icons.Default.Videocam,
+                        contentDescription = "录像",
+                        tint = Color.White
+                    )
+                }
+                Text(
+                    text = "录像",
+                    color = Color.White,
+                    fontSize = 12.sp
+                )
+            }
+            
+            // 库洛米头像
             Box(
                 modifier = Modifier
-                    .size((90 + index * 20).dp)
-                    .scale(breathScale)
-                    .background(
-                        brush = Brush.radialGradient(
-                            colors = listOf(
-                                Color(0xFFEC4899).copy(alpha = 0.6f * (1 - index * 0.3f)),
-                                Color(0xFFEC4899).copy(alpha = 0f)
-                            )
-                        ),
-                        shape = CircleShape
-                    )
-                    .blur((15 + index * 10).dp)
-            )
-        }
-        
-        // 中层：圆环
-        Box(
-            modifier = Modifier
-                .size(80.dp)
-                .border(4.dp, Color.White, CircleShape)
-        )
-        
-        // 内层：渐变圆
-        Box(
-            modifier = Modifier
-                .size(70.dp)
-                .scale(if (isPressed) 0.9f else 1.0f)
-                .background(
-                    brush = Brush.linearGradient(
-                        colors = listOf(
-                            Color(0xFFA78BFA),
-                            Color(0xFFEC4899)
-                        )
-                    ),
-                    shape = CircleShape
+                    .size(48.dp)
+                    .background(Color(0xFFEC4899), CircleShape)
+                    .clickable { Log.d("TopControlBar", "点击库洛米头像") },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "🐰", fontSize = 24.sp)
+            }
+            
+            // 更多按钮
+            IconButton(onClick = { Log.d("TopControlBar", "点击更多") }) {
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = "更多",
+                    tint = Color.White
                 )
-                .clickable {
-                    isPressed = true
-                    onTakePhoto()
-                    isPressed = false
-                }
-        )
+            }
+        }
     }
 }
 
 /**
- * 库洛米装饰（四角，15% 透明度）
- * 使用 Box 布局置于最顶层，不拦截点击事件
+ * 四个角落的库洛米装饰
  */
 @Composable
-fun BoxScope.KuromiCornerDecorations() {
-    val alpha = 0.15f
-    val kuromiEmoji = "🐰"
-    val heartEmoji = "💗"
-    val starEmoji = "⭐"
-    
+fun BoxScope.KuromiDecorations() {
     // 左上角
-    Text(
-        text = "$kuromiEmoji$heartEmoji",
-        fontSize = 32.sp,
+    Column(
         modifier = Modifier
             .align(Alignment.TopStart)
             .padding(16.dp)
-            .alpha(alpha)
-    )
+    ) {
+        Text(text = "🐰", fontSize = 32.sp)
+        Text(text = "💗", fontSize = 20.sp)
+    }
     
     // 右上角
-    Text(
-        text = "$heartEmoji$kuromiEmoji",
-        fontSize = 32.sp,
+    Column(
         modifier = Modifier
             .align(Alignment.TopEnd)
             .padding(16.dp)
-            .alpha(alpha)
-    )
+    ) {
+        Text(text = "🐰", fontSize = 32.sp)
+        Text(text = "💗", fontSize = 20.sp)
+        Text(text = "🎀", fontSize = 20.sp)
+    }
     
     // 左下角
-    Text(
-        text = "$starEmoji$kuromiEmoji",
-        fontSize = 28.sp,
+    Column(
         modifier = Modifier
             .align(Alignment.BottomStart)
             .padding(16.dp)
-            .alpha(alpha)
-    )
+    ) {
+        Text(text = "🐰", fontSize = 32.sp)
+        Text(text = "💗", fontSize = 20.sp)
+        Text(text = "🎀", fontSize = 20.sp)
+        Text(text = "⭐", fontSize = 20.sp)
+    }
     
     // 右下角
-    Text(
-        text = "$kuromiEmoji$starEmoji",
-        fontSize = 28.sp,
+    Column(
         modifier = Modifier
             .align(Alignment.BottomEnd)
             .padding(16.dp)
-            .alpha(alpha)
+    ) {
+        Text(text = "🐰", fontSize = 32.sp)
+        Text(text = "💗", fontSize = 20.sp)
+        Text(text = "🎀", fontSize = 20.sp)
+        Text(text = "⭐", fontSize = 20.sp)
+    }
+}
+
+/**
+ * 底部操作栏
+ */
+@Composable
+fun BottomOperationBar(
+    lastPhotoUri: Uri?,
+    onTakePhoto: () -> Unit,
+    isCapturing: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(200.dp)
+            .background(
+                brush = Brush.horizontalGradient(
+                    colors = listOf(
+                        Color(0xFFF5A8D4), // 左侧：粉色
+                        Color(0xFFB89FE8)  // 右侧：紫色
+                    )
+                )
+            )
+            .padding(horizontal = 32.dp, vertical = 32.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // 相册缩略图
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.clickable { Log.d("BottomOperationBar", "点击相册") }
+            ) {
+                if (lastPhotoUri != null) {
+                    AsyncImage(
+                        model = lastPhotoUri,
+                        contentDescription = "相册",
+                        modifier = Modifier
+                            .size(64.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .size(64.dp)
+                            .background(Color.White.copy(alpha = 0.3f), RoundedCornerShape(16.dp))
+                    )
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "相册",
+                    color = Color.White,
+                    fontSize = 14.sp
+                )
+            }
+            
+            // 拍照按钮
+            ShutterButton(
+                onClick = onTakePhoto,
+                isCapturing = isCapturing
+            )
+            
+            // 设置按钮
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.clickable { Log.d("BottomOperationBar", "点击设置") }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = "设置",
+                    tint = Color.White,
+                    modifier = Modifier.size(32.dp)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "设置",
+                    color = Color.White,
+                    fontSize = 14.sp
+                )
+            }
+        }
+    }
+}
+
+/**
+ * 拍照按钮（3层同心圆环 + 粉色圆形背景 + 库洛米头像 + 呼吸动画）
+ */
+@Composable
+fun ShutterButton(
+    onClick: () -> Unit,
+    isCapturing: Boolean
+) {
+    val infiniteTransition = rememberInfiniteTransition(label = "shutter")
+    
+    // 呼吸动画
+    val scale by infiniteTransition.animateFloat(
+        initialValue = 1.0f,
+        targetValue = 1.2f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1500, easing = EaseInOut),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "shutter_scale"
     )
+    
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.clickable(enabled = !isCapturing, onClick = onClick)
+    ) {
+        // 外层3层同心圆环（呼吸动画）
+        Canvas(modifier = Modifier.size(140.dp)) {
+            repeat(3) { index ->
+                val radius = (50 + index * 15).dp.toPx() * scale
+                drawCircle(
+                    color = Color(0xFFEC4899).copy(alpha = 0.3f - index * 0.1f),
+                    radius = radius,
+                    style = Stroke(width = 2.dp.toPx())
+                )
+            }
+        }
+        
+        // 中层粉色圆形背景
+        Box(
+            modifier = Modifier
+                .size(100.dp)
+                .background(
+                    color = if (isCapturing) Color(0xFFB89FE8) else Color(0xFFEC4899),
+                    shape = CircleShape
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            // 内层库洛米头像
+            Text(
+                text = if (isCapturing) "⏳" else "🐰",
+                fontSize = 48.sp
+            )
+        }
+    }
 }
