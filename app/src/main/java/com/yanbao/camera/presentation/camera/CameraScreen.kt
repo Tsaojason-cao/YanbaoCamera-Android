@@ -24,6 +24,7 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.yanbao.camera.core.model.CameraMode
 import com.yanbao.camera.presentation.camera.components.ModeSelector
+import com.yanbao.camera.presentation.camera.components.Parameter29DPanel
 import com.yanbao.camera.presentation.camera.components.ParameterPanel
 import com.yanbao.camera.presentation.camera.components.ShutterButton
 
@@ -137,14 +138,16 @@ fun CameraScreen(
                     }
                 )
                 
-                // 参数控制面板（仅专业模式显示）
-                if (viewModel.currentMode == CameraMode.PROFESSIONAL) {
-                    ParameterPanel(
-                        currentMode = viewModel.currentMode,
-                        iso = viewModel.manualISO,
-                        onIsoChange = { viewModel.setISO(it) },
-                        exposureTime = viewModel.manualExposureTime,
-                        onExposureTimeChange = { viewModel.setExposureTime(it) }
+                // 29D 参数控制面板
+                val camera29DState by viewModel.camera29DState.collectAsState()
+                val show29DPanel by viewModel.show29DPanel.collectAsState()
+                
+                if (show29DPanel) {
+                    Parameter29DPanel(
+                        state = camera29DState,
+                        onParameterChange = { name, value ->
+                            viewModel.updateParameter(name, value)
+                        }
                     )
                 }
                 

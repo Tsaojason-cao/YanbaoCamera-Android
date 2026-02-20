@@ -9,6 +9,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,7 +31,10 @@ import androidx.compose.ui.unit.sp
  * - 设置项列表：修改资料、隐私设置、同步 Git 备份
  */
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(
+    viewModel: ProfileViewModel = hiltViewModel()
+) {
+    val profile by viewModel.profile.collectAsState()
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -83,14 +89,26 @@ fun ProfileScreen() {
             
             // 用户 ID（会员号：88888）
             Text(
-                text = "ID: 88888",
+                text = profile.userName,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
             )
             
             Text(
-                text = "会员天数: 365 天",
+                text = "ID: ${profile.userId}",
+                fontSize = 16.sp,
+                color = Color.White.copy(alpha = 0.8f)
+            )
+            
+            Text(
+                text = "会员号：YB-${profile.memberNumber}",
+                fontSize = 14.sp,
+                color = Color(0xFFEC4899) // 粉色
+            )
+            
+            Text(
+                text = "剩余天数：${profile.remainingDays}天",
                 fontSize = 14.sp,
                 color = Color(0xFFEC4899) // 粉色
             )
