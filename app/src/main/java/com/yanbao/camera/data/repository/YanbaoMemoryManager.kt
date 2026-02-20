@@ -6,6 +6,7 @@ import com.yanbao.camera.data.local.dao.YanbaoMemoryDao
 import com.yanbao.camera.data.local.entity.YanbaoMemory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.Flow
 import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.*
@@ -68,11 +69,14 @@ class YanbaoMemoryManager(
                 // 2. 创建 YanbaoMemory 实体
                 val memory = YanbaoMemory(
                     imagePath = imagePath,
-                    params29DJson = params29D.toString(),
                     latitude = latitude,
                     longitude = longitude,
-                    timestamp = System.currentTimeMillis(),
-                    memberNumber = "YB-88888" // 从 SharedPreferences 读取
+                    locationName = null, // TODO: 从 LBS 获取
+                    weatherType = null, // TODO: 从天气 API 获取
+                    shootingMode = "29D",
+                    parameterSnapshotJson = params29D.toString(),
+                    memberNumber = "YB-88888", // 从 SharedPreferences 读取
+                    timestamp = System.currentTimeMillis()
                 )
                 
                 // 3. 存入数据库

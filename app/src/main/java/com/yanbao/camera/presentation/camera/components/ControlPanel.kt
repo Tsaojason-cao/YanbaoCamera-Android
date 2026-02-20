@@ -148,32 +148,30 @@ fun ModeSelector(
             val mode = YanbaoMode.values()[index]
             val isSelected = mode == currentMode
             
-            androidx.compose.foundation.clickable.clickable(
-                onClick = { onModeChange(mode) }
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .padding(vertical = 8.dp)
+                    .clickable { onModeChange(mode) }
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                ) {
-                    // 模式名称
-                    androidx.compose.material3.Text(
-                        text = mode.displayName,
-                        fontSize = 14.sp,
-                        fontWeight = if (isSelected) androidx.compose.ui.text.font.FontWeight.Bold else androidx.compose.ui.text.font.FontWeight.Normal,
-                        color = if (isSelected) Color(0xFFEC4899) else Color.White.copy(alpha = 0.6f)
+                // 模式名称
+                Text(
+                    text = mode.displayName,
+                    fontSize = 14.sp,
+                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                    color = if (isSelected) Color(0xFFEC4899) else Color.White.copy(alpha = 0.6f)
+                )
+                
+                // 选中指示器
+                if (isSelected) {
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Box(
+                        modifier = Modifier
+                            .width(24.dp)
+                            .height(3.dp)
+                            .clip(RoundedCornerShape(1.5.dp))
+                            .background(Color(0xFFEC4899))
                     )
-                    
-                    // 选中指示器
-                    if (isSelected) {
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Box(
-                            modifier = Modifier
-                                .width(24.dp)
-                                .height(3.dp)
-                                .clip(RoundedCornerShape(1.5.dp))
-                                .background(Color(0xFFEC4899))
-                        )
-                    }
                 }
             }
         }

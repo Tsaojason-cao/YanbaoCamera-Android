@@ -50,7 +50,7 @@ object CameraMapping {
     fun mapAngleToISO(angle: Float): Int {
         val progress = angle / 360f
         // 对数映射：100, 200, 400, 800, 1600, 3200, 6400
-        val logValue = 100 * (2.0.pow(progress * 6))
+        val logValue = 100 * (2.0.pow((progress * 6).toDouble()))
         return logValue.toInt().coerceIn(100, 6400)
     }
     
