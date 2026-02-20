@@ -187,8 +187,7 @@ class ProfileViewModel @Inject constructor(
             val result = gitBackupManager.getGitLog()
             
             _backupStatus.value = result.fold(
-                onSuccess = { log -> "✅ 最近提交:
-$log" },
+                onSuccess = { log -> "✅ 最近提交:\n$log" },
                 onFailure = { error -> "❌ ${error.message}" }
             )
         }
