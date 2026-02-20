@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.yanbao.camera.ui.components
 
 import androidx.compose.material3.ExperimentalMaterial3Api
