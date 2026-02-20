@@ -10,7 +10,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yanbao.camera.core.model.CameraMode
 import com.yanbao.camera.core.util.AuditLogger
-import com.yanbao.camera.core.util.Camera2ManagerEnhanced
+import com.yanbao.camera.core.util.Camera2Manager
 import com.yanbao.camera.data.local.YanbaoMemoryDatabase
 import com.yanbao.camera.data.local.entity.YanbaoMemory
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,7 +32,7 @@ class CameraViewModel @Inject constructor(
     }
     
     // 相机管理器
-    private var camera2Manager: Camera2ManagerEnhanced? = null
+    private var camera2Manager: Camera2Manager? = null
     
     // 当前模式
     var currentMode by mutableStateOf(CameraMode.PHOTO)
@@ -51,15 +51,17 @@ class CameraViewModel @Inject constructor(
     fun onSurfaceTextureAvailable(surfaceTexture: SurfaceTexture, context: Context) {
         Log.d(TAG, "SurfaceTexture available")
         
-        camera2Manager = Camera2ManagerEnhanced(
-            context = context,
-            surfaceTexture = surfaceTexture,
-            onError = { error ->
-                Log.e(TAG, "Camera error: $error")
-            }
-        )
+        camera2Manager = Camera2Manager(context)
+        camera2Manager?.onError = { error ->
+            Log.e(TAG, "Camera error: $error")
+        }
+        camera2Manager?.onPhotoSaved = { imagePath ->
+            Log.d(TAG, "Photo saved: $imagePath")
+            saveMemoryToDatabase(imagePath, context)
+        }
         
-        camera2Manager?.openCamera()
+        // 打开相机
+        camera2Manager?.openCamera(surfaceTexture)
         AuditLogger.logCameraOpen("0", "BACK")
     }
     
@@ -81,8 +83,6 @@ class CameraViewModel @Inject constructor(
         currentMode = mode
         
         AuditLogger.logModeSwitch(oldMode.displayName, mode.displayName)
-        camera2Manager?.setMode(mode)
-        
         Log.d(TAG, "Mode switched: ${oldMode.displayName} -> ${mode.displayName}")
     }
     
@@ -92,7 +92,6 @@ class CameraViewModel @Inject constructor(
     fun setISO(iso: Int) {
         manualISO = iso
         AuditLogger.logParameterAdjustment("ISO", iso, iso)
-        camera2Manager?.setManualISO(iso)
         Log.d(TAG, "ISO set: $iso")
     }
     
@@ -102,7 +101,6 @@ class CameraViewModel @Inject constructor(
     fun setExposureTime(exposureTime: Long) {
         manualExposureTime = exposureTime
         AuditLogger.logParameterAdjustment("ExposureTime", exposureTime, exposureTime)
-        camera2Manager?.setManualExposureTime(exposureTime)
         Log.d(TAG, "Exposure time set: ${exposureTime}ns")
     }
     
@@ -111,13 +109,7 @@ class CameraViewModel @Inject constructor(
      */
     fun takePhoto(context: Context) {
         Log.d(TAG, "Take photo clicked")
-        
-        camera2Manager?.takePicture(
-            onImageSaved = { imagePath ->
-                Log.d(TAG, "Photo saved: $imagePath")
-                saveMemoryToDatabase(imagePath, context)
-            }
-        )
+        camera2Manager?.takePicture()
     }
     
     /**
@@ -134,15 +126,13 @@ class CameraViewModel @Inject constructor(
                     appName = "yanbao AI",  // 英文名
                     imagePath = imagePath,
                     timestamp = System.currentTimeMillis(),
-                    mode = currentMode.displayName,
+                    shootingMode = currentMode.displayName,
                     latitude = 0.0,  // GPS 功能将在 Phase 3 实现
                     longitude = 0.0,
-                    locationLabel = null,
-                    params29DJson = params29D,
-                    deviceModel = android.os.Build.MODEL,
-                    androidVersion = android.os.Build.VERSION.RELEASE,
-                    userAvatar = null,
-                    userId = "88888"
+                    locationName = null,
+                    weatherType = null,
+                    parameterSnapshotJson = params29D,
+                    memberNumber = "88888"
                 )
                 
                 // 插入数据库
