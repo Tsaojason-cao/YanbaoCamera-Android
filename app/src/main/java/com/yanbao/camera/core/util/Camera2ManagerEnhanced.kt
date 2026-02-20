@@ -49,6 +49,7 @@ class Camera2ManagerEnhanced(private val context: Context) {
     private var cameraCaptureSession: CameraCaptureSession? = null
     private var imageReader: ImageReader? = null
     private var mediaRecorder: MediaRecorder? = null
+    private var previewSurface: Surface? = null // 保存预览 Surface 引用
     
     // 相机参数
     private var cameraId: String = "0" // 默认后置摄像头
@@ -209,6 +210,9 @@ class Camera2ManagerEnhanced(private val context: Context) {
      */
     private fun startPreview(surface: Surface) {
         try {
+            // 保存 previewSurface 引用，供 update29DParams 使用
+            this.previewSurface = surface
+            
             val template = when (currentMode) {
                 CameraMode.PROFESSIONAL -> CameraDevice.TEMPLATE_MANUAL
                 CameraMode.VIDEO -> CameraDevice.TEMPLATE_RECORD
@@ -588,15 +592,31 @@ class Camera2ManagerEnhanced(private val context: Context) {
             manualISO = params.iso
             manualExposureTime = params.exposureTime
             
-            // 如果当前处于专业模式，立即刷新预览
-            if (currentMode == CameraMode.PROFESSIONAL && cameraCaptureSession != null && cameraDevice != null) {
+            // 立即刷新预览（移除模式限制）
+            if (cameraCaptureSession != null && cameraDevice != null) {
                 val captureBuilder = cameraDevice!!.createCaptureRequest(CameraDevice.TEMPLATE_MANUAL)
                 
-                // 下发硬件参数
+                // 必须添加预览 Surface 目标
+                if (previewSurface != null) {
+                    captureBuilder.addTarget(previewSurface)
+                } else {
+                    Log.w(TAG, "⚠️ previewSurface 为空，无法添加目标")
+                    return
+                }
+                
+                // 下发硬件参数（完整版）
                 captureBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_OFF)
                 captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF)
+                captureBuilder.set(CaptureRequest.CONTROL_AWB_MODE, CaptureRequest.CONTROL_AWB_MODE_OFF)
                 captureBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, params.iso)
                 captureBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, params.exposureTime)
+                
+                // 白平衡参数（RGB Gains）
+                val wbTemp = params.whiteBalance
+                val rGain = if (wbTemp > 5500) 1.0f else (wbTemp / 5500f)
+                val bGain = if (wbTemp < 5500) 1.0f else (5500f / wbTemp)
+                val gains = floatArrayOf(rGain, 1.0f, 1.0f, bGain)
+                captureBuilder.set(CaptureRequest.COLOR_CORRECTION_GAINS, android.hardware.camera2.params.RggbChannelVector(gains))
                 
                 // 刷新预览
                 cameraCaptureSession?.setRepeatingRequest(
@@ -608,11 +628,15 @@ class Camera2ManagerEnhanced(private val context: Context) {
                 // 审计日志
                 AuditLogger.logParameterAdjustment("29D_ISO", params.iso, params.iso)
                 AuditLogger.logParameterAdjustment("29D_ExposureTime", params.exposureTime, params.exposureTime)
+                AuditLogger.logParameterAdjustment("29D_WhiteBalance", params.whiteBalance, params.whiteBalance)
                 
-                Log.d(TAG, "29D 参数已下发: ISO=${params.iso}, ExposureTime=${params.exposureTime}")
+                Log.d(TAG, "✅ 29D 参数已下发: ISO=${params.iso}, ExposureTime=${params.exposureTime}ns, WB=${params.whiteBalance}K")
+                Log.d(TAG, "✅ RGB Gains: R=${rGain}, B=${bGain}")
+            } else {
+                Log.w(TAG, "⚠️ CaptureSession 或 CameraDevice 为空，无法下发参数")
             }
         } catch (e: Exception) {
-            Log.e(TAG, "更新 29D 参数失败", e)
+            Log.e(TAG, "❌ 更新 29D 参数失败", e)
         }
     }
     

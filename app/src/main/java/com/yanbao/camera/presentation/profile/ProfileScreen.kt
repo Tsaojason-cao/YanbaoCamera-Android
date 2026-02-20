@@ -39,6 +39,7 @@ fun ProfileScreen(
     onBack: () -> Unit = {}
 ) {
     val profile by viewModel.profile.collectAsState()
+    val backupStatus by viewModel.backupStatus.collectAsState()
     
     // 头像选择器
     val avatarLauncher = rememberLauncherForActivityResult(
@@ -286,8 +287,28 @@ fun ProfileScreen(
                 SettingItem(
                     icon = "💾",
                     title = "Git 同步备份",
-                    onClick = { /* Git 同步 */ }
+                    onClick = { viewModel.performGitBackup() }
                 )
+                
+                // 备份状态显示
+                backupStatus?.let { status ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 16.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFF2A2A2A)
+                        )
+                    ) {
+                        Text(
+                            text = status,
+                            fontSize = 12.sp,
+                            color = Color.White,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
+                }
             }
         }
     }

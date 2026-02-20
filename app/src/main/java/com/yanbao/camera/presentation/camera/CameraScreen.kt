@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -124,6 +125,7 @@ fun CameraScreen(
                 .fillMaxWidth()
                 .weight(0.3f)
                 .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
+                .blur(25.dp)  // 25dp 模糊效果
                 .background(
                     androidx.compose.ui.graphics.Brush.verticalGradient(
                         colors = listOf(

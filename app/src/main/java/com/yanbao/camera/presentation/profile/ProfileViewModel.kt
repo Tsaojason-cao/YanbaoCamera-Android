@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yanbao.camera.core.util.GitBackupManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,9 +45,13 @@ class ProfileViewModel @Inject constructor(
     }
     
     private val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    private val gitBackupManager = GitBackupManager(context)
 
     private val _profile = MutableStateFlow(loadProfile())
     val profile: StateFlow<UserProfile> = _profile
+    
+    private val _backupStatus = MutableStateFlow<String?>(null)
+    val backupStatus: StateFlow<String?> = _backupStatus
     
     /**
      * 从 SharedPreferences 加载用户资料
@@ -141,6 +146,51 @@ class ProfileViewModel @Inject constructor(
             val updated = _profile.value.copy(remainingDays = days)
             _profile.value = updated
             saveProfile(updated)
+        }
+    }
+    
+    /**
+     * 执行 Git 备份
+     */
+    fun performGitBackup() {
+        viewModelScope.launch {
+            _backupStatus.value = "备份中..."
+            
+            val result = gitBackupManager.performFullBackup()
+            
+            _backupStatus.value = result.fold(
+                onSuccess = { message -> "✅ $message" },
+                onFailure = { error -> "❌ 备份失败: ${error.message}" }
+            )
+        }
+    }
+    
+    /**
+     * 检查 Git 仓库状态
+     */
+    fun checkGitStatus() {
+        viewModelScope.launch {
+            val result = gitBackupManager.checkGitStatus()
+            
+            _backupStatus.value = result.fold(
+                onSuccess = { status -> "✅ Git 状态: $status" },
+                onFailure = { error -> "❌ ${error.message}" }
+            )
+        }
+    }
+    
+    /**
+     * 获取 Git 提交记录
+     */
+    fun getGitLog() {
+        viewModelScope.launch {
+            val result = gitBackupManager.getGitLog()
+            
+            _backupStatus.value = result.fold(
+                onSuccess = { log -> "✅ 最近提交:
+$log" },
+                onFailure = { error -> "❌ ${error.message}" }
+            )
         }
     }
 
