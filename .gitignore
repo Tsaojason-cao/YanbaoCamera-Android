@@ -1,36 +1,13 @@
-# Gradle files
-.gradle/
-build/
-*.apk
-*.aar
-*.ap_
-*.aab
-
-# Local configuration file (sdk path, etc)
-local.properties
-
-# Log/OS Files
-*.log
+*.iml
+.gradle
+/local.properties
+/.idea
 .DS_Store
-
-# Android Studio generated files and folders
-.idea/
-.project
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
-
-# Android Studio/IntelliJ
-**/android/gradle/wrapper/gradle-wrapper.jar
-**/android/gradlew
-**/android/gradlew.bat
-**/android/local.properties
-**/android/**/GeneratedPluginRegistrant.java
-
-# Exceptions to above rules.
-!/gradle/wrapper/gradle-wrapper.jar
-!/gradle/wrapper/gradle-wrapper.properties
-!/gradle/gradlew
-!/gradle/gradlew.bat
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+app/build/
+*.apk
+*.aab
