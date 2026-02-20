@@ -597,8 +597,9 @@ class Camera2ManagerEnhanced(private val context: Context) {
                 val captureBuilder = cameraDevice!!.createCaptureRequest(CameraDevice.TEMPLATE_MANUAL)
                 
                 // 必须添加预览 Surface 目标
-                if (previewSurface != null) {
-                    captureBuilder.addTarget(previewSurface)
+                val surface = previewSurface
+                if (surface != null) {
+                    captureBuilder.addTarget(surface)
                 } else {
                     Log.w(TAG, "⚠️ previewSurface 为空，无法添加目标")
                     return
@@ -615,8 +616,7 @@ class Camera2ManagerEnhanced(private val context: Context) {
                 val wbTemp = params.whiteBalance
                 val rGain = if (wbTemp > 5500) 1.0f else (wbTemp / 5500f)
                 val bGain = if (wbTemp < 5500) 1.0f else (5500f / wbTemp)
-                val gains = floatArrayOf(rGain, 1.0f, 1.0f, bGain)
-                captureBuilder.set(CaptureRequest.COLOR_CORRECTION_GAINS, android.hardware.camera2.params.RggbChannelVector(gains))
+                captureBuilder.set(CaptureRequest.COLOR_CORRECTION_GAINS, android.hardware.camera2.params.RggbChannelVector(rGain, 1.0f, 1.0f, bGain))
                 
                 // 刷新预览
                 cameraCaptureSession?.setRepeatingRequest(
