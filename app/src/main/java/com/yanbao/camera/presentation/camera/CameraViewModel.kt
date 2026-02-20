@@ -1,12 +1,14 @@
 package com.yanbao.camera.presentation.camera
 
+import android.content.Context
+import android.graphics.SurfaceTexture
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yanbao.camera.data.local.dao.YanbaoMemoryDao
 import com.yanbao.camera.data.local.entity.YanbaoMemoryFactory
+import com.yanbao.camera.core.model.CameraMode
 import com.yanbao.camera.data.model.Camera29DState
-import com.yanbao.camera.data.model.CameraMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -165,6 +167,40 @@ class CameraViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e(TAG, "Failed to restore parameters from JSON", e)
             }
+        }
+    }
+    
+    /**
+     * Surface Texture 可用时调用
+     */
+    fun onSurfaceTextureAvailable(surfaceTexture: SurfaceTexture, context: Context) {
+        Log.d(TAG, "SurfaceTexture available")
+        // TODO: 初始化 Camera2Manager
+    }
+    
+    /**
+     * Surface Texture 销毁时调用
+     */
+    fun onSurfaceTextureDestroyed() {
+        Log.d(TAG, "SurfaceTexture destroyed")
+        // TODO: 释放 Camera2Manager
+    }
+    
+    /**
+     * 设置相机模式
+     */
+    fun setMode(mode: CameraMode) {
+        switchMode(mode)
+    }
+    
+    /**
+     * 拍照
+     */
+    fun takePhoto(context: Context) {
+        viewModelScope.launch {
+            Log.d(TAG, "Taking photo...")
+            // TODO: 调用 Camera2Manager 拍照
+            // 拍照成功后调用 savePhotoMetadata
         }
     }
     
