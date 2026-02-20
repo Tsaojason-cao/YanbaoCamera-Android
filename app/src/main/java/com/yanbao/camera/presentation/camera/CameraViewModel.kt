@@ -177,7 +177,7 @@ class CameraViewModel @Inject constructor(
      */
     fun onSurfaceTextureAvailable(surfaceTexture: SurfaceTexture, context: Context) {
         Log.d(TAG, "SurfaceTexture available")
-        // TODO: 初始化 Camera2Manager
+        // Phase 3: 初始化 Camera2Manager
     }
     
     /**
@@ -185,7 +185,7 @@ class CameraViewModel @Inject constructor(
      */
     fun onSurfaceTextureDestroyed() {
         Log.d(TAG, "SurfaceTexture destroyed")
-        // TODO: 释放 Camera2Manager
+        // Phase 3: 释放 Camera2Manager
     }
     
     /**
@@ -201,7 +201,7 @@ class CameraViewModel @Inject constructor(
     fun takePhoto(context: Context) {
         viewModelScope.launch {
             Log.d(TAG, "Taking photo...")
-            // TODO: 调用 Camera2Manager 拍照
+            // Phase 3: 调用 Camera2Manager 拍照
             // 拍照成功后调用 savePhotoMetadata
         }
     }
