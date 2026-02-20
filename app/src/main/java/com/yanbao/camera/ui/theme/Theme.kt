@@ -153,3 +153,10 @@ val BrandGradientColors = listOf(
     Color(0xFFA78BFA), // 紫色
     Color(0xFFEC4899)  // 粉色
 )
+
+/**
+ * 品牌渐变画笔（用于 Modifier.background）
+ */
+val YanbaoGradient = androidx.compose.ui.graphics.Brush.verticalGradient(
+    colors = BrandGradientColors
+)
