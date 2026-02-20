@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.YanbaoCamera" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:colorPrimary">@color/yanbao_primary</item>
-        <item name="android:colorAccent">@color/yanbao_accent</item>
+    <style name="Theme.YanbaoCamera" parent="android:Theme.Material.NoTitleBar.Fullscreen">
+        <item name="android:statusBarColor">@color/yanbao_black</item>
+        <item name="android:navigationBarColor">@color/yanbao_black</item>
+        <item name="android:windowBackground">@color/yanbao_black</item>
+    </style>
+    
+    <style name="Theme.YanbaoCamera.Splash" parent="Theme.YanbaoCamera">
+        <item name="android:windowFullscreen">true</item>
     </style>
 </resources>
