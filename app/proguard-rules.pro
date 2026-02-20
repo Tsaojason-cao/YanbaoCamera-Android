@@ -1,27 +1,30 @@
-# This is a configuration file for ProGuard.
-# http://proguard.sourceforge.net/index.html#manual/usage.html
+# Add project specific ProGuard rules here.
+# You can control the set of applied configuration files using the
+# proguardFiles setting in build.gradle.
 
--dontusemixedcaseclassnames
--verbose
+# Keep Hilt
+-keep class dagger.hilt.** { *; }
+-keep class javax.inject.** { *; }
 
-# Preserve line numbers for debugging stack traces
--keepattributes SourceFile,LineNumberTable
--renamesourcefileattribute SourceFile
+# Keep Room
+-keep class * extends androidx.room.RoomDatabase
+-keep @androidx.room.Entity class *
+-keep @androidx.room.Dao interface *
 
-# Keep our interfaces so they can be used by other ProGuard rules.
--keep interface retrofit2.** { *; }
--keep class retrofit2.** { *; }
+# Keep Retrofit
+-keepattributes Signature
 -keepattributes Exceptions
+-keep class retrofit2.** { *; }
+-keep interface retrofit2.** { *; }
 
-# Keep Kotlin metadata
--keepattributes *Annotation*
--keep class kotlin.** { *; }
--keep class kotlinx.** { *; }
+# Keep Gson
+-keep class com.google.gson.** { *; }
+-keep class * implements com.google.gson.TypeAdapterFactory
+-keep class * implements com.google.gson.JsonSerializer
+-keep class * implements com.google.gson.JsonDeserializer
 
-# Keep Jetpack Compose
+# Keep data models
+-keep class com.yanbao.camera.data.** { *; }
+
+# Keep Compose
 -keep class androidx.compose.** { *; }
--keep interface androidx.compose.** { *; }
-
-# Keep AndroidX
--keep class androidx.** { *; }
--keep interface androidx.** { *; }
