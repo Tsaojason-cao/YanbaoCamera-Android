@@ -11,7 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
-import com.yanbao.camera.presentation.camera.CameraScreen
+import com.yanbao.camera.presentation.YanbaoApp
 import com.yanbao.camera.presentation.theme.YanbaoTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -57,7 +57,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    CameraScreen()
+                    YanbaoApp()
                 }
             }
         }

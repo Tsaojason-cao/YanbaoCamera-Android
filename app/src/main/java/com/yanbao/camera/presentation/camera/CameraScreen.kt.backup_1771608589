@@ -24,7 +24,6 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.yanbao.camera.core.model.CameraMode
 import com.yanbao.camera.presentation.camera.components.ModeSelector
-import com.yanbao.camera.presentation.camera.components.Parameter29DPanel
 import com.yanbao.camera.presentation.camera.components.ParameterPanel
 import com.yanbao.camera.presentation.camera.components.ShutterButton
 
@@ -42,9 +41,6 @@ fun CameraScreen(
 ) {
     val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
     val context = LocalContext.current
-    val currentMode by viewModel.currentMode.collectAsState()
-    val camera29DState by viewModel.camera29DState.collectAsState()
-    val show29DPanel by viewModel.show29DPanel.collectAsState()
     
     // 请求相机权限
     LaunchedEffect(Unit) {
@@ -104,7 +100,7 @@ fun CameraScreen(
             
             // 实时参数浮窗（显示当前模式）
             Text(
-                text = currentMode.displayName,
+                text = viewModel.currentMode.displayName,
                 modifier = Modifier
                     .align(Alignment.TopStart)
                     .padding(16.dp)
@@ -135,19 +131,20 @@ fun CameraScreen(
             ) {
                 // 模式选择器
                 ModeSelector(
-                    selectedMode = currentMode,
+                    selectedMode = viewModel.currentMode,
                     onModeSelected = { mode ->
                         viewModel.setMode(mode)
                     }
                 )
                 
-                // 29D 参数控制面板
-                if (show29DPanel) {
-                    Parameter29DPanel(
-                        state = camera29DState,
-                        onParameterChange = { name, value ->
-                            viewModel.updateParameter(name, value)
-                        }
+                // 参数控制面板（仅专业模式显示）
+                if (viewModel.currentMode == CameraMode.PROFESSIONAL) {
+                    ParameterPanel(
+                        currentMode = viewModel.currentMode,
+                        iso = viewModel.manualISO,
+                        onIsoChange = { viewModel.setISO(it) },
+                        exposureTime = viewModel.manualExposureTime,
+                        onExposureTimeChange = { viewModel.setExposureTime(it) }
                     )
                 }
                 

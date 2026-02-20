@@ -11,27 +11,21 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-/**
- * 用户资料数据类
- */
 data class UserProfile(
     val userName: String = "Yanbao Creator",
-    val userId: String = "88888",
-    val memberNumber: String = "YB-88888",
+    val userId: String = "12345678",
+    val memberNumber: String = "88888",
     val remainingDays: Int = 365,
-    val location: String = "上海 · 静安区",
-    val avatarUri: String? = null,
-    val backgroundUri: String? = null
+    val location: String = "上海 · 静安区"
 )
 
-/**
- * 个人中心 ViewModel
- * 
- * 功能：
- * - 用户资料管理（头像、ID、会员号）
- * - SharedPreferences 持久化
- * - 背景图片更换
- */
+data class WorkItem(
+    val id: String,
+    val colorStart: Long,
+    val colorEnd: Long,
+    val likeCount: String
+)
+
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     @ApplicationContext private val context: Context
@@ -44,12 +38,10 @@ class ProfileViewModel @Inject constructor(
         private const val KEY_MEMBER_NUMBER = "member_number"
         private const val KEY_REMAINING_DAYS = "remaining_days"
         private const val KEY_AVATAR_URI = "avatar_uri"
-        private const val KEY_BACKGROUND_URI = "background_uri"
     }
     
     private val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-    
-    // 用户资料状态
+
     private val _profile = MutableStateFlow(loadProfile())
     val profile: StateFlow<UserProfile> = _profile
     
@@ -59,12 +51,10 @@ class ProfileViewModel @Inject constructor(
     private fun loadProfile(): UserProfile {
         return UserProfile(
             userName = prefs.getString(KEY_USER_NAME, "Yanbao Creator") ?: "Yanbao Creator",
-            userId = prefs.getString(KEY_USER_ID, "88888") ?: "88888",
-            memberNumber = prefs.getString(KEY_MEMBER_NUMBER, "YB-88888") ?: "YB-88888",
+            userId = prefs.getString(KEY_USER_ID, "12345678") ?: "12345678",
+            memberNumber = prefs.getString(KEY_MEMBER_NUMBER, "88888") ?: "88888",
             remainingDays = prefs.getInt(KEY_REMAINING_DAYS, 365),
-            location = "上海 · 静安区",
-            avatarUri = prefs.getString(KEY_AVATAR_URI, null),
-            backgroundUri = prefs.getString(KEY_BACKGROUND_URI, null)
+            location = "上海 · 静安区"
         )
     }
     
@@ -77,8 +67,6 @@ class ProfileViewModel @Inject constructor(
             putString(KEY_USER_ID, profile.userId)
             putString(KEY_MEMBER_NUMBER, profile.memberNumber)
             putInt(KEY_REMAINING_DAYS, profile.remainingDays)
-            profile.avatarUri?.let { putString(KEY_AVATAR_URI, it) }
-            profile.backgroundUri?.let { putString(KEY_BACKGROUND_URI, it) }
             apply()
         }
     }
@@ -106,46 +94,45 @@ class ProfileViewModel @Inject constructor(
     }
     
     /**
-     * 更新会员号
-     */
-    fun updateMemberNumber(number: String) {
-        viewModelScope.launch {
-            val updated = _profile.value.copy(memberNumber = number)
-            _profile.value = updated
-            saveProfile(updated)
-        }
-    }
-    
-    /**
-     * 更新剩余天数
-     */
-    fun updateRemainingDays(days: Int) {
-        viewModelScope.launch {
-            val updated = _profile.value.copy(remainingDays = days)
-            _profile.value = updated
-            saveProfile(updated)
-        }
-    }
-    
-    /**
      * 更新头像
      */
-    fun updateAvatar(uri: Uri) {
+    fun updateAvatar(uri: Uri?) {
         viewModelScope.launch {
-            val updated = _profile.value.copy(avatarUri = uri.toString())
-            _profile.value = updated
-            saveProfile(updated)
+            uri?.let {
+                prefs.edit().putString(KEY_AVATAR_URI, it.toString()).apply()
+            }
         }
     }
-    
-    /**
-     * 更新背景图片
-     */
-    fun updateBackground(uri: Uri) {
-        viewModelScope.launch {
-            val updated = _profile.value.copy(backgroundUri = uri.toString())
-            _profile.value = updated
-            saveProfile(updated)
+
+    private val _selectedTab = MutableStateFlow(0)
+    val selectedTab: StateFlow<Int> = _selectedTab
+
+    private val _works = MutableStateFlow(generateMockWorks())
+    val works: StateFlow<List<WorkItem>> = _works
+
+    fun selectTab(index: Int) {
+        _selectedTab.value = index
+    }
+
+    private fun generateMockWorks(): List<WorkItem> {
+        val colorPairs = listOf(
+            0xFFA78BFA to 0xFFEC4899,
+            0xFF6366F1 to 0xFFA78BFA,
+            0xFFEC4899 to 0xFFF9A8D4,
+            0xFF8B5CF6 to 0xFF6366F1,
+            0xFFDB2777 to 0xFFEC4899,
+            0xFF7C3AED to 0xFF8B5CF6,
+            0xFFF472B6 to 0xFFA78BFA,
+            0xFF9333EA to 0xFF7C3AED,
+            0xFFE879F9 to 0xFFF472B6
+        )
+        return colorPairs.mapIndexed { index, (start, end) ->
+            WorkItem(
+                id = "work_$index",
+                colorStart = start.toLong(),
+                colorEnd = end.toLong(),
+                likeCount = listOf("2.5k", "1.8k", "3.2k", "987", "1.1k", "4.5k", "756", "2.1k", "1.4k")[index]
+            )
         }
     }
 }

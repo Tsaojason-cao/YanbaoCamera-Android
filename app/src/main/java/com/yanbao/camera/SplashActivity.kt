@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -16,28 +15,31 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import kotlin.math.sin
 import kotlin.random.Random
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import com.yanbao.camera.R
 
 /**
- * 启动页 - 粉紫渐变 + 库洛米流光动画
+ * 启动页 - 1:1 还原设计图
+ * 
+ * 设计图: 01_splash/splash_screen.png
  * 
  * UI 元素：
- * - 背景：垂直渐变（#A78BFA → #EC4899）
- * - 流光动画：旋转的渐变光环
- * - 库洛米角色：4 张 PNG 拼接（kuromi_tl, tr, bl, br）
- * - 黄色星星：6个，闪烁动画
- * - 标题："yanbao AI"，白色粗体
- * - 进度条：粉紫渐变填充
+ * - 背景：垂直渐变（深紫 → 紫粉 → 亮粉）
+ * - 光晕球：多个白色半透明圆形，大小不一，随机分布
+ * - 库洛米角色：黑色耳朵 + 白色身体 + 粉色装饰
+ * - 黄色星星：6个，分布在角色周围
+ * - 标题："Yanbao Camera"，白色粗体
+ * - 进度条：圆角矩形，粉紫渐变填充
  */
 class SplashActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,17 +76,15 @@ fun SplashScreen(onFinish: () -> Unit) {
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFFA78BFA), // 顶部：紫色
-                        Color(0xFFEC4899)  // 底部：粉色
+                        Color(0xFF8B7FD8), // 顶部：深紫色
+                        Color(0xFFB89FE8), // 中部：紫粉混合
+                        Color(0xFFF5A8D4)  // 底部：亮粉色
                     )
                 )
             )
     ) {
         // 背景光晕球（浮动动画）
         FloatingGlowBalls()
-        
-        // 流光动画（旋转的渐变光环）
-        StreamingLightRing()
         
         // 中央：库洛米角色 + 星星
         Box(
@@ -96,7 +96,7 @@ fun SplashScreen(onFinish: () -> Unit) {
             // 中央白色光晕（角色后方）
             Box(
                 modifier = Modifier
-                    .size(300.dp)
+                    .size(250.dp)
                     .align(Alignment.Center)
                     .background(
                         brush = Brush.radialGradient(
@@ -109,8 +109,14 @@ fun SplashScreen(onFinish: () -> Unit) {
                     )
             )
             
-            // 库洛米角色（4 张 PNG 拼接）
-            KuromiCharacter()
+            // 库洛米角色（使用真实 PNG 图片）
+            Image(
+                painter = painterResource(id = R.drawable.kuromi),
+                contentDescription = "Kuromi",
+                modifier = Modifier
+                    .size(200.dp)
+                    .align(Alignment.Center)
+            )
             
             // 黄色星星（6个，分布在角色周围）
             YellowStars()
@@ -124,7 +130,7 @@ fun SplashScreen(onFinish: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "yanbao AI",
+                text = "Yanbao Camera",
                 fontSize = 48.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
@@ -134,106 +140,6 @@ fun SplashScreen(onFinish: () -> Unit) {
             
             // 进度条
             GlassProgressBar(progress = progress)
-        }
-    }
-}
-
-/**
- * 库洛米角色（4 张 PNG 拼接）
- */
-@Composable
-fun BoxScope.KuromiCharacter() {
-    // 使用 Box 布局拼接 4 张图片
-    Box(
-        modifier = Modifier
-            .size(200.dp)
-            .align(Alignment.Center)
-    ) {
-        // 左上
-        Image(
-            painter = painterResource(id = R.drawable.kuromi_tl),
-            contentDescription = "Kuromi Top Left",
-            modifier = Modifier
-                .size(100.dp)
-                .align(Alignment.TopStart)
-        )
-        
-        // 右上
-        Image(
-            painter = painterResource(id = R.drawable.kuromi_tr),
-            contentDescription = "Kuromi Top Right",
-            modifier = Modifier
-                .size(100.dp)
-                .align(Alignment.TopEnd)
-        )
-        
-        // 左下
-        Image(
-            painter = painterResource(id = R.drawable.kuromi_bl),
-            contentDescription = "Kuromi Bottom Left",
-            modifier = Modifier
-                .size(100.dp)
-                .align(Alignment.BottomStart)
-        )
-        
-        // 右下
-        Image(
-            painter = painterResource(id = R.drawable.kuromi_br),
-            contentDescription = "Kuromi Bottom Right",
-            modifier = Modifier
-                .size(100.dp)
-                .align(Alignment.BottomEnd)
-        )
-    }
-}
-
-/**
- * 流光动画（旋转的渐变光环）
- */
-@Composable
-fun StreamingLightRing() {
-    val infiniteTransition = rememberInfiniteTransition(label = "streaming_light")
-    val rotation by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(4000, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "ring_rotation"
-    )
-    
-    // 动态偏移动画
-    val offset by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 50f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(2000, easing = EaseInOut),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "ring_offset"
-    )
-    
-    Canvas(modifier = Modifier.fillMaxSize()) {
-        val center = Offset(size.width / 2, size.height / 2 + offset)
-        val radius = size.minDimension * 0.6f
-        
-        // 绘制多个旋转的渐变光环
-        for (i in 0..3) {
-            val angleOffset = i * 90f
-            drawCircle(
-                brush = Brush.sweepGradient(
-                    colors = listOf(
-                        Color.White.copy(alpha = 0f),
-                        Color(0xFFEC4899).copy(alpha = 0.4f),  // 粉色
-                        Color(0xFFA78BFA).copy(alpha = 0.4f),  // 紫色
-                        Color.White.copy(alpha = 0f)
-                    ),
-                    center = center
-                ),
-                radius = radius - i * 40f,
-                center = center
-            )
         }
     }
 }
@@ -356,7 +262,7 @@ fun GlassProgressBar(progress: Float) {
                     brush = Brush.horizontalGradient(
                         colors = listOf(
                             Color(0xFFEC4899), // 粉色
-                            Color(0xFFA78BFA)  // 紫色
+                            Color(0xFFB89FE8)  // 紫色
                         )
                     ),
                     shape = RoundedCornerShape(20.dp)
