@@ -1,204 +1,384 @@
 package com.yanbao.camera.presentation.profile
 
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.rememberAsyncImagePainter
 
 /**
- * 个人中心与设置模块
+ * 个人中心界面
  * 
- * 设计规范：
- * - 顶部：全屏背景图（用户可自定义）+ 库洛米风格半透明覆盖
- * - 中心：圆形大头像（点击弹出相册更换）+ 昵称（ID：88888）
- * - 数据行：作品、粉丝、关注、会员天数
- * - 设置项列表：修改资料、隐私设置、同步 Git 备份
+ * 功能：
+ * - 大圆形头像（带描边）
+ * - ID（88888）、会员号（YB-88888）、剩余天数
+ * - 头像/背景/ID 修改
+ * - SharedPreferences 持久化
  */
 @Composable
 fun ProfileScreen(
-    viewModel: ProfileViewModel = hiltViewModel()
+    viewModel: ProfileViewModel = hiltViewModel(),
+    onBack: () -> Unit = {}
 ) {
     val profile by viewModel.profile.collectAsState()
+    
+    // 头像选择器
+    val avatarLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let { viewModel.updateAvatar(it) }
+    }
+    
+    // 背景选择器
+    val backgroundLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let { viewModel.updateBackground(it) }
+    }
+    
+    // ID 编辑对话框
+    var showIdDialog by remember { mutableStateOf(false) }
+    
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF8B7FD8), // 深紫
-                        Color(0xFFB89FE8), // 紫粉
-                        Color(0xFFF5A8D4)  // 亮粉
-                    )
-                )
-            )
+            .background(Color(0xFF1A1A1A))
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxSize()
         ) {
-            // 顶部品牌标识
-            Text(
-                text = "yanbao AI",
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                modifier = Modifier.padding(vertical = 16.dp)
-            )
-            
-            Spacer(modifier = Modifier.height(32.dp))
-            
-            // 用户头像（大圆形）
+            // 顶部：背景墙 + 头像
             Box(
                 modifier = Modifier
-                    .size(120.dp)
-                    .clip(CircleShape)
-                    .background(Color.White.copy(alpha = 0.3f))
-                    .border(4.dp, Color(0xFFEC4899), CircleShape) // 粉色边框
+                    .fillMaxWidth()
+                    .height(300.dp)
             ) {
-                // 编辑按钮
-                Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = "修改头像",
-                    tint = Color.White,
+                // 背景墙
+                Box(
                     modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(8.dp)
-                        .size(24.dp)
-                )
-            }
-            
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            // 用户 ID（会员号：88888）
-            Text(
-                text = profile.userName,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
-            
-            Text(
-                text = "ID: ${profile.userId}",
-                fontSize = 16.sp,
-                color = Color.White.copy(alpha = 0.8f)
-            )
-            
-            Text(
-                text = "会员号：YB-${profile.memberNumber}",
-                fontSize = 14.sp,
-                color = Color(0xFFEC4899) // 粉色
-            )
-            
-            Text(
-                text = "剩余天数：${profile.remainingDays}天",
-                fontSize = 14.sp,
-                color = Color(0xFFEC4899) // 粉色
-            )
-            
-            Spacer(modifier = Modifier.height(32.dp))
-            
-            // 数据行（作品、粉丝、关注）
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                UserStatItem("作品", "128")
-                UserStatItem("粉丝", "1.2K")
-                UserStatItem("关注", "256")
-            }
-            
-            Spacer(modifier = Modifier.height(32.dp))
-            
-            // 设置项列表
-            SettingsList()
-        }
-    }
-}
-
-/**
- * 用户统计项
- */
-@Composable
-fun UserStatItem(label: String, value: String) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = value,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White
-        )
-        Text(
-            text = label,
-            fontSize = 12.sp,
-            color = Color.White.copy(alpha = 0.7f)
-        )
-    }
-}
-
-/**
- * 设置项列表
- */
-@Composable
-fun SettingsList() {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        SettingItem("修改资料")
-        SettingItem("隐私设置")
-        SettingItem("同步 Git 备份")
-        SettingItem("关于 yanbao AI")
-    }
-}
-
-/**
- * 设置项
- */
-@Composable
-fun SettingItem(title: String) {
-    Card(
-        shape = RoundedCornerShape(16.dp),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    brush = Brush.horizontalGradient(
-                        colors = listOf(
-                            Color(0x40FFFFFF), // 25% 白色透明
-                            Color(0x26FFFFFF)  // 15% 白色透明
+                        .fillMaxSize()
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colors = listOf(
+                                    Color(0xFFA78BFA),  // 紫色
+                                    Color(0xFFEC4899)   // 粉色
+                                )
+                            )
                         )
+                        .clickable {
+                            backgroundLauncher.launch("image/*")
+                        }
+                ) {
+                    // 如果有自定义背景，显示图片
+                    profile.backgroundUri?.let { uri ->
+                        Image(
+                            painter = rememberAsyncImagePainter(uri),
+                            contentDescription = "Background",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                    
+                    // 背景遮罩
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.3f))
                     )
+                }
+                
+                // 返回按钮
+                IconButton(
+                    onClick = onBack,
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(16.dp)
+                ) {
+                    Text("←", fontSize = 28.sp, color = Color.White)
+                }
+                
+                // 头像
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .offset(y = 60.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(120.dp)
+                            .clip(CircleShape)
+                            .border(4.dp, Color.White, CircleShape)
+                            .background(Color.Gray)
+                            .clickable {
+                                avatarLauncher.launch("image/*")
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        profile.avatarUri?.let { uri ->
+                            Image(
+                                painter = rememberAsyncImagePainter(uri),
+                                contentDescription = "Avatar",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        } ?: run {
+                            Text(
+                                text = "📷",
+                                fontSize = 48.sp
+                            )
+                        }
+                    }
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(70.dp))
+            
+            // 中间：用户信息
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // 用户名
+                Text(
+                    text = profile.userName,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
                 )
-                .padding(16.dp)
-        ) {
-            Text(
-                text = title,
-                fontSize = 16.sp,
-                color = Color.White,
-                fontWeight = FontWeight.Medium
-            )
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                // ID（可点击编辑）
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable { showIdDialog = true }
+                ) {
+                    Text(
+                        text = "ID: ${profile.userId}",
+                        fontSize = 16.sp,
+                        color = Color.White.copy(alpha = 0.7f)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "✏️",
+                        fontSize = 14.sp
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                // 会员信息卡片
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xFF2A2A2A)
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text(
+                                text = "会员号",
+                                fontSize = 12.sp,
+                                color = Color.White.copy(alpha = 0.6f)
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = profile.memberNumber,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFFEC4899)
+                            )
+                        }
+                        
+                        Column(
+                            horizontalAlignment = Alignment.End
+                        ) {
+                            Text(
+                                text = "剩余天数",
+                                fontSize = 12.sp,
+                                color = Color.White.copy(alpha = 0.6f)
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "${profile.remainingDays} 天",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF10B981)
+                            )
+                        }
+                    }
+                }
+                
+                Spacer(modifier = Modifier.height(24.dp))
+                
+                // 位置信息
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "📍",
+                        fontSize = 16.sp
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = profile.location,
+                        fontSize = 14.sp,
+                        color = Color.White.copy(alpha = 0.7f)
+                    )
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(32.dp))
+            
+            // 底部：设置选项
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+            ) {
+                SettingItem(
+                    icon = "🎨",
+                    title = "更换背景",
+                    onClick = { backgroundLauncher.launch("image/*") }
+                )
+                
+                SettingItem(
+                    icon = "📸",
+                    title = "更换头像",
+                    onClick = { avatarLauncher.launch("image/*") }
+                )
+                
+                SettingItem(
+                    icon = "✏️",
+                    title = "修改 ID",
+                    onClick = { showIdDialog = true }
+                )
+                
+                SettingItem(
+                    icon = "💾",
+                    title = "Git 同步备份",
+                    onClick = { /* Git 同步 */ }
+                )
+            }
         }
     }
+    
+    // ID 编辑对话框
+    if (showIdDialog) {
+        EditIdDialog(
+            currentId = profile.userId,
+            onConfirm = { newId ->
+                viewModel.updateUserId(newId)
+                showIdDialog = false
+            },
+            onDismiss = { showIdDialog = false }
+        )
+    }
+}
+
+/**
+ * 设置选项
+ */
+@Composable
+fun SettingItem(
+    icon: String,
+    title: String,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(12.dp))
+            .background(Color(0xFF2A2A2A))
+            .clickable(onClick = onClick)
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = icon,
+            fontSize = 24.sp
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+        Text(
+            text = title,
+            fontSize = 16.sp,
+            color = Color.White,
+            modifier = Modifier.weight(1f)
+        )
+        Text(
+            text = "›",
+            fontSize = 24.sp,
+            color = Color.White.copy(alpha = 0.5f)
+        )
+    }
+    Spacer(modifier = Modifier.height(12.dp))
+}
+
+/**
+ * ID 编辑对话框
+ */
+@Composable
+fun EditIdDialog(
+    currentId: String,
+    onConfirm: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    var newId by remember { mutableStateOf(currentId) }
+    
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text("修改 ID", fontWeight = FontWeight.Bold)
+        },
+        text = {
+            OutlinedTextField(
+                value = newId,
+                onValueChange = { newId = it },
+                label = { Text("新 ID") },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = { onConfirm(newId) }) {
+                Text("确认", color = Color(0xFFEC4899))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("取消", color = Color.White.copy(alpha = 0.6f))
+            }
+        },
+        containerColor = Color(0xFF2A2A2A),
+        textContentColor = Color.White
+    )
 }
