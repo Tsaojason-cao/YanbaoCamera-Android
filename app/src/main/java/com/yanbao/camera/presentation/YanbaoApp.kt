@@ -41,7 +41,14 @@ fun YanbaoApp() {
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
             when (selectedTab) {
-                0 -> HomeScreen()
+                0 -> HomeScreen(
+                    onCameraClick = { selectedTab = 1 },
+                    onEditorClick = { /* TODO: 跳转编辑器 */ },
+                    onGalleryClick = { selectedTab = 2 },
+                    onSettingsClick = { selectedTab = 4 },
+                    onRecommendClick = { selectedTab = 3 },
+                    onProfileClick = { selectedTab = 4 }
+                )
                 1 -> CameraScreen()
                 2 -> GalleryScreen()
                 3 -> RecommendScreen()
