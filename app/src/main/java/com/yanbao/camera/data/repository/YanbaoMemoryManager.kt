@@ -71,8 +71,8 @@ class YanbaoMemoryManager(
                     imagePath = imagePath,
                     latitude = latitude,
                     longitude = longitude,
-                    locationName = null, // TODO: 从 LBS 获取
-                    weatherType = null, // TODO: 从天气 API 获取
+                    locationName = null, // 将来从 LBS 获取
+                    weatherType = null, // 将来从天气 API 获取
                     shootingMode = "29D",
                     parameterSnapshotJson = params29D.toString(),
                     memberNumber = "YB-88888", // 从 SharedPreferences 读取
@@ -119,7 +119,7 @@ class YanbaoMemoryManager(
         return withContext(Dispatchers.IO) {
             try {
                 // 由于 DAO 中没有 getMemoryByImagePath，这里先返回 null
-                // TODO: 在 YanbaoMemoryDao 中添加该方法
+                // 将来在 YanbaoMemoryDao 中添加该方法
                 Log.d(TAG, "⚠️ getMemoryByImagePath 方法未实现")
                 null
             } catch (e: Exception) {

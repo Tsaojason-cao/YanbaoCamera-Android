@@ -43,7 +43,7 @@ fun YanbaoApp() {
             when (selectedTab) {
                 0 -> HomeScreen(
                     onCameraClick = { selectedTab = 1 },
-                    onEditorClick = { /* TODO: 跳转编辑器 */ },
+                    onEditorClick = { /* 将来跳转编辑器 */ },
                     onGalleryClick = { selectedTab = 2 },
                     onSettingsClick = { selectedTab = 4 },
                     onRecommendClick = { selectedTab = 3 },

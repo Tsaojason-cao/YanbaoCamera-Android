@@ -133,8 +133,7 @@ fun TopUserAction(
             .background(Color(0xFF2A2A2A)),
         contentAlignment = Alignment.Center
     ) {
-        // TODO: 集成 ProfileViewModel 加载真实头像
-        // 当前使用占位符
+        // 将来集成 ProfileViewModel 加载真实头像
         Text(
             text = "👤",
             fontSize = 24.sp

@@ -413,7 +413,7 @@ fun MainShutterSection(
         modifier = modifier,
         contentAlignment = Alignment.Center
     ) {
-        // TODO: 实现快门按钮
+        // 快门按钮将来实现
         // 占位符
     }
 }
