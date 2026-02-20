@@ -1,5 +1,6 @@
 package com.yanbao.camera.ui.components
 
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -21,6 +22,9 @@ import android.util.Log
 
 /**
  * 2.9D 模式控制面板（按设计图 04_camera_29d.png 重写）
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+/**
  * 
  * 关键元素：
  * - 标题："✨ 2.9D模式" + "即时" 按钮
