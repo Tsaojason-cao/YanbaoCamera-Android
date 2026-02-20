@@ -231,6 +231,14 @@ fun CameraScreen(
             }
         }
 
+        // ============ 库洛米耳朵装饰 ============
+        KuromiEarsDecoration(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(150.dp)
+                .align(Alignment.TopStart)
+        )
+
         // ============ 顶部控制栏 ============
         TopControlBar(
             flashMode = cameraState.flashMode,
@@ -572,39 +580,76 @@ fun BottomActionBar(
             Text("🖼️", fontSize = 24.sp)
         }
 
-        // 中：快门按钮
+        // 中：快门按钮（增强版）
         Box(
             modifier = Modifier
-                .size(72.dp)
-                .scale(shutterScale),
+                .size(120.dp),  // 增大区域以容纳光晕
             contentAlignment = Alignment.Center
         ) {
-            // 外圈
+            // 粉紫渐变光晕效果（最外层）
+            Box(
+                modifier = Modifier
+                    .size(100.dp)
+                    .background(
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                Color(0xFFEC4899).copy(alpha = 0.3f),
+                                Color(0xFFA78BFA).copy(alpha = 0.2f),
+                                Color.Transparent
+                            )
+                        ),
+                        shape = CircleShape
+                    )
+            )
+            
+            // 虚线圆环动画（中层）
+            Box(
+                modifier = Modifier
+                    .size(80.dp)
+                    .border(
+                        width = 2.dp,
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                Color(0xFFEC4899).copy(alpha = 0.6f),
+                                Color(0xFFA78BFA).copy(alpha = 0.6f)
+                            )
+                        ),
+                        shape = CircleShape
+                    )
+            )
+            
             Box(
                 modifier = Modifier
                     .size(72.dp)
-                    .border(3.dp, Color.White.copy(alpha = 0.8f), CircleShape)
-            )
-            // 内圈（快门）
-            Box(
-                modifier = Modifier
-                    .size(60.dp)
-                    .background(
-                        brush = if (isRecording) {
-                            Brush.radialGradient(listOf(Color.Red, Color(0xFFFF5252)))
-                        } else {
-                            Brush.radialGradient(
-                                listOf(Color(0xFFEC4899), Color(0xFFF9A8D4))
-                            )
-                        },
-                        shape = CircleShape
-                    )
-                    .clickable {
-                        onShutterPress()
-                        onShutterRelease()
-                    },
+                    .scale(shutterScale),
                 contentAlignment = Alignment.Center
             ) {
+                // 外圈
+                Box(
+                    modifier = Modifier
+                        .size(72.dp)
+                        .border(3.dp, Color.White.copy(alpha = 0.8f), CircleShape)
+                )
+                // 内圈（快门）
+                Box(
+                    modifier = Modifier
+                        .size(60.dp)
+                        .background(
+                            brush = if (isRecording) {
+                                Brush.radialGradient(listOf(Color.Red, Color(0xFFFF5252)))
+                            } else {
+                                Brush.radialGradient(
+                                    listOf(Color(0xFFEC4899), Color(0xFFF9A8D4))
+                                )
+                            },
+                            shape = CircleShape
+                        )
+                        .clickable {
+                            onShutterPress()
+                            onShutterRelease()
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
                 if (isRecording) {
                     Box(
                         modifier = Modifier
