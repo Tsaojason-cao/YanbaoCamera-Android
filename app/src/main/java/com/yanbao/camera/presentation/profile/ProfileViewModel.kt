@@ -14,9 +14,11 @@ import javax.inject.Inject
 data class UserProfile(
     val userName: String = "Yanbao Creator",
     val userId: String = "12345678",
-    val memberNumber: String = "88888",
+    val memberNumber: String = "YB-88888",
     val remainingDays: Int = 365,
-    val location: String = "上海 · 静安区"
+    val location: String = "上海 · 静安区",
+    val avatarUri: String? = null,
+    val backgroundUri: String? = null
 )
 
 data class WorkItem(
@@ -38,6 +40,7 @@ class ProfileViewModel @Inject constructor(
         private const val KEY_MEMBER_NUMBER = "member_number"
         private const val KEY_REMAINING_DAYS = "remaining_days"
         private const val KEY_AVATAR_URI = "avatar_uri"
+        private const val KEY_BACKGROUND_URI = "background_uri"
     }
     
     private val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -51,10 +54,12 @@ class ProfileViewModel @Inject constructor(
     private fun loadProfile(): UserProfile {
         return UserProfile(
             userName = prefs.getString(KEY_USER_NAME, "Yanbao Creator") ?: "Yanbao Creator",
-            userId = prefs.getString(KEY_USER_ID, "12345678") ?: "12345678",
-            memberNumber = prefs.getString(KEY_MEMBER_NUMBER, "88888") ?: "88888",
+            userId = prefs.getString(KEY_USER_ID, "88888") ?: "88888",
+            memberNumber = prefs.getString(KEY_MEMBER_NUMBER, "YB-88888") ?: "YB-88888",
             remainingDays = prefs.getInt(KEY_REMAINING_DAYS, 365),
-            location = "上海 · 静安区"
+            location = "上海 · 静安区",
+            avatarUri = prefs.getString(KEY_AVATAR_URI, null),
+            backgroundUri = prefs.getString(KEY_BACKGROUND_URI, null)
         )
     }
     
@@ -67,6 +72,8 @@ class ProfileViewModel @Inject constructor(
             putString(KEY_USER_ID, profile.userId)
             putString(KEY_MEMBER_NUMBER, profile.memberNumber)
             putInt(KEY_REMAINING_DAYS, profile.remainingDays)
+            profile.avatarUri?.let { putString(KEY_AVATAR_URI, it) }
+            profile.backgroundUri?.let { putString(KEY_BACKGROUND_URI, it) }
             apply()
         }
     }
@@ -96,11 +103,44 @@ class ProfileViewModel @Inject constructor(
     /**
      * 更新头像
      */
-    fun updateAvatar(uri: Uri?) {
+    fun updateAvatar(uri: Uri) {
         viewModelScope.launch {
-            uri?.let {
-                prefs.edit().putString(KEY_AVATAR_URI, it.toString()).apply()
-            }
+            val updated = _profile.value.copy(avatarUri = uri.toString())
+            _profile.value = updated
+            saveProfile(updated)
+        }
+    }
+    
+    /**
+     * 更新背景
+     */
+    fun updateBackground(uri: Uri) {
+        viewModelScope.launch {
+            val updated = _profile.value.copy(backgroundUri = uri.toString())
+            _profile.value = updated
+            saveProfile(updated)
+        }
+    }
+    
+    /**
+     * 更新会员号
+     */
+    fun updateMemberNumber(number: String) {
+        viewModelScope.launch {
+            val updated = _profile.value.copy(memberNumber = number)
+            _profile.value = updated
+            saveProfile(updated)
+        }
+    }
+    
+    /**
+     * 更新剩余天数
+     */
+    fun updateRemainingDays(days: Int) {
+        viewModelScope.launch {
+            val updated = _profile.value.copy(remainingDays = days)
+            _profile.value = updated
+            saveProfile(updated)
         }
     }
 
