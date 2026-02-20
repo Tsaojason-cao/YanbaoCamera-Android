@@ -113,8 +113,8 @@ class CameraViewModel @Inject constructor(
      */
     fun takePhoto(context: Context) {
         Log.d(TAG, "Take photo clicked")
-        camera2Manager?.takePicture()
-        // 注: Camera2Manager 的 takePicture 方法会通过 onPhotoSaved 回调返回结果
+        camera2Manager?.takePhoto()
+        // 注: Camera2Manager 的 takePhoto 方法会通过 onPhotoSaved 回调返回结果
     }
     
     /**
