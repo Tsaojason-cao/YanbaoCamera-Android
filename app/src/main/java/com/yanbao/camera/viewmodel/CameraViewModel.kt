@@ -54,6 +54,16 @@ class CameraViewModel @Inject constructor(
     private val _photoToast = MutableStateFlow<String?>(null)
     val photoToast: StateFlow<String?> = _photoToast
 
+    // 2.9D 参数状态（景深强度、虚化半径、边缘柔和度）
+    private val _depthIntensity = MutableStateFlow(50f)
+    val depthIntensity: StateFlow<Float> = _depthIntensity
+
+    private val _blurRadius = MutableStateFlow(25f)
+    val blurRadius: StateFlow<Float> = _blurRadius
+
+    private val _edgeSoftness = MutableStateFlow(60f)
+    val edgeSoftness: StateFlow<Float> = _edgeSoftness
+
     // 录制计时 Job
     private var recordingTimerJob: Job? = null
 
@@ -183,6 +193,30 @@ class CameraViewModel @Inject constructor(
      */
     fun clearToast() {
         _photoToast.value = null
+    }
+
+    /**
+     * 设置 2.9D 景深强度
+     */
+    fun setDepthIntensity(value: Float) {
+        _depthIntensity.value = value.coerceIn(0f, 100f)
+        Log.d(TAG, "2.9D 景深强度: ${_depthIntensity.value}")
+    }
+
+    /**
+     * 设置 2.9D 虚化半径
+     */
+    fun setBlurRadius(value: Float) {
+        _blurRadius.value = value.coerceIn(0f, 50f)
+        Log.d(TAG, "2.9D 虚化半径: ${_blurRadius.value}")
+    }
+
+    /**
+     * 设置 2.9D 边缘柔和度
+     */
+    fun setEdgeSoftness(value: Float) {
+        _edgeSoftness.value = value.coerceIn(0f, 100f)
+        Log.d(TAG, "2.9D 边缘柔和度: ${_edgeSoftness.value}")
     }
 
     override fun onCleared() {
