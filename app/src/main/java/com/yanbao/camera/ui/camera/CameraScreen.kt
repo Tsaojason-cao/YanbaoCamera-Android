@@ -136,6 +136,37 @@ fun CameraScreen(
                 GridOverlay(modifier = Modifier.fillMaxSize())
             }
 
+            // ============ 模式特定界面叠加层 ============
+            when (cameraState.currentMode) {
+                CameraMode.BEAUTY -> {
+                    BeautyModeOverlay(
+                        modifier = Modifier.fillMaxSize(),
+                        onFilterSelected = { filter ->
+                            // TODO: 应用美颜滤镜
+                        }
+                    )
+                }
+                CameraMode.TWO_DOT_NINE_D -> {
+                    TwoDotNineDOverlay(
+                        modifier = Modifier.fillMaxSize(),
+                        onParametersChanged = { params ->
+                            // TODO: 应用 2.9D 参数
+                        }
+                    )
+                }
+                CameraMode.AR -> {
+                    ARModeOverlay(
+                        modifier = Modifier.fillMaxSize(),
+                        onStickerSelected = { sticker ->
+                            // TODO: 应用 AR 贴纸
+                        }
+                    )
+                }
+                else -> {
+                    // NORMAL, VIDEO, MASTER, MEMORY, IPHONE 模式使用默认界面
+                }
+            }
+
             // 焦点指示器
             AnimatedVisibility(
                 visible = showFocusIndicator,
