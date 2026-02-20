@@ -129,9 +129,11 @@ class CameraViewModel @Inject constructor(
             _currentMode.value = mode
             Log.d(TAG, "Camera mode switched to: ${mode.displayName}")
             
-            // 如果切换到 2.9D 模式，启用 2.9D 参数
-            if (mode == CameraMode.MODE_29D) {
-                updateParameter("is2Dot9DEnabled", true)
+            // 如果切换到专业模式，显示 29D 面板
+            if (mode == CameraMode.PROFESSIONAL) {
+                _show29DPanel.value = true
+            } else {
+                _show29DPanel.value = false
             }
         }
     }

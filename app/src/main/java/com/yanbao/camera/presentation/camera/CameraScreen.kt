@@ -100,8 +100,9 @@ fun CameraScreen(
             )
             
             // 实时参数浮窗（显示当前模式）
+            val currentMode by viewModel.currentMode.collectAsState()
             Text(
-                text = viewModel.currentMode.displayName,
+                text = currentMode.displayName,
                 modifier = Modifier
                     .align(Alignment.TopStart)
                     .padding(16.dp)
@@ -132,7 +133,7 @@ fun CameraScreen(
             ) {
                 // 模式选择器
                 ModeSelector(
-                    selectedMode = viewModel.currentMode,
+                    selectedMode = currentMode,
                     onModeSelected = { mode ->
                         viewModel.setMode(mode)
                     }
