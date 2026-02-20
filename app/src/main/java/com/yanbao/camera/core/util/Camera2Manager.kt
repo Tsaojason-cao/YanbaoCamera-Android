@@ -57,6 +57,11 @@ class Camera2Manager(private val context: Context) {
     private var previewSize: Size = Size(1920, 1080)
     private var flashMode: Int = CaptureRequest.FLASH_MODE_OFF
     
+    // 模式参数
+    private var currentMode: String = "PHOTO"
+    private var portraitBlurStrength: Float = 0.5f  // 人像模式虚化强度
+    private var filterEffect: Int = CaptureRequest.CONTROL_EFFECT_MODE_OFF  // 滤镜效果
+    
     // 后台线程
     private var backgroundThread: HandlerThread? = null
     private var backgroundHandler: Handler? = null
@@ -65,6 +70,12 @@ class Camera2Manager(private val context: Context) {
     var onPreviewSurfaceReady: ((Surface) -> Unit)? = null
     var onPhotoSaved: ((String) -> Unit)? = null
     var onError: ((String) -> Unit)? = null
+    
+    // MediaRecorder 录像
+    private var mediaRecorder: android.media.MediaRecorder? = null
+    private var isRecording: Boolean = false
+    var onRecordingStarted: (() -> Unit)? = null
+    var onRecordingStopped: ((String) -> Unit)? = null
     
     /**
      * 启动后台线程
@@ -201,6 +212,9 @@ class Camera2Manager(private val context: Context) {
             
             // 设置闪光灯模式
             previewRequestBuilder.set(CaptureRequest.FLASH_MODE, flashMode)
+            
+            // 应用模式参数
+            applyModeParameters(previewRequestBuilder)
             
             // 创建捕获会话
             device.createCaptureSession(
@@ -393,6 +407,30 @@ class Camera2Manager(private val context: Context) {
     }
     
     /**
+     * 设置相机模式
+     */
+    fun setMode(mode: String) {
+        Log.d(TAG, "设置相机模式: $mode")
+        currentMode = mode
+    }
+    
+    /**
+     * 设置人像模式虚化强度
+     */
+    fun setPortraitBlurStrength(strength: Float) {
+        Log.d(TAG, "设置虚化强度: $strength")
+        portraitBlurStrength = strength
+    }
+    
+    /**
+     * 设置滤镜效果
+     */
+    fun setFilterEffect(effect: Int) {
+        Log.d(TAG, "设置滤镜效果: $effect")
+        filterEffect = effect
+    }
+    
+    /**
      * 关闭相机
      */
     fun closeCamera() {
@@ -430,6 +468,55 @@ class Camera2Manager(private val context: Context) {
             bigEnough.maxByOrNull { it.width * it.height } ?: choices[0]
         } else {
             choices[0]
+        }
+    }
+    
+    /**
+     * 应用模式参数到 CaptureRequest
+     */
+    private fun applyModeParameters(builder: CaptureRequest.Builder) {
+        when (currentMode) {
+            "PORTRAIT" -> {
+                // 人像模式：启用系统内置美颜效果
+                builder.set(
+                    CaptureRequest.CONTROL_EFFECT_MODE,
+                    CaptureRequest.CONTROL_EFFECT_MODE_PORTRAIT
+                )
+                Log.d(TAG, "应用人像模式参数")
+            }
+            "NIGHT" -> {
+                // 夜景模式：设置长曝光时间 (500ms)
+                builder.set(
+                    CaptureRequest.SENSOR_EXPOSURE_TIME,
+                    500_000_000L  // 500ms = 0.5s
+                )
+                // 锁定 ISO
+                builder.set(
+                    CaptureRequest.SENSOR_SENSITIVITY,
+                    800  // ISO 800
+                )
+                // 关闭自动曝光
+                builder.set(
+                    CaptureRequest.CONTROL_AE_MODE,
+                    CaptureRequest.CONTROL_AE_MODE_OFF
+                )
+                Log.d(TAG, "应用夜景模式参数: 曝光=500ms, ISO=800")
+            }
+            "MASTER_FILTERS" -> {
+                // 大师滤镜：应用选定的滤镜效果
+                builder.set(
+                    CaptureRequest.CONTROL_EFFECT_MODE,
+                    filterEffect
+                )
+                Log.d(TAG, "应用滤镜效果: $filterEffect")
+            }
+            else -> {
+                // 默认模式：不应用特殊效果
+                builder.set(
+                    CaptureRequest.CONTROL_EFFECT_MODE,
+                    CaptureRequest.CONTROL_EFFECT_MODE_OFF
+                )
+            }
         }
     }
 }

@@ -191,4 +191,21 @@ object AuditLogger {
         }
         Log.e("AUDIT_ERROR", "Timestamp: ${System.currentTimeMillis()}")
     }
+    
+    /**
+     * 记录录像开始
+     */
+    fun logRecordingStarted() {
+        Log.d("AUDIT_VIDEO", "=== RECORDING STARTED ===")
+        Log.d("AUDIT_VIDEO", "Timestamp: ${System.currentTimeMillis()}")
+    }
+    
+    /**
+     * 记录录像停止
+     */
+    fun logRecordingStopped(filePath: String) {
+        Log.d("AUDIT_VIDEO", "=== RECORDING STOPPED ===")
+        Log.d("AUDIT_VIDEO", "File Path: $filePath")
+        Log.d("AUDIT_VIDEO", "Timestamp: ${System.currentTimeMillis()}")
+    }
 }

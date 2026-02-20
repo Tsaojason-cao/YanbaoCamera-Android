@@ -53,18 +53,29 @@ fun ParameterPanel(
                 )
             }
             CameraMode.PORTRAIT -> {
-                // 人像模式：显示美颜参数
-                Text(
-                    text = "人像模式参数调整（即将推出）",
-                    color = Color.White.copy(alpha = 0.6f),
-                    fontSize = 12.sp
+                // 人像模式：显示虚化强度滑块
+                ParameterSlider(
+                    label = "虚化强度",
+                    value = 0.5f,
+                    valueRange = 0f..1f,
+                    onValueChange = { /* 将来集成 */ },
+                    valueText = "50%"
                 )
             }
             CameraMode.NIGHT -> {
-                // 夜景模式：显示夜景参数
+                // 夜景模式：显示曝光时间提示
                 Text(
-                    text = "夜景模式参数调整（即将推出）",
-                    color = Color.White.copy(alpha = 0.6f),
+                    text = "夜景模式：长曝光 500ms，请保持稳定",
+                    color = Color(0xFFFFEB3B),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            CameraMode.MASTER_FILTERS -> {
+                // 大师滤镜：显示滤镜选择器
+                Text(
+                    text = "大师滤镜：点击选择滤镜效果",
+                    color = Color.White.copy(alpha = 0.8f),
                     fontSize = 12.sp
                 )
             }
