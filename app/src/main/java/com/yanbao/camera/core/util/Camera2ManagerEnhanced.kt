@@ -589,9 +589,8 @@ class Camera2ManagerEnhanced(private val context: Context) {
             manualExposureTime = params.exposureTime
             
             // 如果当前处于专业模式，立即刷新预览
-            if (currentMode == CameraMode.PROFESSIONAL && cameraCaptureSession != null) {
+            if (currentMode == CameraMode.PROFESSIONAL && cameraCaptureSession != null && cameraDevice != null) {
                 val captureBuilder = cameraDevice!!.createCaptureRequest(CameraDevice.TEMPLATE_MANUAL)
-                captureBuilder.addTarget(cameraCaptureSession!!.device.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW).build().targets.first())
                 
                 // 下发硬件参数
                 captureBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_OFF)

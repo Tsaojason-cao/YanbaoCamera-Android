@@ -226,7 +226,7 @@ class CameraViewModel @Inject constructor(
     fun takePhoto(context: Context) {
         viewModelScope.launch {
             Log.d(TAG, "Taking photo...")
-            camera2Manager?.captureStillPicture()
+            camera2Manager?.takePhoto()
         }
     }
     
