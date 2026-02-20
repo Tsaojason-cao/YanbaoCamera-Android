@@ -1,6 +1,7 @@
 package com.yanbao.camera.core.util
 
 import android.hardware.camera2.CaptureRequest
+import android.hardware.camera2.CaptureResult
 import android.hardware.camera2.TotalCaptureResult
 import android.hardware.SensorEvent
 import android.util.Log
