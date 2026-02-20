@@ -48,6 +48,10 @@ import com.yanbao.camera.data.model.CameraMode
 import com.yanbao.camera.data.model.FlashMode
 import com.yanbao.camera.data.model.GridType
 import com.yanbao.camera.viewmodel.CameraViewModel
+import com.yanbao.camera.ui.components.KuromiEarsDecoration
+import com.yanbao.camera.ui.components.BeautyModeOverlay
+import com.yanbao.camera.ui.components.TwoDotNineDOverlay
+import com.yanbao.camera.ui.components.ARModeOverlay
 
 /**
  * 相机主界面
@@ -146,7 +150,7 @@ fun CameraScreen(
                         }
                     )
                 }
-                CameraMode.TWO_DOT_NINE_D -> {
+                CameraMode.MODE_29D -> {
                     TwoDotNineDOverlay(
                         modifier = Modifier.fillMaxSize(),
                         onParametersChanged = { params ->

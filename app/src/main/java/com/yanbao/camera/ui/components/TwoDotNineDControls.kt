@@ -136,7 +136,7 @@ fun TwoDotNineDControls(
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 TwoDotNineDScene.values().forEach { scene ->
-                    SceneChip(
+                    SceneCard(
                         scene = scene,
                         isSelected = selectedScene == scene,
                         onClick = { 
