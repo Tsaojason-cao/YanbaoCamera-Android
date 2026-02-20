@@ -578,6 +578,46 @@ class Camera2ManagerEnhanced(private val context: Context) {
     }
     
     /**
+     * 更新 29D 参数（实时下发到硬件）
+     * 
+     * @param params 29D 参数状态
+     */
+    fun update29DParams(params: com.yanbao.camera.data.model.Camera29DState) {
+        try {
+            // 更新手动参数
+            manualISO = params.iso
+            manualExposureTime = params.exposureTime
+            
+            // 如果当前处于专业模式，立即刷新预览
+            if (currentMode == CameraMode.PROFESSIONAL && cameraCaptureSession != null) {
+                val captureBuilder = cameraDevice!!.createCaptureRequest(CameraDevice.TEMPLATE_MANUAL)
+                captureBuilder.addTarget(cameraCaptureSession!!.device.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW).build().targets.first())
+                
+                // 下发硬件参数
+                captureBuilder.set(CaptureRequest.CONTROL_MODE, CaptureRequest.CONTROL_MODE_OFF)
+                captureBuilder.set(CaptureRequest.CONTROL_AE_MODE, CaptureRequest.CONTROL_AE_MODE_OFF)
+                captureBuilder.set(CaptureRequest.SENSOR_SENSITIVITY, params.iso)
+                captureBuilder.set(CaptureRequest.SENSOR_EXPOSURE_TIME, params.exposureTime)
+                
+                // 刷新预览
+                cameraCaptureSession?.setRepeatingRequest(
+                    captureBuilder.build(),
+                    null,
+                    backgroundHandler
+                )
+                
+                // 审计日志
+                AuditLogger.logParameterAdjustment("29D_ISO", params.iso, params.iso)
+                AuditLogger.logParameterAdjustment("29D_ExposureTime", params.exposureTime, params.exposureTime)
+                
+                Log.d(TAG, "29D 参数已下发: ISO=${params.iso}, ExposureTime=${params.exposureTime}")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "更新 29D 参数失败", e)
+        }
+    }
+    
+    /**
      * 切换摄像头
      */
     fun switchCamera() {

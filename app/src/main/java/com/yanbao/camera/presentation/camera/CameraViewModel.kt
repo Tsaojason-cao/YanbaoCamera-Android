@@ -3,8 +3,10 @@ package com.yanbao.camera.presentation.camera
 import android.content.Context
 import android.graphics.SurfaceTexture
 import android.util.Log
+import android.view.Surface
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yanbao.camera.core.util.Camera2ManagerEnhanced
 import com.yanbao.camera.data.local.dao.YanbaoMemoryDao
 import com.yanbao.camera.data.local.entity.YanbaoMemoryFactory
 import com.yanbao.camera.core.model.CameraMode
@@ -27,6 +29,9 @@ import javax.inject.Inject
 class CameraViewModel @Inject constructor(
     private val yanbaoMemoryDao: YanbaoMemoryDao
 ) : ViewModel() {
+    
+    // Camera2Manager 实例（延迟初始化）
+    private var camera2Manager: Camera2ManagerEnhanced? = null
     
     companion object {
         private const val TAG = "CameraViewModel"
@@ -116,8 +121,8 @@ class CameraViewModel @Inject constructor(
                 updated
             }
             
-            // Phase 3: 调用底层 Camera2 API 真实调节硬件
-            // applyHardwareSettings(_camera29DState.value)
+            // 实时下发到 Camera2Manager
+            camera2Manager?.update29DParams(_camera29DState.value)
         }
     }
     
@@ -177,7 +182,26 @@ class CameraViewModel @Inject constructor(
      */
     fun onSurfaceTextureAvailable(surfaceTexture: SurfaceTexture, context: Context) {
         Log.d(TAG, "SurfaceTexture available")
-        // Phase 3: 初始化 Camera2Manager
+        
+        viewModelScope.launch {
+            try {
+                // 初始化 Camera2Manager
+                camera2Manager = Camera2ManagerEnhanced(context)
+                
+                // 设置回调
+                camera2Manager?.onPhotoSaved = { path ->
+                    savePhotoMetadata(path)
+                }
+                
+                // 打开相机
+                val surface = Surface(surfaceTexture)
+                camera2Manager?.openCamera(surface)
+                
+                Log.d(TAG, "Camera2Manager 初始化成功")
+            } catch (e: Exception) {
+                Log.e(TAG, "Camera2Manager 初始化失败", e)
+            }
+        }
     }
     
     /**
@@ -185,7 +209,8 @@ class CameraViewModel @Inject constructor(
      */
     fun onSurfaceTextureDestroyed() {
         Log.d(TAG, "SurfaceTexture destroyed")
-        // Phase 3: 释放 Camera2Manager
+        camera2Manager?.closeCamera()
+        camera2Manager = null
     }
     
     /**
@@ -201,8 +226,7 @@ class CameraViewModel @Inject constructor(
     fun takePhoto(context: Context) {
         viewModelScope.launch {
             Log.d(TAG, "Taking photo...")
-            // Phase 3: 调用 Camera2Manager 拍照
-            // 拍照成功后调用 savePhotoMetadata
+            camera2Manager?.captureStillPicture()
         }
     }
     
