@@ -123,7 +123,7 @@ fun CameraModeSelectionDialog(
                                 title = "2.9D",
                                 description = "探索三维世界，\n立体拍摄",
                                 gradientColors = listOf(Color(0xFF06B6D4), Color(0xFF67E8F9)),
-                                onClick = { onModeSelected(CameraMode.TWO_DOT_NINE_D) },
+                                onClick = { onModeSelected(CameraMode.MODE_29D) },
                                 modifier = Modifier.weight(1f)
                             )
                         }
