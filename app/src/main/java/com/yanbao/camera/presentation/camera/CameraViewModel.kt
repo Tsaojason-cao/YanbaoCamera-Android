@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yanbao.camera.data.model.Camera29DState
-import com.yanbao.camera.data.model.CameraMode
+import com.yanbao.camera.core.model.CameraMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -123,9 +123,24 @@ class CameraViewModel @Inject constructor() : ViewModel() {
             _currentMode.value = mode
             Log.d(TAG, "Camera mode switched to: ${mode.displayName}")
             
-            // 如果切换到 2.9D 模式，启用 2.9D 参数
-            if (mode == CameraMode.MODE_29D) {
-                updateParameter("is2Dot9DEnabled", true)
+            // 根据模式调整参数
+            when (mode) {
+                CameraMode.PROFESSIONAL -> {
+                    // 专业模式：启用手动控制
+                    Log.d(TAG, "专业模式：启用手动控制")
+                }
+                CameraMode.NIGHT -> {
+                    // 夜景模式：增加曝光时间
+                    updateParameter("exposureTime", 100000000L) // 100ms
+                }
+                CameraMode.PORTRAIT -> {
+                    // 人像模式：启用美颜
+                    updateParameter("beautySmooth", 0.3f)
+                    updateParameter("beautyWhiten", 0.2f)
+                }
+                else -> {
+                    // 其他模式：使用默认参数
+                }
             }
         }
     }

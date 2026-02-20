@@ -22,6 +22,9 @@ data class YanbaoMemory(
     @PrimaryKey(autoGenerate = true) 
     val id: Long = 0,
     
+    // App 标识（English Name）
+    val appName: String = "yanbao AI",
+    
     @ColumnInfo(name = "image_path") 
     val imagePath: String,
     
