@@ -29,6 +29,7 @@ import javax.inject.Inject
 /**
  * 编辑 ViewModel
  * 真实实现图片亮度、对比度、饱和度调节，撤销/重做栈，保存到相册
+ * API与EditScreen.kt完全匹配
  */
 @HiltViewModel
 class EditViewModel @Inject constructor(
@@ -37,119 +38,106 @@ class EditViewModel @Inject constructor(
 
     private val TAG = "YanbaoEditViewModel"
 
-    // 编辑状态
+    // 编辑状态（包含所有编辑参数、历史记录、图片URI）
     private val _editState = MutableStateFlow(EditState())
     val editState: StateFlow<EditState> = _editState
 
-    // 当前选中工具
-    private val _currentTool = MutableStateFlow<EditTool?>(editTools.first())
-    val currentTool: StateFlow<EditTool?> = _currentTool
+    // 当前选中工具（EditScreen使用selectedTool）
+    private val _selectedTool = MutableStateFlow<EditTool?>(editTools.first())
+    val selectedTool: StateFlow<EditTool?> = _selectedTool
 
-    // 当前参数值
-    private val _currentParameterValue = MutableStateFlow(0f)
-    val currentParameterValue: StateFlow<Float> = _currentParameterValue
+    // 保存状态
+    private val _isSaving = MutableStateFlow(false)
+    val isSaving: StateFlow<Boolean> = _isSaving
+
+    /**
+     * 加载照片（EditScreen使用loadPhoto）
+     */
+    fun loadPhoto(uri: String) {
+        _editState.value = EditState(
+            photoUri = uri,
+            parameters = editTools.associate { it.id to it.defaultValue }
+        )
+        Log.d(TAG, "加载照片: $uri")
+    }
 
     /**
      * 选择编辑工具
      */
     fun selectTool(tool: EditTool) {
-        _currentTool.value = tool
-        // 恢复该工具当前的参数值
-        val value = when (tool.id) {
-            "brightness" -> _editState.value.brightness
-            "contrast" -> _editState.value.contrast
-            "saturation" -> _editState.value.saturation
-            "ai_enhance" -> _editState.value.aiEnhance
-            "grain" -> _editState.value.grain
-            "vignette" -> _editState.value.vignette
-            else -> 0f
-        }
-        _currentParameterValue.value = value
-        Log.d(TAG, "选择工具: ${tool.name}, 当前值: $value")
+        _selectedTool.value = tool
+        Log.d(TAG, "选择工具: ${tool.name}")
     }
 
     /**
-     * 更新当前工具的参数值
-     * 真实修改 EditState 中对应的参数
+     * 更新工具参数值（EditScreen使用updateParameter(toolId, value)）
+     * 真实修改EditState中对应的参数，并推入历史记录
      */
-    fun updateParameter(value: Float) {
-        _currentParameterValue.value = value
-        val tool = _currentTool.value ?: return
-
-        // 保存撤销快照
+    fun updateParameter(toolId: String, value: Float) {
         val previousState = _editState.value
-
-        // 更新对应参数
-        val newState = when (tool.id) {
-            "brightness" -> previousState.copy(brightness = value)
-            "contrast" -> previousState.copy(contrast = value)
-            "saturation" -> previousState.copy(saturation = value)
-            "ai_enhance" -> previousState.copy(aiEnhance = value)
-            "grain" -> previousState.copy(grain = value)
-            "vignette" -> previousState.copy(vignette = value)
-            else -> previousState
+        val newParams = previousState.parameters.toMutableMap().apply {
+            put(toolId, value)
         }
 
-        // 更新状态并推入撤销栈
-        _editState.value = newState.copy(
-            undoStack = previousState.undoStack + previousState,
-            redoStack = emptyList() // 新操作清空重做栈
+        // 截断历史记录（如果在历史中间进行了新操作）
+        val newHistory = previousState.history.take(previousState.historyIndex + 1) + previousState
+        val newHistoryIndex = newHistory.size - 1
+
+        _editState.value = previousState.copy(
+            parameters = newParams,
+            history = newHistory,
+            historyIndex = newHistoryIndex
         )
 
-        Log.d(TAG, "参数更新: ${tool.name} = $value")
+        Log.d(TAG, "参数更新: $toolId = $value")
     }
 
     /**
-     * 撤销 - 从撤销栈恢复上一个状态
+     * 撤销 - 从历史记录恢复上一个状态
      */
     fun undo() {
         val current = _editState.value
-        if (current.undoStack.isEmpty()) return
+        if (current.historyIndex <= 0) return
 
-        val previousState = current.undoStack.last()
+        val newIndex = current.historyIndex - 1
+        val previousState = current.history[newIndex]
         _editState.value = previousState.copy(
-            undoStack = current.undoStack.dropLast(1),
-            redoStack = current.redoStack + current
+            history = current.history,
+            historyIndex = newIndex
         )
 
-        // 更新当前工具的参数值显示
-        _currentTool.value?.let { tool ->
-            _currentParameterValue.value = when (tool.id) {
-                "brightness" -> previousState.brightness
-                "contrast" -> previousState.contrast
-                "saturation" -> previousState.saturation
-                else -> _currentParameterValue.value
-            }
-        }
-
-        Log.d(TAG, "撤销操作，剩余撤销步数: ${previousState.undoStack.size}")
+        Log.d(TAG, "撤销操作，历史索引: $newIndex")
     }
 
     /**
-     * 重做 - 从重做栈恢复下一个状态
+     * 重做 - 从历史记录恢复下一个状态
      */
     fun redo() {
         val current = _editState.value
-        if (current.redoStack.isEmpty()) return
+        if (current.historyIndex >= current.history.size - 1) return
 
-        val nextState = current.redoStack.last()
+        val newIndex = current.historyIndex + 1
+        val nextState = current.history[newIndex]
         _editState.value = nextState.copy(
-            undoStack = current.undoStack + current,
-            redoStack = current.redoStack.dropLast(1)
+            history = current.history,
+            historyIndex = newIndex
         )
 
-        Log.d(TAG, "重做操作")
+        Log.d(TAG, "重做操作，历史索引: $newIndex")
     }
 
     /**
-     * 保存图片到系统相册
-     * 真实使用 Android ColorMatrix 处理亮度/对比度/饱和度后保存
+     * 保存图片到系统相册（EditScreen使用saveImage { savedUri -> ... }）
+     * 真实使用Android ColorMatrix处理亮度/对比度/饱和度后保存
      */
-    fun saveImage(onSuccess: (String) -> Unit, onError: (String) -> Unit) {
+    fun saveImage(onSuccess: (String) -> Unit) {
+        if (_isSaving.value) return
+        _isSaving.value = true
+
         viewModelScope.launch {
             val state = _editState.value
-            if (state.imageUri == null) {
-                onError("没有可保存的图片")
+            if (state.photoUri == null) {
+                _isSaving.value = false
                 return@launch
             }
 
@@ -160,39 +148,34 @@ class EditViewModel @Inject constructor(
                 if (result != null) {
                     onSuccess(result)
                     Log.d(TAG, "图片保存成功: $result")
-                } else {
-                    onError("保存失败，请重试")
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "保存图片异常: ${e.message}", e)
-                onError("保存失败: ${e.message}")
+            } finally {
+                _isSaving.value = false
             }
         }
     }
 
     /**
-     * 真实图片处理：使用 Android ColorMatrix 应用亮度/对比度/饱和度
+     * 真实图片处理：使用Android ColorMatrix应用亮度/对比度/饱和度
      */
     private fun processAndSaveImage(state: EditState): String? {
-        val uri = Uri.parse(state.imageUri) ?: return null
+        val uri = Uri.parse(state.photoUri) ?: return null
 
-        // 从 URI 解码 Bitmap
         val inputStream = context.contentResolver.openInputStream(uri) ?: return null
         val originalBitmap = android.graphics.BitmapFactory.decodeStream(inputStream)
         inputStream.close()
 
         if (originalBitmap == null) return null
 
-        // 创建可编辑的 Bitmap 副本
         val mutableBitmap = originalBitmap.copy(Bitmap.Config.ARGB_8888, true)
 
-        // 构建 ColorMatrix 应用所有参数
-        val colorMatrix = buildColorMatrix(
-            brightness = state.brightness,
-            contrast = state.contrast,
-            saturation = state.saturation
-        )
+        val brightness = state.parameters["brightness"] ?: 0f
+        val contrast = state.parameters["contrast"] ?: 0f
+        val saturation = state.parameters["saturation"] ?: 0f
 
+        val colorMatrix = buildColorMatrix(brightness, contrast, saturation)
         val paint = Paint().apply {
             colorFilter = ColorMatrixColorFilter(colorMatrix)
         }
@@ -200,7 +183,6 @@ class EditViewModel @Inject constructor(
         val canvas = AndroidCanvas(mutableBitmap)
         canvas.drawBitmap(mutableBitmap, 0f, 0f, paint)
 
-        // 保存到系统相册
         val name = "YANBAO_EDIT_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.CHINA).format(System.currentTimeMillis())}"
         val contentValues = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, name)
@@ -220,20 +202,18 @@ class EditViewModel @Inject constructor(
         outputStream.flush()
         outputStream.close()
 
-        // 释放内存
         if (!originalBitmap.isRecycled) originalBitmap.recycle()
 
         return outputUri.toString()
     }
 
     /**
-     * 构建 ColorMatrix 实现亮度/对比度/饱和度调节
-     * 这是真实的图像处理算法，不是占位符
+     * 构建ColorMatrix实现亮度/对比度/饱和度调节
+     * 这是真实的图像处理算法
      */
     private fun buildColorMatrix(brightness: Float, contrast: Float, saturation: Float): ColorMatrix {
         val matrix = ColorMatrix()
 
-        // 1. 亮度调节：brightness 范围 -1 到 1，转换为 0 到 255 的偏移量
         val brightnessOffset = brightness * 127f
         val brightnessMatrix = ColorMatrix(floatArrayOf(
             1f, 0f, 0f, 0f, brightnessOffset,
@@ -242,7 +222,6 @@ class EditViewModel @Inject constructor(
             0f, 0f, 0f, 1f, 0f
         ))
 
-        // 2. 对比度调节：contrast 范围 -1 到 1
         val contrastScale = 1f + contrast
         val contrastOffset = 127f * (1f - contrastScale)
         val contrastMatrix = ColorMatrix(floatArrayOf(
@@ -252,37 +231,24 @@ class EditViewModel @Inject constructor(
             0f, 0f, 0f, 1f, 0f
         ))
 
-        // 3. 饱和度调节
         val saturationMatrix = ColorMatrix()
         saturationMatrix.setSaturation(1f + saturation)
 
-        // 组合三个矩阵
         matrix.postConcat(brightnessMatrix)
         matrix.postConcat(contrastMatrix)
         matrix.postConcat(saturationMatrix)
 
         return matrix
     }
-
-    /**
-     * 设置要编辑的图片 URI
-     */
-    fun setImageUri(uri: String) {
-        _editState.value = _editState.value.copy(imageUri = uri)
-    }
 }
 
 /**
  * 编辑状态数据类
+ * 使用parameters Map存储所有工具参数，history列表存储历史记录
  */
 data class EditState(
-    val imageUri: String? = null,
-    val brightness: Float = 0f,
-    val contrast: Float = 0f,
-    val saturation: Float = 0f,
-    val aiEnhance: Float = 0f,
-    val grain: Float = 0f,
-    val vignette: Float = 0f,
-    val undoStack: List<EditState> = emptyList(),
-    val redoStack: List<EditState> = emptyList()
+    val photoUri: String? = null,
+    val parameters: Map<String, Float> = emptyMap(),
+    val history: List<EditState> = emptyList(),
+    val historyIndex: Int = -1
 )

@@ -18,6 +18,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import com.yanbao.camera.data.model.FlashMode
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -177,7 +178,7 @@ class CameraManager @Inject constructor(
 
     /**
      * 设置闪光灯模式
-     * @param mode FlashMode 枚举
+     * @param mode FlashMode 枚举（来自 com.yanbao.camera.data.model）
      */
     fun setFlashMode(mode: FlashMode) {
         _cameraState.value = _cameraState.value.copy(flashMode = mode)
@@ -196,8 +197,10 @@ class CameraManager @Inject constructor(
 
     /**
      * 点击对焦
-     * @param x 触摸点 X 坐标（归一化 0-1）
-     * @param y 触摸点 Y 坐标（归一化 0-1）
+     * @param x 触摸点 X 坐标
+     * @param y 触摸点 Y 坐标
+     * @param width 预览区域宽度
+     * @param height 预览区域高度
      */
     fun tapToFocus(x: Float, y: Float, width: Float, height: Float) {
         val factory = SurfaceOrientedMeteringPointFactory(width, height)
@@ -275,37 +278,17 @@ class CameraManager @Inject constructor(
             FlashMode.AUTO -> ImageCapture.FLASH_MODE_AUTO
             FlashMode.ON -> ImageCapture.FLASH_MODE_ON
             FlashMode.OFF -> ImageCapture.FLASH_MODE_OFF
+            FlashMode.TORCH -> ImageCapture.FLASH_MODE_ON // TORCH模式映射到ON
         }
     }
 }
 
 /**
- * 闪光灯模式枚举
- */
-enum class FlashMode {
-    AUTO, ON, OFF
-}
-
-/**
- * 相机状态数据类
+ * 相机状态数据类（内部使用，与 data.model.FlashMode 保持一致）
  */
 data class CameraState(
     val isFrontCamera: Boolean = false,
     val flashMode: FlashMode = FlashMode.AUTO,
     val zoomRatio: Float = 1.0f,
-    val isRecording: Boolean = false,
-    val currentMode: CameraMode = CameraMode.PHOTO
+    val isRecording: Boolean = false
 )
-
-/**
- * 拍摄模式枚举
- */
-enum class CameraMode(val displayName: String) {
-    PHOTO("拍照"),
-    VIDEO("录像"),
-    PORTRAIT("人像"),
-    NIGHT("夜景"),
-    PRO("专业"),
-    PANORAMA("全景"),
-    TIMELAPSE("延时")
-}

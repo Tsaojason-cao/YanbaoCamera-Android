@@ -2,7 +2,6 @@ package com.yanbao.camera.viewmodel
 
 import android.content.Context
 import android.util.Log
-import androidx.camera.core.ImageCapture
 import androidx.camera.view.PreviewView
 import androidx.compose.ui.geometry.Offset
 import androidx.lifecycle.LifecycleOwner
@@ -12,6 +11,7 @@ import com.yanbao.camera.camera.CameraManager
 import com.yanbao.camera.data.model.CameraMode
 import com.yanbao.camera.data.model.CameraUiState
 import com.yanbao.camera.data.model.FlashMode
+import com.yanbao.camera.data.model.GridType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -31,17 +31,9 @@ class CameraViewModel @Inject constructor(
 
     private val TAG = "YanbaoCameraVM"
 
-    // 相机基础状态
+    // 相机基础状态（使用CameraUiState，字段名与数据类一致）
     private val _cameraState = MutableStateFlow(CameraUiState())
     val cameraState: StateFlow<CameraUiState> = _cameraState
-
-    // 当前拍摄模式
-    private val _currentMode = MutableStateFlow(CameraMode.NORMAL)
-    val currentMode: StateFlow<CameraMode> = _currentMode
-
-    // 闪光灯模式
-    private val _flashMode = MutableStateFlow(FlashMode.OFF)
-    val flashMode: StateFlow<FlashMode> = _flashMode
 
     // 录像状态
     private val _isRecording = MutableStateFlow(false)
@@ -58,24 +50,12 @@ class CameraViewModel @Inject constructor(
     private val _focusPosition = MutableStateFlow(Offset.Zero)
     val focusPosition: StateFlow<Offset> = _focusPosition
 
-    // 最近拍摄的照片 URI
-    private val _lastPhotoUri = MutableStateFlow<String?>(null)
-    val lastPhotoUri: StateFlow<String?> = _lastPhotoUri
-
     // 提示消息
     private val _photoToast = MutableStateFlow<String?>(null)
     val photoToast: StateFlow<String?> = _photoToast
 
     // 录制计时 Job
     private var recordingTimerJob: Job? = null
-
-    /**
-     * 设置 ImageCapture 实例（由 CameraPreview 回调）
-     */
-    fun setImageCapture(capture: ImageCapture) {
-        cameraManager.setImageCapture(capture)
-        Log.d(TAG, "ImageCapture 已设置")
-    }
 
     /**
      * 启动相机预览
@@ -93,7 +73,7 @@ class CameraViewModel @Inject constructor(
             Log.d(TAG, "开始拍照...")
             cameraManager.takePhoto(
                 onSuccess = { uri ->
-                    _lastPhotoUri.value = uri
+                    _cameraState.value = _cameraState.value.copy(lastPhotoUri = uri)
                     _photoToast.value = "照片已保存到相册"
                     onSuccess(uri)
                     Log.d(TAG, "拍照成功: $uri")
@@ -132,9 +112,10 @@ class CameraViewModel @Inject constructor(
     }
 
     /**
-     * 切换前后摄像头
+     * 切换前后摄像头（使用CameraManager的flipCamera方法）
      */
-    fun flipCamera() {
+    fun flipCamera(lifecycleOwner: LifecycleOwner, previewView: PreviewView) {
+        cameraManager.flipCamera(lifecycleOwner, previewView)
         _cameraState.value = _cameraState.value.copy(
             isFrontCamera = !_cameraState.value.isFrontCamera
         )
@@ -145,20 +126,22 @@ class CameraViewModel @Inject constructor(
      * 循环切换闪光灯模式：OFF → AUTO → ON → OFF
      */
     fun cycleFlashMode() {
-        _flashMode.value = when (_flashMode.value) {
+        val newMode = when (_cameraState.value.flashMode) {
             FlashMode.OFF -> FlashMode.AUTO
             FlashMode.AUTO -> FlashMode.ON
             FlashMode.ON -> FlashMode.OFF
             FlashMode.TORCH -> FlashMode.OFF
         }
-        Log.d(TAG, "闪光灯模式: ${_flashMode.value}")
+        _cameraState.value = _cameraState.value.copy(flashMode = newMode)
+        cameraManager.setFlashMode(newMode)
+        Log.d(TAG, "闪光灯模式: $newMode")
     }
 
     /**
-     * 设置变焦级别
+     * 设置变焦级别（使用CameraUiState的zoomRatio字段）
      */
     fun setZoom(zoom: Float) {
-        _cameraState.value = _cameraState.value.copy(zoomLevel = zoom.coerceIn(1f, 10f))
+        _cameraState.value = _cameraState.value.copy(zoomRatio = zoom.coerceIn(1f, 10f))
         cameraManager.setZoom(zoom)
     }
 
@@ -166,16 +149,17 @@ class CameraViewModel @Inject constructor(
      * 选择拍摄模式
      */
     fun selectMode(mode: CameraMode) {
-        _currentMode.value = mode
+        _cameraState.value = _cameraState.value.copy(currentMode = mode)
         Log.d(TAG, "切换拍摄模式: ${mode.displayName}")
     }
 
     /**
      * 点击对焦
      */
-    fun focusAt(x: Float, y: Float) {
+    fun focusAt(x: Float, y: Float, width: Float, height: Float) {
         _focusPosition.value = Offset(x, y)
         _showFocusIndicator.value = true
+        cameraManager.tapToFocus(x, y, width, height)
         viewModelScope.launch {
             delay(1500)
             _showFocusIndicator.value = false
@@ -183,12 +167,15 @@ class CameraViewModel @Inject constructor(
     }
 
     /**
-     * 切换网格线显示
+     * 切换网格线显示（使用CameraUiState的gridType字段）
      */
     fun toggleGrid() {
-        _cameraState.value = _cameraState.value.copy(
-            showGrid = !_cameraState.value.showGrid
-        )
+        val newGridType = when (_cameraState.value.gridType) {
+            GridType.NONE -> GridType.THREE_BY_THREE
+            GridType.THREE_BY_THREE -> GridType.NONE
+            else -> GridType.NONE
+        }
+        _cameraState.value = _cameraState.value.copy(gridType = newGridType)
     }
 
     /**
@@ -204,4 +191,3 @@ class CameraViewModel @Inject constructor(
         cameraManager.shutdown()
     }
 }
-

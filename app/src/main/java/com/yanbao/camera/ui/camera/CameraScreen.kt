@@ -12,7 +12,6 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -47,6 +46,7 @@ import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yanbao.camera.data.model.CameraMode
 import com.yanbao.camera.data.model.FlashMode
+import com.yanbao.camera.data.model.GridType
 import com.yanbao.camera.viewmodel.CameraViewModel
 
 /**
@@ -67,12 +67,13 @@ fun CameraScreen(
     val lifecycleOwner = LocalLifecycleOwner.current
 
     val cameraState by viewModel.cameraState.collectAsState()
-    val currentMode by viewModel.currentMode.collectAsState()
-    val flashMode by viewModel.flashMode.collectAsState()
     val isRecording by viewModel.isRecording.collectAsState()
     val recordingDuration by viewModel.recordingDuration.collectAsState()
     val showFocusIndicator by viewModel.showFocusIndicator.collectAsState()
     val focusPosition by viewModel.focusPosition.collectAsState()
+
+    // 保存 PreviewView 引用（用于翻转摄像头）
+    val previewViewRef = remember { mutableStateOf<PreviewView?>(null) }
 
     // 相机权限
     var hasCameraPermission by remember {
@@ -120,17 +121,18 @@ fun CameraScreen(
             // 相机预览区（全屏）
             CameraPreview(
                 modifier = Modifier.fillMaxSize(),
-                onCameraReady = { imageCapture ->
-                    viewModel.setImageCapture(imageCapture)
+                onPreviewViewReady = { pv ->
+                    previewViewRef.value = pv
+                    viewModel.startCamera(lifecycleOwner, pv)
                 },
                 isFrontCamera = cameraState.isFrontCamera,
-                onTap = { x, y ->
-                    viewModel.focusAt(x, y)
+                onTap = { x, y, w, h ->
+                    viewModel.focusAt(x, y, w, h)
                 }
             )
 
-            // 网格线叠加层
-            if (cameraState.showGrid) {
+            // 网格线叠加层（使用gridType字段）
+            if (cameraState.gridType != GridType.NONE) {
                 GridOverlay(modifier = Modifier.fillMaxSize())
             }
 
@@ -200,10 +202,14 @@ fun CameraScreen(
 
         // ============ 顶部控制栏 ============
         TopControlBar(
-            flashMode = flashMode,
+            flashMode = cameraState.flashMode,
             onFlashToggle = { viewModel.cycleFlashMode() },
             onSettingsClick = { /* TODO: 打开设置 */ },
-            onFlipCamera = { viewModel.flipCamera() },
+            onFlipCamera = {
+                previewViewRef.value?.let { pv ->
+                    viewModel.flipCamera(lifecycleOwner, pv)
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.TopStart)
@@ -217,7 +223,7 @@ fun CameraScreen(
         ) {
             // 模式选择栏
             CameraModeBar(
-                currentMode = currentMode,
+                currentMode = cameraState.currentMode,
                 onModeSelected = { mode -> viewModel.selectMode(mode) }
             )
 
@@ -227,11 +233,11 @@ fun CameraScreen(
             BottomActionBar(
                 shutterScale = shutterScale,
                 isRecording = isRecording,
-                currentMode = currentMode,
+                currentMode = cameraState.currentMode,
                 onGalleryClick = onNavigateToGallery,
                 onShutterPress = {
                     shutterPressed = true
-                    if (currentMode == CameraMode.VIDEO) {
+                    if (cameraState.currentMode == CameraMode.VIDEO) {
                         if (isRecording) {
                             viewModel.stopRecording()
                         } else {
@@ -244,7 +250,11 @@ fun CameraScreen(
                     }
                 },
                 onShutterRelease = { shutterPressed = false },
-                onFlipCamera = { viewModel.flipCamera() }
+                onFlipCamera = {
+                    previewViewRef.value?.let { pv ->
+                        viewModel.flipCamera(lifecycleOwner, pv)
+                    }
+                }
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -254,58 +264,26 @@ fun CameraScreen(
 
 /**
  * 真实 CameraX 预览组件
+ * 通过 onPreviewViewReady 回调传出 PreviewView 引用
  */
 @Composable
 fun CameraPreview(
     modifier: Modifier = Modifier,
-    onCameraReady: (ImageCapture) -> Unit,
+    onPreviewViewReady: (PreviewView) -> Unit,
     isFrontCamera: Boolean,
-    onTap: (Float, Float) -> Unit
+    onTap: (Float, Float, Float, Float) -> Unit
 ) {
     val context = LocalContext.current
-    val lifecycleOwner = LocalLifecycleOwner.current
-
     val previewView = remember { PreviewView(context) }
 
-    LaunchedEffect(isFrontCamera) {
-        val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
-        cameraProviderFuture.addListener({
-            val cameraProvider = cameraProviderFuture.get()
-
-            val preview = Preview.Builder().build().also {
-                it.setSurfaceProvider(previewView.surfaceProvider)
-            }
-
-            val imageCapture = ImageCapture.Builder()
-                .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
-                .build()
-
-            val cameraSelector = if (isFrontCamera) {
-                CameraSelector.DEFAULT_FRONT_CAMERA
-            } else {
-                CameraSelector.DEFAULT_BACK_CAMERA
-            }
-
-            try {
-                cameraProvider.unbindAll()
-                cameraProvider.bindToLifecycle(
-                    lifecycleOwner,
-                    cameraSelector,
-                    preview,
-                    imageCapture
-                )
-                onCameraReady(imageCapture)
-                Log.d("YanbaoCamera", "相机绑定成功，前置: $isFrontCamera")
-            } catch (e: Exception) {
-                Log.e("YanbaoCamera", "相机绑定失败: ${e.message}", e)
-            }
-        }, ContextCompat.getMainExecutor(context))
+    LaunchedEffect(Unit) {
+        onPreviewViewReady(previewView)
     }
 
     AndroidView(
         factory = { previewView },
         modifier = modifier.pointerInput(Unit) {
-            detectTransformGestures { _, pan, _, _ ->
+            detectTransformGestures { _, _, _, _ ->
                 // 手势缩放在 CameraViewModel 中处理
             }
         }
