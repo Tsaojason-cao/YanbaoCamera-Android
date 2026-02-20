@@ -2,6 +2,7 @@ package com.yanbao.camera.presentation.camera
 
 import android.content.Context
 import android.graphics.SurfaceTexture
+import android.view.Surface
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -60,8 +61,11 @@ class CameraViewModel @Inject constructor(
             saveMemoryToDatabase(imagePath, context)
         }
         
+        // 创建 Surface
+        val surface = Surface(surfaceTexture)
+        
         // 打开相机
-        camera2Manager?.openCamera(surfaceTexture)
+        camera2Manager?.openCamera(surface)
         AuditLogger.logCameraOpen("0", "BACK")
     }
     
@@ -110,6 +114,7 @@ class CameraViewModel @Inject constructor(
     fun takePhoto(context: Context) {
         Log.d(TAG, "Take photo clicked")
         camera2Manager?.takePicture()
+        // 注: Camera2Manager 的 takePicture 方法会通过 onPhotoSaved 回调返回结果
     }
     
     /**
