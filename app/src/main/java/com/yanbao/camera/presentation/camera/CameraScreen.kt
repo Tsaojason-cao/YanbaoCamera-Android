@@ -124,7 +124,14 @@ fun CameraScreen(
                 .fillMaxWidth()
                 .weight(0.3f)
                 .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
-                .background(Color.White.copy(alpha = 0.15f))
+                .background(
+                    androidx.compose.ui.graphics.Brush.verticalGradient(
+                        colors = listOf(
+                            Color(0xFF1A1A1A).copy(alpha = 0.85f),  // 深色毛玻璃
+                            Color(0xFF0D0D0D).copy(alpha = 0.95f)
+                        )
+                    )
+                )
         ) {
             Column(
                 modifier = Modifier
