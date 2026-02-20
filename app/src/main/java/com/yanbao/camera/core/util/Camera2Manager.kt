@@ -477,10 +477,10 @@ class Camera2Manager(private val context: Context) {
     private fun applyModeParameters(builder: CaptureRequest.Builder) {
         when (currentMode) {
             "PORTRAIT" -> {
-                // 人像模式：启用系统内置美颜效果
+                // 人像模式：使用 SEPIA 效果模拟美颜
                 builder.set(
                     CaptureRequest.CONTROL_EFFECT_MODE,
-                    CaptureRequest.CONTROL_EFFECT_MODE_PORTRAIT
+                    CaptureRequest.CONTROL_EFFECT_MODE_SEPIA
                 )
                 Log.d(TAG, "应用人像模式参数")
             }
