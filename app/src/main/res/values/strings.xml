@@ -1,4 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">雁宝AI相机</string>
+    <string name="app_name">雁寶AI相机</string>
+    <string name="app_name_en">Yanbao AI Camera</string>
+    
+    <!-- 相机模式 -->
+    <string name="mode_normal">普通</string>
+    <string name="mode_beauty">美颜</string>
+    <string name="mode_29d">2.9D</string>
+    <string name="mode_ar">AR</string>
+    <string name="mode_iphone">原相机</string>
+    <string name="mode_master">大师</string>
+    <string name="mode_memory">记忆</string>
+    <string name="mode_video">录像</string>
+    
+    <!-- 编辑工具 -->
+    <string name="tool_brightness">亮度</string>
+    <string name="tool_contrast">对比度</string>
+    <string name="tool_saturation">饱和度</string>
+    <string name="tool_ai_enhance">AI增强</string>
+    <string name="tool_crop">裁剪</string>
+    <string name="tool_text">文字</string>
+    <string name="tool_sticker">贴纸</string>
+    
+    <!-- 权限 -->
+    <string name="permission_camera">需要相机权限</string>
+    <string name="permission_storage">需要存储权限</string>
+    <string name="permission_grant">授予权限</string>
+    
+    <!-- 通用 -->
+    <string name="save">保存</string>
+    <string name="cancel">取消</string>
+    <string name="undo">撤销</string>
+    <string name="redo">重做</string>
+    <string name="loading">正在加载...</string>
+    <string name="photo_saved">照片已保存到相册</string>
 </resources>
