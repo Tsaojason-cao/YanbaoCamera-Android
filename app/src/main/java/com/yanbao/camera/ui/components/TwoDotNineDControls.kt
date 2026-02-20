@@ -297,10 +297,11 @@ fun TwoDotNineDControls(
 }
 
 /**
- * 场景选择芯片
+ * 场景选择卡片
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SceneChip(
+fun SceneCard(
     scene: TwoDotNineDScene,
     isSelected: Boolean,
     onClick: () -> Unit
@@ -326,6 +327,7 @@ fun SceneChip(
 /**
  * 参数滑块组件
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ParameterSlider(
     icon: String,
