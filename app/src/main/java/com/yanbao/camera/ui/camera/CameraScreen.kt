@@ -440,6 +440,17 @@ fun TopControlBar(
 
         Spacer(modifier = Modifier.weight(1f))
 
+        // 中间文字：yanbao AI | ID: 88888
+        Text(
+            text = "yanbao AI | ID: 88888",
+            color = Color.White,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.padding(horizontal = 8.dp)
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
+
         // 切换摄像头
         IconButton(onClick = onFlipCamera) {
             Icon(
