@@ -3,6 +3,7 @@ package com.yanbao.camera.core.util
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
@@ -16,24 +17,19 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import javax.inject.Inject
-import javax.inject.Singleton
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
-@Singleton
-class CameraManager @Inject constructor() {
+class CameraManager {
     
     private var imageCapture: ImageCapture? = null
     private var cameraProvider: ProcessCameraProvider? = null
     private var cameraExecutor: ExecutorService = Executors.newSingleThreadExecutor()
     
-    suspend fun startCamera(
+    fun startCamera(
         context: Context,
         lifecycleOwner: LifecycleOwner,
         previewView: PreviewView,
         lensFacing: Int = CameraSelector.LENS_FACING_BACK
-    ) = suspendCoroutine { continuation ->
+    ) {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
         
         cameraProviderFuture.addListener({
@@ -62,21 +58,19 @@ class CameraManager @Inject constructor() {
                     imageCapture
                 )
                 
-                continuation.resume(Unit)
+                Log.d(TAG, "Camera started successfully")
             } catch (e: Exception) {
                 Log.e(TAG, "Camera initialization failed", e)
-                continuation.resume(Unit)
             }
         }, ContextCompat.getMainExecutor(context))
     }
     
     fun takePhoto(
         context: Context,
-        onPhotoSaved: (Uri) -> Unit,
-        onError: (Exception) -> Unit
+        onResult: (Boolean, String) -> Unit
     ) {
         val imageCapture = imageCapture ?: run {
-            onError(IllegalStateException("Camera not initialized"))
+            onResult(false, "Camera not initialized")
             return
         }
         
@@ -95,12 +89,26 @@ class CameraManager @Inject constructor() {
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val savedUri = Uri.fromFile(photoFile)
                     Log.d(TAG, "Photo saved: $savedUri")
-                    onPhotoSaved(savedUri)
+                    ContextCompat.getMainExecutor(context).execute {
+                        Toast.makeText(
+                            context,
+                            "照片已保存: ${photoFile.name}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    onResult(true, savedUri.toString())
                 }
                 
                 override fun onError(exception: ImageCaptureException) {
                     Log.e(TAG, "Photo capture failed", exception)
-                    onError(exception)
+                    ContextCompat.getMainExecutor(context).execute {
+                        Toast.makeText(
+                            context,
+                            "拍照失败: ${exception.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    onResult(false, exception.message ?: "Unknown error")
                 }
             }
         )
