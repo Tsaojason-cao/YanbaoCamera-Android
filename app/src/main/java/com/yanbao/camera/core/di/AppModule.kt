@@ -1,7 +1,7 @@
 package com.yanbao.camera.core.di
 
 import android.content.Context
-import com.yanbao.camera.core.util.CameraManager
+import com.yanbao.camera.core.util.Camera2Manager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,7 +15,7 @@ object AppModule {
     
     @Provides
     @Singleton
-    fun provideCameraManager(): CameraManager {
-        return CameraManager()
+    fun provideCamera2Manager(@ApplicationContext context: Context): Camera2Manager {
+        return Camera2Manager(context)
     }
 }

@@ -157,18 +157,22 @@ fun FloatingGlowBalls() {
         }
     }
     
+    // 预先创建所有动画
+    val offsets = glowBalls.mapIndexed { index, _ ->
+        infiniteTransition.animateFloat(
+            initialValue = 0f,
+            targetValue = 30f,
+            animationSpec = infiniteRepeatable(
+                animation = tween((2000 + index * 200), easing = EaseInOut),
+                repeatMode = RepeatMode.Reverse
+            ),
+            label = "glow_offset_$index"
+        )
+    }
+    
     Canvas(modifier = Modifier.fillMaxSize()) {
         glowBalls.forEachIndexed { index, (xRatio, yRatio, sizeDp) ->
-            // 每个光晕球有不同的浮动动画
-            val offset by infiniteTransition.animateFloat(
-                initialValue = 0f,
-                targetValue = 30f,
-                animationSpec = infiniteRepeatable(
-                    animation = tween((2000 + index * 200), easing = EaseInOut),
-                    repeatMode = RepeatMode.Reverse
-                ),
-                label = "glow_offset_$index"
-            )
+            val offset = offsets[index].value
             
             val x = size.width * xRatio
             val y = size.height * yRatio + offset * sin(index.toFloat())
@@ -206,8 +210,9 @@ fun BoxScope.YellowStars() {
         Offset(100f, 140f)     // 右下
     )
     
-    starPositions.forEachIndexed { index, offset ->
-        val twinkle by infiniteTransition.animateFloat(
+    // 预先创建所有动画
+    val twinkles = starPositions.mapIndexed { index, _ ->
+        infiniteTransition.animateFloat(
             initialValue = 0.6f,
             targetValue = 1.0f,
             animationSpec = infiniteRepeatable(
@@ -216,14 +221,16 @@ fun BoxScope.YellowStars() {
             ),
             label = "star_twinkle_$index"
         )
-        
+    }
+    
+    starPositions.forEachIndexed { index, offset ->
         Text(
             text = "⭐",
             fontSize = 32.sp,
             modifier = Modifier
                 .align(Alignment.Center)
                 .offset(x = offset.x.dp, y = offset.y.dp)
-                .scale(twinkle)
+                .scale(twinkles[index].value)
         )
     }
 }
