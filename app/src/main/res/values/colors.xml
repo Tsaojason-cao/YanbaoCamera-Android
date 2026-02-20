@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="yanbao_primary">#FF6B9D</color>
-    <color name="yanbao_secondary">#C06FFF</color>
-    <color name="yanbao_accent">#FFB6D9</color>
+    <!-- 雁宝品牌颜色 -->
+    <color name="yanbao_purple">#A78BFA</color>
+    <color name="yanbao_pink">#EC4899</color>
+    <color name="yanbao_light_pink">#F9A8D4</color>
+    <color name="yanbao_black">#0F0F10</color>
+    <color name="yanbao_dark_bg">#1A1A2E</color>
+    <color name="yanbao_card_bg">#16213E</color>
+    
+    <!-- 系统颜色 -->
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="transparent">#00000000</color>
+    
+    <!-- 状态颜色 -->
+    <color name="success">#22C55E</color>
+    <color name="error">#EF4444</color>
+    <color name="warning">#F59E0B</color>
 </resources>
