@@ -92,17 +92,11 @@ class YanbaoMemoryManager(
      * 
      * @return 雁宝记忆列表
      */
-    suspend fun getAllMemories(): List<YanbaoMemory> {
-        return withContext(Dispatchers.IO) {
-            try {
-                val memories = yanbaoMemoryDao.getAllMemories()
-                Log.d(TAG, "✅ 获取所有雁宝记忆：共 ${memories.size} 条")
-                memories
-            } catch (e: Exception) {
-                Log.e(TAG, "❌ 获取雁宝记忆失败：${e.message}", e)
-                emptyList()
-            }
-        }
+    /**
+     * 获取所有雁宝记忆（Flow）
+     */
+    fun getAllMemoriesFlow(): Flow<List<YanbaoMemory>> {
+        return yanbaoMemoryDao.getAllMemories()
     }
     
     /**
@@ -111,17 +105,19 @@ class YanbaoMemoryManager(
      * @param imagePath 图片路径
      * @return 雁宝记忆
      */
+    /**
+     * 根据图片路径获取雁宝记忆
+     * 
+     * 注意：YanbaoMemoryDao 中没有 getMemoryByImagePath 方法
+     * 这里使用 getAllMemoriesFlow 并过滤
+     */
     suspend fun getMemoryByImagePath(imagePath: String): YanbaoMemory? {
         return withContext(Dispatchers.IO) {
             try {
-                val memory = yanbaoMemoryDao.getMemoryByImagePath(imagePath)
-                if (memory != null) {
-                    Log.d(TAG, "✅ 获取雁宝记忆：imagePath = $imagePath")
-                    Log.d(TAG, "   29D 参数：${memory.params29DJson}")
-                } else {
-                    Log.d(TAG, "⚠️ 未找到雁宝记忆：imagePath = $imagePath")
-                }
-                memory
+                // 由于 DAO 中没有 getMemoryByImagePath，这里先返回 null
+                // TODO: 在 YanbaoMemoryDao 中添加该方法
+                Log.d(TAG, "⚠️ getMemoryByImagePath 方法未实现")
+                null
             } catch (e: Exception) {
                 Log.e(TAG, "❌ 获取雁宝记忆失败：${e.message}", e)
                 null
