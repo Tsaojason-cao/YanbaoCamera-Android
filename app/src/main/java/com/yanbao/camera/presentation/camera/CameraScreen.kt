@@ -42,6 +42,9 @@ fun CameraScreen(
 ) {
     val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
     val context = LocalContext.current
+    val currentMode by viewModel.currentMode.collectAsState()
+    val camera29DState by viewModel.camera29DState.collectAsState()
+    val show29DPanel by viewModel.show29DPanel.collectAsState()
     
     // 请求相机权限
     LaunchedEffect(Unit) {
@@ -100,7 +103,6 @@ fun CameraScreen(
             )
             
             // 实时参数浮窗（显示当前模式）
-            val currentMode by viewModel.currentMode.collectAsState()
             Text(
                 text = currentMode.displayName,
                 modifier = Modifier
@@ -140,9 +142,6 @@ fun CameraScreen(
                 )
                 
                 // 29D 参数控制面板
-                val camera29DState by viewModel.camera29DState.collectAsState()
-                val show29DPanel by viewModel.show29DPanel.collectAsState()
-                
                 if (show29DPanel) {
                     Parameter29DPanel(
                         state = camera29DState,
