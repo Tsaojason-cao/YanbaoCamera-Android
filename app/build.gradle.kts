@@ -128,3 +128,4 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")

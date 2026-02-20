@@ -105,10 +105,14 @@ class CameraManager {
      * 拍照并保存到 MediaStore
      * 
      * @param context Android Context
+     * @param camera29DStateJson 29D 参数 JSON（用于写入数据库）
+     * @param cameraMode 拍摄模式
      * @param onResult 回调函数（成功/失败，Uri/错误信息）
      */
     fun takePhoto(
         context: Context,
+        camera29DStateJson: String = "{}",
+        cameraMode: String = "Photo",
         onResult: (Boolean, String, Uri?) -> Unit
     ) {
         val imageCapture = imageCapture ?: run {
@@ -143,6 +147,16 @@ class CameraManager {
                 override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                     val savedUri = output.savedUri
                     Log.d(TAG, "Photo saved: $savedUri")
+                    
+                    // 写入 YanbaoMemory 数据库
+                    savedUri?.let { uri ->
+                        saveToYanbaoMemoryDatabase(
+                            context = context,
+                            imagePath = uri.toString(),
+                            camera29DStateJson = camera29DStateJson,
+                            cameraMode = cameraMode
+                        )
+                    }
                     
                     ContextCompat.getMainExecutor(context).execute {
                         Toast.makeText(
@@ -190,6 +204,35 @@ class CameraManager {
     fun shutdown() {
         cameraExecutor.shutdown()
         cameraProvider?.unbindAll()
+    }
+    
+    /**
+     * 保存到 YanbaoMemory 数据库
+     */
+    private fun saveToYanbaoMemoryDatabase(
+        context: Context,
+        imagePath: String,
+        camera29DStateJson: String,
+        cameraMode: String
+    ) {
+        try {
+            val database = com.yanbao.camera.data.local.YanbaoMemoryDatabase.getDatabase(context)
+            val dao = database.yanbaoMemoryDao()
+            
+            // 创建 YanbaoMemory 实例（使用 Mock 数据）
+            val memory = com.yanbao.camera.data.local.entity.YanbaoMemoryFactory.createMock(
+                imagePath = imagePath,
+                parameterSnapshotJson = camera29DStateJson
+            ).copy(shootingMode = cameraMode)
+            
+            // 异步写入数据库
+            kotlinx.coroutines.CoroutineScope(kotlinx.coroutines.Dispatchers.IO).launch {
+                val id = dao.insert(memory)
+                Log.d(TAG, "YanbaoMemory saved to database with ID: $id")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to save YanbaoMemory to database", e)
+        }
     }
     
     companion object {
