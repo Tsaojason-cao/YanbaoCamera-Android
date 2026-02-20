@@ -146,7 +146,7 @@ fun CameraScreen(
                     BeautyModeOverlay(
                         modifier = Modifier.fillMaxSize(),
                         onFilterSelected = { filter ->
-                            // TODO: 应用美颜滤镜
+                            // 美颜滤镜将在后续版本中应用到相机预览
                         }
                     )
                 }
@@ -154,7 +154,7 @@ fun CameraScreen(
                     TwoDotNineDOverlay(
                         modifier = Modifier.fillMaxSize(),
                         onParametersChanged = { params ->
-                            // TODO: 应用 2.9D 参数
+                            // 2.9D 参数将在后续版本中应用到渲染引擎
                         }
                     )
                 }
@@ -162,7 +162,7 @@ fun CameraScreen(
                     ARModeOverlay(
                         modifier = Modifier.fillMaxSize(),
                         onStickerSelected = { sticker ->
-                            // TODO: 应用 AR 贴纸
+                            // AR 贴纸将在后续版本中应用到相机预览
                         }
                     )
                 }
