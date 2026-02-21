@@ -39,6 +39,7 @@ import com.yanbao.camera.presentation.camera.components.ShutterButton
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun CameraScreen(
+    onBackClick: () -> Unit = {},
     viewModel: CameraViewModel = hiltViewModel()
 ) {
     // ✅ Obsidian Flux 架構
