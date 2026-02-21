@@ -41,6 +41,21 @@ import com.yanbao.camera.presentation.camera.components.ShutterButton
 fun CameraScreen(
     viewModel: CameraViewModel = hiltViewModel()
 ) {
+    // ✅ Obsidian Flux 架構
+    YanbaoCameraLayout(
+        onCaptureClick = { /* TODO: 拍照逻辑 */ },
+        onProfileClick = { /* TODO: 跳转个人中心 */ }
+    )
+}
+
+/**
+ * 旧版 CameraScreen（备份）
+ */
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+fun CameraScreenOld(
+    viewModel: CameraViewModel = hiltViewModel()
+) {
     val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
     val context = LocalContext.current
     val currentMode by viewModel.currentMode.collectAsState()
