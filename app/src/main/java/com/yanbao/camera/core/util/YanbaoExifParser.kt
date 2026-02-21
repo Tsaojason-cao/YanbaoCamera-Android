@@ -43,8 +43,7 @@ object YanbaoExifParser {
             val shutter = formatShutter(exposureTime)
 
             // 2. 读取 ISO 感光度
-            val isoString = exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS) 
-                ?: exif.getAttribute(ExifInterface.TAG_ISO_SPEED)
+            val isoString = exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS)
             val iso = if (isoString != null) "ISO $isoString" else "ISO 100"
 
             // 3. 读取色温/白平衡
