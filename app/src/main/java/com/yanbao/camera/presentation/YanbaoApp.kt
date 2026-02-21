@@ -50,7 +50,7 @@ fun YanbaoApp() {
                     onProfileClick = { selectedTab = 4 }
                 )
                 1 -> CameraScreen()
-                2 -> GalleryScreen(navController = navController)
+                2 -> GalleryScreen()
                 3 -> RecommendScreen()
                 4 -> ProfileScreen()
             }
