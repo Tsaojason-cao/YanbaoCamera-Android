@@ -125,10 +125,27 @@ fun ProfileCardFront(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // 可更换头像
+                // 可更换头像 + 库洛米粉呼吸灯效果
+                val infiniteTransition = rememberInfiniteTransition(label = "breathing")
+                val breathingAlpha by infiniteTransition.animateFloat(
+                    initialValue = 0.3f,
+                    targetValue = 1f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(2000, easing = FastOutSlowInEasing),
+                        repeatMode = RepeatMode.Reverse
+                    ),
+                    label = "breathing_alpha"
+                )
+                
                 Box(
                     modifier = Modifier
-                        .size(64.dp)
+                        .size(80.dp)
+                        .border(
+                            width = 3.dp,
+                            color = YanbaoPink.copy(alpha = breathingAlpha), // 库洛米粉呼吸灯
+                            shape = CircleShape
+                        )
+                        .padding(4.dp)
                         .clip(CircleShape)
                         .background(Color.Gray),
                     contentAlignment = Alignment.Center

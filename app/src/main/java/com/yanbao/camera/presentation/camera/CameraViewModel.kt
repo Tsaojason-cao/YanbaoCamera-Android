@@ -220,21 +220,88 @@ class CameraViewModel @Inject constructor(
         switchMode(mode)
     }
     
+    // 拍照反馈状态
+    private val _capturePreviewUri = MutableStateFlow<String?>(null)
+    val capturePreviewUri: StateFlow<String?> = _capturePreviewUri.asStateFlow()
+    
     /**
      * 拍照
+     * 
+     * 增强功能：
+     * - 2秒缩略图预览
+     * - Toast 提示
+     * - 震动反馈
      */
     fun takePhoto(context: Context) {
         viewModelScope.launch {
             try {
                 Log.d(TAG, "AUDIT_CAPTURE: Starting photo capture")
                 
-                // 调用 Camera2ManagerEnhanced 拍照
+                // 1. 震动反馈
+                triggerVibration(context)
+                
+                // 2. 调用 Camera2ManagerEnhanced 拍照
                 camera2Manager?.takePhoto()
                 
                 Log.d(TAG, "AUDIT_CAPTURE: Photo capture triggered")
+                
+                // 3. Toast 提示
+                android.widget.Toast.makeText(
+                    context,
+                    "照片已保存",
+                    android.widget.Toast.LENGTH_SHORT
+                ).show()
+                
             } catch (e: Exception) {
                 Log.e(TAG, "AUDIT_CAPTURE: Photo capture failed", e)
+                android.widget.Toast.makeText(
+                    context,
+                    "拍照失败",
+                    android.widget.Toast.LENGTH_SHORT
+                ).show()
             }
+        }
+    }
+    
+    /**
+     * 触发震动反馈
+     */
+    private fun triggerVibration(context: Context) {
+        try {
+            val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as? android.os.Vibrator
+            
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                // Android 8.0+
+                vibrator?.vibrate(
+                    android.os.VibrationEffect.createOneShot(
+                        50, // 50ms
+                        android.os.VibrationEffect.DEFAULT_AMPLITUDE
+                    )
+                )
+            } else {
+                // 旧版本
+                @Suppress("DEPRECATION")
+                vibrator?.vibrate(50)
+            }
+            
+            Log.d(TAG, "VIBRATION: Triggered")
+        } catch (e: Exception) {
+            Log.e(TAG, "VIBRATION: Failed", e)
+        }
+    }
+    
+    /**
+     * 显示拍照预览
+     */
+    fun showCapturePreview(uri: String) {
+        viewModelScope.launch {
+            _capturePreviewUri.value = uri
+            Log.d(TAG, "PREVIEW: Showing capture preview: $uri")
+            
+            // 2秒后隐藏
+            kotlinx.coroutines.delay(2000)
+            _capturePreviewUri.value = null
+            Log.d(TAG, "PREVIEW: Hiding capture preview")
         }
     }
     
@@ -257,6 +324,9 @@ class CameraViewModel @Inject constructor(
                 
                 // 存入数据库
                 yanbaoMemoryDao.insert(memory)
+                
+                // 显示缩略图预览（2秒）
+                showCapturePreview(imagePath)
                 
                 Log.d(TAG, "Photo metadata saved: $imagePath")
                 Log.d(TAG, "29D Parameters JSON: $parameterJson")
