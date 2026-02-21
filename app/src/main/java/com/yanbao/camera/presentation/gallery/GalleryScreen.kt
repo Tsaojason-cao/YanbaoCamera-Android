@@ -178,15 +178,14 @@ fun PhotoItem(
                 modifier = Modifier.fillMaxSize()
             )
 
-            // 如果是 29D 照片，右上角打上库洛米或 29D 特有标识
+            // 如果是 29D 照片，右上角显示标识
             if (photo.hasMetadata) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_kuromi),
-                    contentDescription = "29D 标识",
+                Box(
                     modifier = Modifier
                         .align(Alignment.TopEnd)
                         .padding(4.dp)
                         .size(16.dp)
+                        .background(Color(0xFFFFB6C1), CircleShape)
                 )
             }
         }
