@@ -165,9 +165,8 @@ fun ControlPanelWithVerticalChain(
                 top.linkTo(parent.top)
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
-                width = Dimension.fillToConstraints
-                height = Dimension.wrapContent
             }
+                .fillMaxWidth()
         )
         
         // 2. 91国滤镜预览网格（横向滚动）
@@ -179,9 +178,8 @@ fun ControlPanelWithVerticalChain(
                 bottom.linkTo(shutterBar.top)
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
-                width = Dimension.fillToConstraints
-                height = Dimension.wrapContent
             }
+                .fillMaxWidth()
         )
         
         // 3. 快门栏
@@ -193,9 +191,8 @@ fun ControlPanelWithVerticalChain(
                 bottom.linkTo(modeBar.top)
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
-                width = Dimension.fillToConstraints
-                height = Dimension.wrapContent
             }
+                .fillMaxWidth()
         )
         
         // 4. 模式栏（9大模式）
@@ -208,9 +205,8 @@ fun ControlPanelWithVerticalChain(
                 bottom.linkTo(navBar.top)
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
-                width = Dimension.fillToConstraints
-                height = Dimension.wrapContent
             }
+                .fillMaxWidth()
         )
         
         // 5. 底部导航栏
@@ -220,9 +216,9 @@ fun ControlPanelWithVerticalChain(
                 bottom.linkTo(parent.bottom)
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
-                width = Dimension.fillToConstraints
-                height = Dimension.value(56.dp)
             }
+                .fillMaxWidth()
+                .height(56.dp)
         )
     }
 }
