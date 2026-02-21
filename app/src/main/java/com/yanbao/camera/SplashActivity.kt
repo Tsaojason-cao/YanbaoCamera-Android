@@ -22,7 +22,7 @@ import kotlinx.coroutines.delay
 import kotlin.random.Random
 
 /**
- * 啟動頁 - 完全照抄用戶提供的代碼
+ * 啟動頁 - 完全照抄用戶提供的代碼（修復編譯錯誤）
  */
 class SplashActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,20 +41,31 @@ class SplashActivity : ComponentActivity() {
 fun YanbaoSplashScreen(onNext: () -> Unit) {
     val infiniteTransition = rememberInfiniteTransition(label = "Blink")
     val stars = remember { List(25) { Offset(Random.nextFloat(), Random.nextFloat()) } }
+    
+    // ✅ 修復：為每個星星創建動畫狀態
+    val starAlphas = stars.map { pos ->
+        infiniteTransition.animateFloat(
+            initialValue = 0.2f,
+            targetValue = 1.0f,
+            animationSpec = infiniteRepeatable(
+                tween(Random.nextInt(800, 2000)),
+                RepeatMode.Reverse
+            ),
+            label = "Alpha_${pos.x}_${pos.y}"
+        )
+    }
 
     Box(modifier = Modifier.fillMaxSize().background(
         Brush.verticalGradient(listOf(Color(0xFFFFB6C1), Color(0xFFE0B0FF)))
     )) {
         // 1. 动态闪烁星空 (通电逻辑)
         Canvas(modifier = Modifier.fillMaxSize()) {
-            stars.forEach { pos ->
-                val alpha by infiniteTransition.animateFloat(
-                    initialValue = 0.2f, targetValue = 1.0f,
-                    animationSpec = infiniteRepeatable(tween(Random.nextInt(800, 2000)), RepeatMode.Reverse),
-                    label = "Alpha"
+            stars.forEachIndexed { index, pos ->
+                drawCircle(
+                    Color.White.copy(alpha = starAlphas[index].value),
+                    radius = 3f,
+                    center = Offset(pos.x * size.width, pos.y * size.height)
                 )
-                drawCircle(Color.White.copy(alpha = alpha), radius = 3f, 
-                           center = Offset(pos.x * size.width, pos.y * size.height))
             }
         }
         // 2. 库洛米装饰 (尺寸修正为 160dp)
