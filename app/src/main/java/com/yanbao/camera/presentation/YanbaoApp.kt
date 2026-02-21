@@ -18,6 +18,7 @@ import com.yanbao.camera.presentation.home.HomeScreen
 import com.yanbao.camera.presentation.profile.ProfileScreen
 import com.yanbao.camera.presentation.profile.ProfileViewModel
 import com.yanbao.camera.presentation.recommend.RecommendScreen
+import com.yanbao.camera.presentation.editor.EditorScreen
 import com.yanbao.camera.core.util.verifyYanbaoUi
 import androidx.compose.ui.platform.LocalContext
 import com.yanbao.camera.presentation.theme.YanbaoPink
@@ -60,19 +61,19 @@ fun YanbaoApp() {
                     val profile by profileViewModel.profile.collectAsState()
                     
                     HomeScreen(
-                        onCameraClick = { selectedTab = 1 },
-                        onEditorClick = { /* 将来跳转编辑器 */ },
-                        onGalleryClick = { selectedTab = 2 },
-                        onSettingsClick = { selectedTab = 4 },
-                        onRecommendClick = { selectedTab = 3 },
+                        onCameraClick = { selectedTab = 2 },      // ✅ 拍攝在 index 2
+                        onEditorClick = { selectedTab = 3 },      // ✅ 編輯在 index 3
+                        onGalleryClick = { /* TODO: 相册功能 */ },
+                        onSettingsClick = { selectedTab = 4 },    // ✅ 我的在 index 4
+                        onRecommendClick = { selectedTab = 1 },   // ✅ 推薦在 index 1
                         onProfileClick = { selectedTab = 4 },
-                        avatarUri = profile.avatarUri // 传入真实头像
+                        avatarUri = profile.avatarUri
                     )
                 }
-                1 -> CameraScreen()
-                2 -> GalleryScreen()
-                3 -> RecommendScreen()
-                4 -> ProfileScreen()
+                1 -> RecommendScreen()  // ✅ 推薦
+                2 -> CameraScreen()     // ✅ 拍攝
+                3 -> EditorScreen()     // ✅ 編輯 (需要實現)
+                4 -> ProfileScreen()    // ✅ 我的
             }
         }
     }
@@ -92,11 +93,11 @@ fun YanbaoBottomNavigation(
     onTabSelected: (Int) -> Unit
 ) {
     val tabs = listOf(
-        BottomNavItem("首页", Icons.Default.Home),
-        BottomNavItem("相机", Icons.Default.CameraAlt),
-        BottomNavItem("相册", Icons.Default.PhotoLibrary),
-        BottomNavItem("推荐", Icons.Default.Recommend),
-        BottomNavItem("我的", Icons.Default.Person)
+        BottomNavItem("首页", Icons.Default.Home),        // Home
+        BottomNavItem("推荐", Icons.Default.Explore),     // Explore (推薦)
+        BottomNavItem("拍攝", Icons.Default.CameraAlt),  // 拍攝 (中間大按鈕)
+        BottomNavItem("编辑", Icons.Default.Edit),       // Editor (編輯)
+        BottomNavItem("我的", Icons.Default.Person)      // Profile
     )
     
     NavigationBar(
