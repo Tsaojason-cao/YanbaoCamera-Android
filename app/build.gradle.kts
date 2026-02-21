@@ -82,6 +82,7 @@ dependencies {
     implementation("androidx.compose.material:material-icons-extended")
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("androidx.compose.animation:animation")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
 
     // CameraX
     implementation("androidx.camera:camera-core:1.3.2")
