@@ -88,7 +88,7 @@ fun RecommendScreen(
                     .padding(end = 16.dp)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_kuromi),
+                        painter = painterResource(id = R.drawable.kuromi),
                     contentDescription = "个人中心",
                     modifier = Modifier
                         .size(48.dp)
@@ -293,7 +293,7 @@ fun PhotoSpotCard(spot: PhotoSpot) {
             
             // 右下角库洛米装饰
             Image(
-                painter = painterResource(id = R.drawable.ic_kuromi_small),
+                painter = painterResource(id = R.drawable.kuromi),
                 contentDescription = "库洛米装饰",
                 modifier = Modifier
                     .align(Alignment.BottomEnd)

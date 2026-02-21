@@ -50,7 +50,7 @@ class RecommendViewModel @Inject constructor() : ViewModel() {
                     rating = 4.8f,
                     category = "📊 城市地标",
                     categoryColor = Color(0xFF6B7FFF),
-                    badgeIcon = R.drawable.ic_kuromi_gold,
+                    badgeIcon = R.drawable.kuromi,
                     distance = 2.1f,
                     photoCount = 345
                 ),
@@ -63,7 +63,7 @@ class RecommendViewModel @Inject constructor() : ViewModel() {
                     rating = 4.8f,
                     category = "🏮 古色古香",
                     categoryColor = Color(0xFFFF6B6B),
-                    badgeIcon = R.drawable.ic_kuromi_blue,
+                    badgeIcon = R.drawable.kuromi_bl,
                     distance = 12.4f,
                     photoCount = 280
                 ),
@@ -76,7 +76,7 @@ class RecommendViewModel @Inject constructor() : ViewModel() {
                     rating = 4.8f,
                     category = "🏞️ 自然风光",
                     categoryColor = Color(0xFF4CAF50),
-                    badgeIcon = R.drawable.ic_kuromi_purple,
+                    badgeIcon = R.drawable.kuromi_br,
                     distance = 45.2f,
                     photoCount = 189
                 ),
@@ -89,7 +89,7 @@ class RecommendViewModel @Inject constructor() : ViewModel() {
                     rating = 4.8f,
                     category = "⛰️ 壮观峡谷",
                     categoryColor = Color(0xFF8BC34A),
-                    badgeIcon = R.drawable.ic_kuromi_green,
+                    badgeIcon = R.drawable.kuromi_tl,
                     distance = 78.3f,
                     photoCount = 156
                 )
