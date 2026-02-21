@@ -2,11 +2,12 @@ package com.yanbao.camera.presentation.home
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -16,42 +17,40 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlinx.coroutines.delay
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.graphics.drawscope.Stroke
 import com.yanbao.camera.presentation.theme.YanbaoPink
-import com.yanbao.camera.presentation.theme.YanbaoDeepBg
+import kotlinx.coroutines.delay
 
 /**
- * 首页
+ * 首页 - 无手机框版本
  * 
- * 严格按照用户提供的图 3 设计：
- * - 顶部：品牌名 "yanbao AI" + 48dp 头像入口
- * - 中部：四宫格功能卡片（拍照/编辑器/相册/设置）
- * - 底部：160dp AI 推荐位
- * - 背景：紫色流光渐变
+ * Phase 1 优化：
+ * - 去除手机框装饰
+ * - 底部导航改为6个标签：首页、拍照、编辑、相册、推荐、我的
+ * - AI推荐位高度：160dp → 120dp
+ * - 新增Hot Spots Nearby横向滚动
  */
 @Composable
 fun HomeScreen(
     onCameraClick: () -> Unit,
     onEditorClick: () -> Unit,
     onGalleryClick: () -> Unit,
-    onSettingsClick: () -> Unit,
     onRecommendClick: () -> Unit,
     onProfileClick: () -> Unit,
-    avatarUri: String? = null, // 🚨 从 ProfileViewModel 传入
+    avatarUri: String? = null,
     modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier.fillMaxSize()
     ) {
-        // 1. 紫色流光背景
+        // 1. 粉紫渐变背景 + 星光粒子
         PurpleFlowingBackground()
         
         // 2. 内容层
@@ -60,7 +59,7 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            // 顶部：品牌名 + 头像入口（显示真实头像）
+            // 顶部：品牌名 + 头像入口
             TopBar(
                 onProfileClick = onProfileClick,
                 avatarUri = avatarUri
@@ -73,19 +72,36 @@ fun HomeScreen(
                 onCameraClick = onCameraClick,
                 onEditorClick = onEditorClick,
                 onGalleryClick = onGalleryClick,
-                onSettingsClick = onSettingsClick
+                onSettingsClick = { /* TODO: 设置页面 */ }
             )
             
             Spacer(modifier = Modifier.height(16.dp))
             
-            // AI 推荐位
+            // Hot Spots Nearby（新增）
+            HotSpotsNearby()
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            // AI 推荐位（压缩高度至120dp）
             AIRecommendationBanner(
                 onRecommendClick = onRecommendClick,
-                modifier = Modifier.height(160.dp)
+                modifier = Modifier.height(120.dp)
             )
             
             Spacer(modifier = Modifier.weight(1f))
         }
+        
+        // 3. 底部导航栏（6个标签）
+        BottomNavigationBar(
+            currentTab = "Home",
+            onHomeClick = { /* 已在首页 */ },
+            onCameraClick = onCameraClick,
+            onEditorClick = onEditorClick,
+            onGalleryClick = onGalleryClick,
+            onRecommendClick = onRecommendClick,
+            onProfileClick = onProfileClick,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }
 
@@ -111,63 +127,42 @@ fun TopBar(
             color = Color.White,
             style = androidx.compose.ui.text.TextStyle(
                 shadow = androidx.compose.ui.graphics.Shadow(
-                    color = YanbaoPink, // ✅ 使用正確的粉色
+                    color = YanbaoPink,
                     offset = Offset(0f, 4f),
                     blurRadius = 12f
                 )
             )
         )
         
-        // 48dp 头像入口（显示真实头像）
-        TopUserAction(
-            onProfileClick = onProfileClick,
-            avatarUri = avatarUri
-        )
-    }
-}
-
-/**
- * 48dp 头像入口
- * 
- * 🚨 核心逻辑：从 ProfileViewModel 读取真实头像
- * 点击后跳转“我的”页面
- */
-@Composable
-fun TopUserAction(
-    onProfileClick: () -> Unit,
-    avatarUri: String? = null,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .size(48.dp)
-            .drawBehind {
-                // ✅ 1:1 还原：粉色發光邊框
-                drawCircle(
-                    color = YanbaoPink,
-                    style = Stroke(width = 4f),
-                    alpha = 0.8f
+        // 48dp 头像入口
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .drawBehind {
+                    drawCircle(
+                        color = YanbaoPink,
+                        style = Stroke(width = 4f),
+                        alpha = 0.8f
+                    )
+                }
+                .clip(CircleShape)
+                .clickable { onProfileClick() }
+                .background(Color(0xFF2A2A2A)),
+            contentAlignment = Alignment.Center
+        ) {
+            if (avatarUri != null) {
+                coil.compose.AsyncImage(
+                    model = avatarUri,
+                    contentDescription = "User Avatar",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = androidx.compose.ui.layout.ContentScale.Crop
+                )
+            } else {
+                Text(
+                    text = "👤",
+                    fontSize = 24.sp
                 )
             }
-            .clip(CircleShape)
-            .clickable { onProfileClick() }
-            .background(Color(0xFF2A2A2A)),
-        contentAlignment = Alignment.Center
-    ) {
-        if (avatarUri != null) {
-            // 显示真实头像
-            coil.compose.AsyncImage(
-                model = avatarUri,
-                contentDescription = "User Avatar",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = androidx.compose.ui.layout.ContentScale.Crop
-            )
-        } else {
-            // 默认头像
-            Text(
-                text = "👤",
-                fontSize = 24.sp
-            )
         }
     }
 }
@@ -250,7 +245,7 @@ fun FeatureCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .height(160.dp)
+            .height(140.dp)
             .clickable { onClick() },
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
@@ -290,19 +285,95 @@ fun FeatureCard(
                     )
                 }
             }
-            
-            // 右下角库洛米装饰
-            Text(
-                text = "🐰",
-                fontSize = 24.sp,
-                modifier = Modifier.align(Alignment.BottomEnd)
-            )
         }
     }
 }
 
 /**
- * AI 推荐位（160dp）
+ * Hot Spots Nearby（新增）
+ */
+@Composable
+fun HotSpotsNearby(modifier: Modifier = Modifier) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        Text(
+            text = "Hot Spots Nearby",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+            modifier = Modifier.padding(bottom = 12.dp)
+        )
+        
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(hotSpots) { spot ->
+                HotSpotCard(spot = spot)
+            }
+        }
+    }
+}
+
+/**
+ * Hot Spot卡片
+ */
+@Composable
+fun HotSpotCard(spot: HotSpot) {
+    Card(
+        modifier = Modifier
+            .width(120.dp)
+            .height(140.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.White.copy(alpha = 0.2f)
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            // 照片预览
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(80.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color.Gray),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = spot.emoji,
+                    fontSize = 32.sp
+                )
+            }
+            
+            // 标题
+            Text(
+                text = spot.title,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.White,
+                maxLines = 1
+            )
+            
+            // 星级评分
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                repeat(spot.rating) {
+                    Text(
+                        text = "⭐",
+                        fontSize = 10.sp
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * AI 推荐位（压缩至120dp）
  */
 @Composable
 fun AIRecommendationBanner(
@@ -324,42 +395,125 @@ fun AIRecommendationBanner(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(24.dp),
+                .padding(16.dp),
             contentAlignment = Alignment.Center
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "AI 推荐 (20sp)",
-                    fontSize = 20.sp,
+                    text = "AI 推荐",
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = "Personalized for you",
-                    fontSize = 14.sp,
+                    fontSize = 12.sp,
                     color = Color.White.copy(alpha = 0.7f)
                 )
-            }
-            
-            // 左右库洛米装饰
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(text = "🐰", fontSize = 32.sp)
-                Text(text = "🐰", fontSize = 32.sp)
             }
         }
     }
 }
 
 /**
- * 紫色流光背景
- * 
- * 动态渐变色在 45° 方向缓慢位移
+ * 底部导航栏（6个标签）
+ */
+@Composable
+fun BottomNavigationBar(
+    currentTab: String,
+    onHomeClick: () -> Unit,
+    onCameraClick: () -> Unit,
+    onEditorClick: () -> Unit,
+    onGalleryClick: () -> Unit,
+    onRecommendClick: () -> Unit,
+    onProfileClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(72.dp)
+            .background(
+                color = Color(0xFF1A1A1A).copy(alpha = 0.9f)
+            )
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        BottomNavItem(
+            icon = "🏠",
+            label = "Home",
+            isSelected = currentTab == "Home",
+            onClick = onHomeClick
+        )
+        BottomNavItem(
+            icon = "📷",
+            label = "Camera",
+            isSelected = currentTab == "Camera",
+            onClick = onCameraClick
+        )
+        BottomNavItem(
+            icon = "✏️",
+            label = "Editor",
+            isSelected = currentTab == "Editor",
+            onClick = onEditorClick
+        )
+        BottomNavItem(
+            icon = "🖼️",
+            label = "Gallery",
+            isSelected = currentTab == "Gallery",
+            onClick = onGalleryClick
+        )
+        BottomNavItem(
+            icon = "🌟",
+            label = "Recommend",
+            isSelected = currentTab == "Recommend",
+            onClick = onRecommendClick
+        )
+        BottomNavItem(
+            icon = "👤",
+            label = "Profile",
+            isSelected = currentTab == "Profile",
+            onClick = onProfileClick
+        )
+    }
+}
+
+/**
+ * 底部导航栏单项
+ */
+@Composable
+fun BottomNavItem(
+    icon: String,
+    label: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier
+            .clickable { onClick() }
+            .padding(horizontal = 4.dp)
+    ) {
+        Text(
+            text = icon,
+            fontSize = 20.sp
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = label,
+            fontSize = 9.sp,
+            color = if (isSelected) YanbaoPink else Color.White,
+            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+        )
+    }
+}
+
+/**
+ * 粉紫渐变背景 + 星光粒子
  */
 @Composable
 fun PurpleFlowingBackground(modifier: Modifier = Modifier) {
@@ -405,3 +559,22 @@ fun PurpleFlowingBackground(modifier: Modifier = Modifier) {
         }
     }
 }
+
+/**
+ * Hot Spot数据类
+ */
+data class HotSpot(
+    val title: String,
+    val emoji: String,
+    val rating: Int
+)
+
+/**
+ * 示例数据
+ */
+val hotSpots = listOf(
+    HotSpot("Scenic Photo", "🌅", 4),
+    HotSpot("Youch Mouss", "🏝️", 5),
+    HotSpot("Photography", "📸", 4),
+    HotSpot("Detine", "🏔️", 5)
+)
