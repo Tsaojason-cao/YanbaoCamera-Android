@@ -7,6 +7,11 @@ import com.yanbao.camera.data.filter.MasterFilter91
 import com.yanbao.camera.data.filter.MasterFilter91Database
 import kotlinx.coroutines.*
 import kotlin.math.exp
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.alpha
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
 
 /**
  * AI智能推荐引擎
@@ -31,7 +36,7 @@ import kotlin.math.exp
 object FilterRecommendationEngine {
     
     // 用户偏好记录（filterId -> 使用次数）
-    private val userPreferences = mutableMapOf<Int, Int>()
+    val userPreferences = mutableMapOf<Int, Int>()
     
     // 场景-滤镜映射表
     private val sceneFilterMapping = mapOf(

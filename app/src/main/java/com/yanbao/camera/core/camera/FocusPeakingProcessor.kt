@@ -9,6 +9,10 @@ import androidx.camera.core.ImageProxy
 import kotlinx.coroutines.*
 import java.nio.ByteBuffer
 import kotlin.math.abs
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.alpha
+import androidx.compose.ui.graphics.asImageBitmap
 
 /**
  * Focus Peaking（对焦峰值）处理器

@@ -19,6 +19,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yanbao.camera.core.camera.Camera2PreviewManager
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.graphics.alpha
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * 相机控制叠加层

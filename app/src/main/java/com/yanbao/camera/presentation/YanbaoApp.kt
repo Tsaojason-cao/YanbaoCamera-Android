@@ -22,6 +22,7 @@ import com.yanbao.camera.presentation.editor.EditorScreen
 import com.yanbao.camera.core.util.verifyYanbaoUi
 import androidx.compose.ui.platform.LocalContext
 import com.yanbao.camera.presentation.theme.YanbaoPink
+import androidx.compose.ui.graphics.alpha
 
 /**
  * 雁宝AI相机主应用框架
@@ -64,9 +65,8 @@ fun YanbaoApp() {
                         onCameraClick = { selectedTab = 2 },      // ✅ 拍攝在 index 2
                         onEditorClick = { selectedTab = 3 },      // ✅ 编辑在 index 3
                         onGalleryClick = { selectedTab = 5 },     // ✅ 相册功能
-                        onSettingsClick = { selectedTab = 4 },    // ✅ 我的在 index 4
                         onRecommendClick = { selectedTab = 1 },   // ✅ 推薦在 index 1
-                        onProfileClick = { selectedTab = 4 },
+                        onProfileClick = { selectedTab = 4 },     // ✅ 我的在 index 4
                         avatarUri = profile.avatarUri
                     )
                 }

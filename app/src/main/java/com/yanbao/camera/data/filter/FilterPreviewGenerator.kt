@@ -23,6 +23,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.*
 import kotlin.system.measureTimeMillis
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.graphics.alpha
+import androidx.compose.ui.graphics.graphicsLayer
 
 /**
  * 滤镜预览图生成器
