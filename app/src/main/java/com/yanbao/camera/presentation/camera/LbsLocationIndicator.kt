@@ -359,9 +359,9 @@ private fun getCityName(context: Context, latitude: Double, longitude: Double): 
     var minDistance = Double.MAX_VALUE
     
     cityMap.forEach { (city, coords) ->
-        val distance = sqrt(
-            pow(coords.first - latitude, 2.0) +
-            pow(coords.second - longitude, 2.0)
+        val distance = kotlin.math.sqrt(
+            kotlin.math.pow(coords.first - latitude, 2.0) +
+            kotlin.math.pow(coords.second - longitude, 2.0)
         )
         if (distance < minDistance) {
             minDistance = distance
