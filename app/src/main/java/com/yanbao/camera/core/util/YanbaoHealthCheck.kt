@@ -50,9 +50,9 @@ class YanbaoHealthCheck(private val context: Context) {
         Log.i(TAG, "User Persistence: ${if(isProfilePersistent) "✅ PASS" else "❌ FAILED"}")
 
         // 3. 检查 UID 是否 Hardcode（必须基于硬件指纹，多次调用结果一致）
-        val uid1 = DeviceUidGenerator.generateYanbaoUid(context)
+        val uid1 = DeviceUidGenerator.generateUid(context)
         delay(100)
-        val uid2 = DeviceUidGenerator.generateYanbaoUid(context)
+        val uid2 = DeviceUidGenerator.generateUid(context)
         val isUidIntegrity = uid1 == uid2
         results["UID Integrity"] = isUidIntegrity
         Log.i(TAG, "UID Integrity: ${if(isUidIntegrity) "✅ PASS (UID: $uid1)" else "❌ STOCHASTIC_ERROR"}")

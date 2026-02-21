@@ -12,6 +12,7 @@ import android.graphics.Typeface
 import android.net.Uri
 import androidx.core.content.FileProvider
 import com.yanbao.camera.core.util.YanbaoExifParser
+import com.yanbao.camera.core.util.PhotoParams as ExifPhotoParams
 import java.io.File
 import java.io.FileOutputStream
 
@@ -276,7 +277,15 @@ class YanbaoShareManager(private val context: Context) {
     ): Bitmap? {
         return try {
             // 读取照片 Exif 参数
-            val params = YanbaoExifParser.getPhotoMetadata(photoPath)
+            val exifParams = YanbaoExifParser.getPhotoMetadata(photoPath)
+            
+            // 轉換為 ShareManager 的 PhotoParams
+            val params = PhotoParams(
+                shutter = exifParams.shutter,
+                iso = exifParams.iso,
+                wb = exifParams.wb,
+                location = null // 暫時不支持從 Exif 讀取地點
+            )
 
             // 加载照片 Bitmap
             val photo = android.graphics.BitmapFactory.decodeFile(photoPath)
