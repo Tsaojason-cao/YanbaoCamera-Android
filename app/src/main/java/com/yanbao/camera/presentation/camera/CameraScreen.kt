@@ -40,13 +40,67 @@ import com.yanbao.camera.presentation.camera.components.ShutterButton
 @Composable
 fun CameraScreen(
     onBackClick: () -> Unit = {},
+    onProfileClick: () -> Unit = {},
     viewModel: CameraViewModel = hiltViewModel()
 ) {
-    // ✅ Obsidian Flux 架構
-    YanbaoCameraLayout(
-        onCaptureClick = { /* TODO: 拍照逻辑 */ },
-        onProfileClick = { /* TODO: 跳转个人中心 */ }
-    )
+    val scope = rememberCoroutineScope()
+    val previewManager = rememberCamera2PreviewManager()
+    
+    // 权限检查
+    val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
+    
+    LaunchedEffect(Unit) {
+        if (!cameraPermissionState.status.isGranted) {
+            cameraPermissionState.launchPermissionRequest()
+        }
+    }
+    
+    if (!cameraPermissionState.status.isGranted) {
+        PermissionRequestScreen(
+            onRequestPermission = {
+                cameraPermissionState.launchPermissionRequest()
+            }
+        )
+        return
+    }
+    
+    // 使用真实的Camera2预览
+    Box(modifier = Modifier.fillMaxSize()) {
+        // Camera2 预览层
+        Camera2PreviewView(
+            onCaptureClick = {
+                scope.launch {
+                    val bitmap = previewManager.takePicture()
+                    if (bitmap != null) {
+                        Log.d("CameraScreen", "Picture taken: ${bitmap.width}x${bitmap.height}")
+                        // TODO: 保存到相册
+                    }
+                }
+            },
+            onPictureTaken = { bitmap ->
+                Log.d("CameraScreen", "Picture received: ${bitmap.width}x${bitmap.height}")
+            },
+            modifier = Modifier.fillMaxSize()
+        )
+        
+        // 顶部品牌标识
+        Text(
+            text = "yanbao AI",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 32.dp)
+        )
+        
+        // 返回按钮
+        com.yanbao.camera.presentation.components.CommonTopBar(
+            title = "",
+            onBackClick = onBackClick,
+            modifier = Modifier.align(Alignment.TopStart)
+        )
+    }
 }
 
 /**
