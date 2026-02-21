@@ -135,3 +135,4 @@ dependencies {
     // Kotlinx Serialization
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 }
+    implementation("com.google.zxing:core:3.5.1")
