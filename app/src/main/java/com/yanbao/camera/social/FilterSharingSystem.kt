@@ -12,6 +12,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -278,9 +279,10 @@ object FilterSharingSystem {
                 countryCode = countryCode,
                 countryName = countryName,
                 filterName = filterName,
+                displayName = "$countryName - $filterName",
                 latitude = latitude,
                 longitude = longitude,
-                parameters = parameters
+                matrix29D = parameters
             )
             
             Log.d("FilterSharingSystem", """
@@ -302,7 +304,7 @@ object FilterSharingSystem {
      */
     private fun generateSignature(filter: MasterFilter91): String {
         // 简化版签名（实际应使用HMAC-SHA256）
-        val data = "${filter.id}${filter.filterName}${filter.parameters.sum()}"
+        val data = "${filter.id}${filter.filterName}${filter.matrix29D.sum()}"
         return Base64.getEncoder().encodeToString(data.toByteArray())
     }
 }

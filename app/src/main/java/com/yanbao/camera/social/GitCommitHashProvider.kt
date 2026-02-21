@@ -280,7 +280,7 @@ private fun generate29DQRCodeWithGitHash(
         
         // 29D参数数组
         val parametersArray = org.json.JSONArray()
-        filter.parameters.forEach { parametersArray.put(it) }
+        filter.matrix29D.forEach { parametersArray.put(it) }
         put("parameters", parametersArray)
         
         // Git信息
@@ -350,6 +350,6 @@ private fun generateSignature(
     gitInfo: GitInfo
 ): String {
     // 简化版签名（实际应使用HMAC-SHA256）
-    val data = "${filter.id}${filter.filterName}${filter.parameters.sum()}${gitInfo.commitHash}"
+    val data = "${filter.id}${filter.filterName}${filter.matrix29D.sum()}${gitInfo.commitHash}"
     return java.util.Base64.getEncoder().encodeToString(data.toByteArray())
 }
