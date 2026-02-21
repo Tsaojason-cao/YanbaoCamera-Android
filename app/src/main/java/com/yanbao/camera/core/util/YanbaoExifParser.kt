@@ -43,8 +43,8 @@ object YanbaoExifParser {
             val shutter = formatShutter(exposureTime)
 
             // 2. 读取 ISO 感光度
-            val isoString = exif.getAttribute(ExifInterface.TAG_PHOTOGRAPHIC_SENSITIVITY) 
-                ?: exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS)
+            val isoString = exif.getAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS) 
+                ?: exif.getAttribute(ExifInterface.TAG_ISO_SPEED)
             val iso = if (isoString != null) "ISO $isoString" else "ISO 100"
 
             // 3. 读取色温/白平衡
@@ -224,7 +224,7 @@ object YanbaoExifParser {
             val exif = ExifInterface(imagePath)
 
             // 写入 ISO
-            exif.setAttribute(ExifInterface.TAG_PHOTOGRAPHIC_SENSITIVITY, iso.toString())
+            exif.setAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS, iso.toString())
 
             // 写入快门速度（转换为秒）
             val exposureTime = convertShutterToSeconds(shutter)
