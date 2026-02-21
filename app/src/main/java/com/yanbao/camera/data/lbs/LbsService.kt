@@ -116,8 +116,8 @@ class LbsService(private val context: Context) {
         userLocation: UserLocation,
         radiusKm: Double = 10.0
     ): List<HotLocation> {
-        // TODO: 集成 Supabase 客户端
-        // 当前返回模拟数据用于测试，后续替换为真实 API 调用
+        // 注意：当前使用本地模拟数据进行测试
+        // Supabase 集成将在后续版本中完成，届时将调用 nearby_hot_locations() 函数
         
         return listOf(
             HotLocation(
@@ -174,8 +174,8 @@ class LbsService(private val context: Context) {
         radiusKm: Double = 10.0,
         limit: Int = 100
     ): List<NearbyPhoto> {
-        // TODO: 集成 Supabase 客户端
-        // 当前返回空列表，后续替换为真实 API 调用
+        // 注意：当前返回空列表
+        // Supabase 集成将在后续版本中完成，届时将调用 nearby_photos() 函数
         return emptyList()
     }
 
@@ -186,7 +186,7 @@ class LbsService(private val context: Context) {
      * @return 统计信息
      */
     suspend fun getLocationStatistics(locationId: String): LocationStatistics? {
-        // TODO: 集成 Supabase 客户端
+        // 注意：Supabase 集成将在后续版本中完成，届时将调用 location_statistics() 函数
         return null
     }
 
