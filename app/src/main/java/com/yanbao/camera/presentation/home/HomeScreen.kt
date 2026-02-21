@@ -189,10 +189,10 @@ fun MainFeatureGrid(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // 拍照 (Camera)
+        // Camera
         item {
             FeatureCard(
-                title = "拍照 (Camera)",
+                title = "Camera",
                 subtitle = "Capture moments",
                 icon = "📷",
                 backgroundColor = Color(0xFFD4B0FF),
@@ -200,10 +200,10 @@ fun MainFeatureGrid(
             )
         }
         
-        // 编辑器 (Editor)
+        // Editor
         item {
             FeatureCard(
-                title = "编辑器 (Editor)",
+                title = "Editor",
                 subtitle = "Create magic",
                 icon = "✨",
                 backgroundColor = Color(0xFFC0A0FF),
@@ -211,10 +211,10 @@ fun MainFeatureGrid(
             )
         }
         
-        // 相册 (Gallery)
+        // Gallery
         item {
             FeatureCard(
-                title = "相册 (Gallery)",
+                title = "Gallery",
                 subtitle = "View memories",
                 icon = "🖼️",
                 backgroundColor = Color(0xFFB090FF),
@@ -222,10 +222,10 @@ fun MainFeatureGrid(
             )
         }
         
-        // 设置 (Settings)
+        // Settings
         item {
             FeatureCard(
-                title = "设置 (Settings)",
+                title = "Settings",
                 subtitle = "Customize app",
                 icon = "⚙️",
                 backgroundColor = Color(0xFFA080FF),
