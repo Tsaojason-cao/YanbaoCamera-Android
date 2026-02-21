@@ -41,6 +41,7 @@ fun HomeScreen(
     onSettingsClick: () -> Unit,
     onRecommendClick: () -> Unit,
     onProfileClick: () -> Unit,
+    avatarUri: String? = null, // 🚨 从 ProfileViewModel 传入
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -55,8 +56,11 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
-            // 顶部：品牌名 + 头像入口
-            TopBar(onProfileClick = onProfileClick)
+            // 顶部：品牌名 + 头像入口（显示真实头像）
+            TopBar(
+                onProfileClick = onProfileClick,
+                avatarUri = avatarUri
+            )
             
             Spacer(modifier = Modifier.height(32.dp))
             
@@ -87,6 +91,7 @@ fun HomeScreen(
 @Composable
 fun TopBar(
     onProfileClick: () -> Unit,
+    avatarUri: String? = null,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -109,19 +114,24 @@ fun TopBar(
             )
         )
         
-        // 48dp 头像入口
-        TopUserAction(onProfileClick = onProfileClick)
+        // 48dp 头像入口（显示真实头像）
+        TopUserAction(
+            onProfileClick = onProfileClick,
+            avatarUri = avatarUri
+        )
     }
 }
 
 /**
  * 48dp 头像入口
  * 
- * 点击后跳转"我的"页面
+ * 🚨 核心逻辑：从 ProfileViewModel 读取真实头像
+ * 点击后跳转“我的”页面
  */
 @Composable
 fun TopUserAction(
     onProfileClick: () -> Unit,
+    avatarUri: String? = null,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -133,11 +143,21 @@ fun TopUserAction(
             .background(Color(0xFF2A2A2A)),
         contentAlignment = Alignment.Center
     ) {
-        // 将来集成 ProfileViewModel 加载真实头像
-        Text(
-            text = "👤",
-            fontSize = 24.sp
-        )
+        if (avatarUri != null) {
+            // 显示真实头像
+            coil.compose.AsyncImage(
+                model = avatarUri,
+                contentDescription = "User Avatar",
+                modifier = Modifier.fillMaxSize(),
+                contentScale = androidx.compose.ui.layout.ContentScale.Crop
+            )
+        } else {
+            // 默认头像
+            Text(
+                text = "👤",
+                fontSize = 24.sp
+            )
+        }
     }
 }
 

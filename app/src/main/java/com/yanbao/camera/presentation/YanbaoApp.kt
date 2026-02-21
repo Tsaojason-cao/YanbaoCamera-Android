@@ -11,10 +11,12 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.yanbao.camera.presentation.camera.CameraScreen
 import com.yanbao.camera.presentation.gallery.GalleryScreen
 import com.yanbao.camera.presentation.home.HomeScreen
 import com.yanbao.camera.presentation.profile.ProfileScreen
+import com.yanbao.camera.presentation.profile.ProfileViewModel
 import com.yanbao.camera.presentation.recommend.RecommendScreen
 
 /**
@@ -31,6 +33,9 @@ import com.yanbao.camera.presentation.recommend.RecommendScreen
 fun YanbaoApp() {
     var selectedTab by remember { mutableIntStateOf(1) } // 默认选中相机
     
+    // 🚨 核心：共享 ProfileViewModel 实例，确保数据同步
+    val profileViewModel: ProfileViewModel = hiltViewModel()
+    
     Scaffold(
         bottomBar = {
             YanbaoBottomNavigation(
@@ -41,14 +46,20 @@ fun YanbaoApp() {
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues)) {
             when (selectedTab) {
-                0 -> HomeScreen(
-                    onCameraClick = { selectedTab = 1 },
-                    onEditorClick = { /* 将来跳转编辑器 */ },
-                    onGalleryClick = { selectedTab = 2 },
-                    onSettingsClick = { selectedTab = 4 },
-                    onRecommendClick = { selectedTab = 3 },
-                    onProfileClick = { selectedTab = 4 }
-                )
+                0 -> {
+                    // 🚨 核心：从 ProfileViewModel 读取真实头像
+                    val profile by profileViewModel.profile.collectAsState()
+                    
+                    HomeScreen(
+                        onCameraClick = { selectedTab = 1 },
+                        onEditorClick = { /* 将来跳转编辑器 */ },
+                        onGalleryClick = { selectedTab = 2 },
+                        onSettingsClick = { selectedTab = 4 },
+                        onRecommendClick = { selectedTab = 3 },
+                        onProfileClick = { selectedTab = 4 },
+                        avatarUri = profile.avatarUri // 传入真实头像
+                    )
+                }
                 1 -> CameraScreen()
                 2 -> GalleryScreen()
                 3 -> RecommendScreen()

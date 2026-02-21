@@ -1,10 +1,15 @@
 package com.yanbao.camera.presentation.recommend
 
+import android.content.Context
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.yanbao.camera.R
+import com.yanbao.camera.data.lbs.FilterMapper
+import com.yanbao.camera.data.lbs.LbsService
+import com.yanbao.camera.data.lbs.UserLocation
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,7 +25,11 @@ import javax.inject.Inject
  * - LBS 定位和距离计算
  */
 @HiltViewModel
-class RecommendViewModel @Inject constructor() : ViewModel() {
+class RecommendViewModel @Inject constructor(
+    @ApplicationContext private val context: Context
+) : ViewModel() {
+
+    private val lbsService = LbsService(context)
 
     private val _selectedTab = MutableStateFlow(RecommendTab.NEARBY)
     val selectedTab: StateFlow<RecommendTab> = _selectedTab.asStateFlow()
@@ -28,13 +37,102 @@ class RecommendViewModel @Inject constructor() : ViewModel() {
     private val _filteredSpots = MutableStateFlow<List<PhotoSpot>>(emptyList())
     val filteredSpots: StateFlow<List<PhotoSpot>> = _filteredSpots.asStateFlow()
 
+    private val _currentLocation = MutableStateFlow<UserLocation?>(null)
+    val currentLocation: StateFlow<UserLocation?> = _currentLocation.asStateFlow()
+
+    private val _locationError = MutableStateFlow<String?>(null)
+    val locationError: StateFlow<String?> = _locationError.asStateFlow()
+
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
+
     init {
-        loadPhotoSpots()
+        // 🚨 核心：启动时获取真实位置
+        fetchCurrentLocation()
     }
 
     fun onTabSelected(tab: RecommendTab) {
         _selectedTab.value = tab
         filterSpotsByTab(tab)
+    }
+
+    /**
+     * 🚨 核心逻辑：获取当前位置
+     * 
+     * 验收闭环：
+     * - 关闭定位权限 → 提示“无法获取位置”
+     * - 开启定位权限 → 显示真实的经纬度
+     * - 模拟器中修改位置 → 附近地点实时刷新
+     */
+    fun fetchCurrentLocation() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _locationError.value = null
+
+            try {
+                // 1. 检查权限
+                if (!lbsService.hasLocationPermission()) {
+                    _locationError.value = "请授予位置权限以查看附近地点"
+                    _isLoading.value = false
+                    return@launch
+                }
+
+                // 2. 检查位置服务
+                if (!lbsService.isLocationEnabled()) {
+                    _locationError.value = "请开启位置服务"
+                    _isLoading.value = false
+                    return@launch
+                }
+
+                // 3. 获取当前位置
+                val location = lbsService.getCurrentLocation()
+                if (location != null) {
+                    _currentLocation.value = location
+                    // 4. 加载附近地点
+                    loadNearbySpots(location)
+                } else {
+                    _locationError.value = "无法获取当前位置"
+                }
+            } catch (e: SecurityException) {
+                _locationError.value = "位置权限被拒绝"
+            } catch (e: Exception) {
+                _locationError.value = "获取位置失败：${e.message}"
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    /**
+     * 🚨 核心逻辑：加载附近地点
+     * 
+     * 从 LbsService 查询真实的附近热门地点
+     */
+    private suspend fun loadNearbySpots(userLocation: UserLocation) {
+        try {
+            val hotLocations = lbsService.getNearbyHotLocations(userLocation, radiusKm = 50.0)
+            
+            // 转换为 PhotoSpot 数据结构
+            val spots = hotLocations.map { location ->
+                PhotoSpot(
+                    id = location.id,
+                    title = location.name,
+                    location = location.address,
+                    description = "热门拍摄地点，已有 ${location.photoCount} 张照片",
+                    imageUrl = location.featuredPhotoUrl ?: "",
+                    rating = location.popularityScore,
+                    category = location.category,
+                    categoryColor = FilterMapper.getCategoryColor(location.category),
+                    badgeIcon = R.drawable.kuromi,
+                    distance = location.distanceKm.toFloat(),
+                    photoCount = location.photoCount
+                )
+            }
+            
+            _filteredSpots.value = spots
+        } catch (e: Exception) {
+            _locationError.value = "加载附近地点失败：${e.message}"
+        }
     }
 
     private fun loadPhotoSpots() {

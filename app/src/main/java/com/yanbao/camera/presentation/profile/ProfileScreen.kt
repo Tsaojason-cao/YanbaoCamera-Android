@@ -224,13 +224,13 @@ fun ProfileScreen(
                             horizontalAlignment = Alignment.End
                         ) {
                             Text(
-                                text = "剩余天数",
+                                text = "与雁宝同行",
                                 fontSize = 12.sp,
                                 color = Color.White.copy(alpha = 0.6f)
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
-                                text = "${profile.remainingDays} 天",
+                                text = "${profile.daysWithYanbao} 天",
                                 fontSize = 20.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color(0xFF10B981)
