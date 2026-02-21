@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.*
 import kotlin.system.measureTimeMillis
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.ui.graphics.alpha
 import androidx.compose.ui.graphics.graphicsLayer
 
 /**

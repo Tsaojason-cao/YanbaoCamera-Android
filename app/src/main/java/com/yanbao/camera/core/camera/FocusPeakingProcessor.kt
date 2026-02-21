@@ -11,7 +11,6 @@ import java.nio.ByteBuffer
 import kotlin.math.abs
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.alpha
 import androidx.compose.ui.graphics.asImageBitmap
 import kotlin.math.sqrt
 
@@ -149,7 +148,7 @@ class FocusPeakingProcessor(
                 )
                 
                 // 梯度强度
-                gradientMagnitude[index] = kotlin.math.sqrt(gx * gx + gy * gy)
+                gradientMagnitude[index] = sqrt(gx * gx + gy * gy)
             }
         }
         

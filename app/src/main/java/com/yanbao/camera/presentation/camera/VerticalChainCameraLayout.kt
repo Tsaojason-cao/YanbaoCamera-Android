@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.constraintlayout.compose
 
 /**
  * 相机布局 - Vertical Chain版本

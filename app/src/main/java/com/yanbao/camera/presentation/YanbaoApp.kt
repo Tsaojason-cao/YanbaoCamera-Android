@@ -22,7 +22,6 @@ import com.yanbao.camera.presentation.editor.EditorScreen
 import com.yanbao.camera.core.util.verifyYanbaoUi
 import androidx.compose.ui.platform.LocalContext
 import com.yanbao.camera.presentation.theme.YanbaoPink
-import androidx.compose.ui.graphics.alpha
 
 /**
  * 雁宝AI相机主应用框架

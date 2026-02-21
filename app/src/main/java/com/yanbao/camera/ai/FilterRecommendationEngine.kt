@@ -8,9 +8,20 @@ import com.yanbao.camera.data.filter.MasterFilter91Database
 import kotlinx.coroutines.*
 import kotlin.math.exp
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.alpha
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import kotlinx.coroutines.delay
 
 /**
@@ -254,41 +265,41 @@ data class ImageFeatures(
 fun AiRecommendationLabel(
     sceneType: SceneType,
     recommendedFilter: MasterFilter91?,
-    modifier: androidx.compose.ui.Modifier = androidx.compose.ui.Modifier
+    modifier: Modifier = Modifier
 ) {
     if (recommendedFilter != null) {
-        androidx.compose.foundation.layout.Box(
+        Box(
             modifier = modifier
-                .androidx.compose.ui.draw.clip(androidx.compose.foundation.shape.RoundedCornerShape(12.dp))
-                .androidx.compose.foundation.background(
-                    brush = androidx.compose.ui.graphics.Brush.horizontalGradient(
+                .clip(RoundedCornerShape(12.dp))
+                .background(
+                    brush = Brush.horizontalGradient(
                         colors = listOf(
-                            androidx.compose.ui.graphics.Color(0xFFEC4899).copy(alpha = 0.8f),
-                            androidx.compose.ui.graphics.Color(0xFFA78BFA).copy(alpha = 0.8f)
+                            Color(0xFFEC4899).copy(alpha = 0.8f),
+                            Color(0xFFA78BFA).copy(alpha = 0.8f)
                         )
                     )
                 )
-                .androidx.compose.foundation.layout.padding(horizontal = 16.dp, vertical = 8.dp),
-            contentAlignment = androidx.compose.ui.Alignment.Center
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            contentAlignment = Alignment.Center
         ) {
-            androidx.compose.foundation.layout.Row(
-                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,
-                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 // AI图标
-                androidx.compose.material3.Text(
+                Text(
                     text = "🤖",
                     fontSize = 16.sp,
-                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                    color = androidx.compose.ui.graphics.Color.White
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
                 )
                 
                 // 推荐文字
-                androidx.compose.material3.Text(
+                Text(
                     text = "推荐: ${recommendedFilter.displayName}",
                     fontSize = 12.sp,
-                    fontWeight = androidx.compose.ui.text.font.FontWeight.Normal,
-                    color = androidx.compose.ui.graphics.Color.White
+                    fontWeight = FontWeight.Normal,
+                    color = Color.White
                 )
             }
         }

@@ -316,7 +316,7 @@ fun FilterPreviewCard(
                 },
                 shape = RoundedCornerShape(12.dp)
             )
-            .androidx.compose.foundation.clickable.clickable { onClick() },
+            .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
         // TODO: 使用FilterPreviewGenerator生成的真实预览图
@@ -379,7 +379,7 @@ fun ParameterBubble(
                 ),
                 shape = RoundedCornerShape(16.dp)
             )
-            .androidx.compose.foundation.clickable.clickable { onClick() }
+            .clickable { onClick() }
             .padding(horizontal = 12.dp, vertical = 8.dp)
     ) {
         androidx.compose.material3.Text(
@@ -411,7 +411,7 @@ fun CaptureButton(
                 ),
                 shape = androidx.compose.foundation.shape.CircleShape
             )
-            .androidx.compose.foundation.clickable.clickable { onClick() },
+            .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
         androidx.compose.material3.Text(
@@ -443,7 +443,7 @@ fun ShareButton(
                 ),
                 shape = androidx.compose.foundation.shape.CircleShape
             )
-            .androidx.compose.foundation.clickable.clickable { onClick() },
+            .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
         androidx.compose.material3.Text(
