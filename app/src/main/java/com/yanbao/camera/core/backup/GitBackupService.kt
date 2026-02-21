@@ -13,15 +13,15 @@ import java.util.Locale
  * Git 自動備份服務
  * 
  * 🚨 用戶要求：
- * 補充 GitBackupService。每次保存照片時，自動在後台靜默執行 git add 和 git commit
+ * 補充 GitBackupService。每次保存照片時，自動在後台靜默执行 git add 和 git commit
  * 
  * 驗收閉環：
- * - 保存照片後 → 自動執行 git commit
- * - PC 端執行 git log → 能看到來自手機端的 "Commit: Profile Update" 記錄
+ * - 保存照片後 → 自動执行 git commit
+ * - PC 端执行 git log → 能看到來自手機端的 "Commit: Profile Update" 記錄
  * 
  * 注意：
  * 此功能需要在 Android 設備上安裝 Git 工具或使用 JGit 庫
- * 當前實現使用 JGit 庫（純 Java 實現的 Git）
+ * 當前实现使用 JGit 庫（純 Java 实现的 Git）
  */
 class GitBackupService(private val context: Context) {
     
@@ -43,7 +43,7 @@ class GitBackupService(private val context: Context) {
                 repoDir.mkdirs()
             }
             
-            // 檢查是否已經是 Git 倉庫
+            // 检查是否已經是 Git 倉庫
             val gitDir = File(repoDir, ".git")
             if (gitDir.exists()) {
                 Log.d(TAG, "Git repository already initialized")
@@ -81,14 +81,14 @@ class GitBackupService(private val context: Context) {
             destFile.parentFile?.mkdirs()
             sourceFile.copyTo(destFile, overwrite = true)
             
-            // 2. 執行 git add
+            // 2. 执行 git add
             val addSuccess = gitAdd(destFile.relativeTo(repoDir).path)
             if (!addSuccess) {
                 Log.w(TAG, "Git add failed")
                 return@withContext false
             }
             
-            // 3. 執行 git commit
+            // 3. 执行 git commit
             val message = commitMessage ?: generateCommitMessage()
             val commitSuccess = gitCommit(message)
             if (!commitSuccess) {
@@ -118,14 +118,14 @@ class GitBackupService(private val context: Context) {
             profileFile.parentFile?.mkdirs()
             profileFile.writeText(profileData)
             
-            // 2. 執行 git add
+            // 2. 执行 git add
             val addSuccess = gitAdd("profile/user_profile.json")
             if (!addSuccess) {
                 Log.w(TAG, "Git add failed")
                 return@withContext false
             }
             
-            // 3. 執行 git commit
+            // 3. 执行 git commit
             val message = "Commit: Profile Update"
             val commitSuccess = gitCommit(message)
             if (!commitSuccess) {
@@ -144,7 +144,7 @@ class GitBackupService(private val context: Context) {
     }
     
     /**
-     * 執行 git add
+     * 执行 git add
      */
     private fun gitAdd(filePath: String): Boolean {
         return try {
@@ -162,7 +162,7 @@ class GitBackupService(private val context: Context) {
     }
     
     /**
-     * 執行 git commit
+     * 执行 git commit
      */
     private fun gitCommit(message: String): Boolean {
         return try {
@@ -217,7 +217,7 @@ class GitBackupService(private val context: Context) {
     }
     
     /**
-     * 檢查倉庫狀態
+     * 检查倉庫状态
      */
     suspend fun getRepositoryStatus(): RepositoryStatus = withContext(Dispatchers.IO) {
         try {
@@ -262,7 +262,7 @@ data class CommitInfo(
 )
 
 /**
- * 倉庫狀態
+ * 倉庫状态
  */
 data class RepositoryStatus(
     val isClean: Boolean,

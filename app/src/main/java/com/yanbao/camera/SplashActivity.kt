@@ -26,13 +26,13 @@ import kotlinx.coroutines.delay
 import kotlin.math.sin
 
 /**
- * 啟動頁 - 1:1 還原設計圖 01_splash_screen(2).png
+ * 启动頁 - 1:1 还原设计圖 01_splash_screen(2).png
  * 
  * 視覺元素：
  * 1. 粉紫垂直漸變背景 + 流動波紋
- * 2. 頂部 "yanbao AI" 文字
+ * 2. 顶部 "yanbao AI" 文字
  * 3. 中央库洛米拿相機形象 (300dp)
- * 4. 底部圓角進度條
+ * 4. 底部圓角进度條
  * 5. "Loading..." 文字
  * 6. ❌ 沒有星星
  */
@@ -65,7 +65,7 @@ fun YanbaoSplashScreen(onNext: () -> Unit) {
         // 1. 流動波紋背景
         FlowingWaveBackground()
         
-        // 2. 頂部 "yanbao AI" 文字
+        // 2. 顶部 "yanbao AI" 文字
         Text(
             text = "yanbao AI",
             fontSize = 52.sp,
@@ -85,14 +85,14 @@ fun YanbaoSplashScreen(onNext: () -> Unit) {
                 .align(Alignment.Center)
         )
         
-        // 4. 底部進度條 + Loading 文字
+        // 4. 底部进度條 + Loading 文字
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 100.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // 圓角進度條
+            // 圓角进度條
             RoundedProgressBar(progress = progress)
             
             Spacer(modifier = Modifier.height(16.dp))
@@ -166,7 +166,7 @@ fun FlowingWaveBackground() {
 }
 
 /**
- * 圓角進度條
+ * 圓角进度條
  * 白色半透明背景 + 粉紫漸變填充 + 白色邊框
  */
 @Composable
@@ -197,7 +197,7 @@ fun RoundedProgressBar(progress: Float) {
             )
         }
         
-        // 進度填充（粉紫漸變）
+        // 进度填充（粉紫漸變）
         Canvas(
             modifier = Modifier
                 .fillMaxHeight()

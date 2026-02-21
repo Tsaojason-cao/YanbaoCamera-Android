@@ -30,20 +30,23 @@ import com.yanbao.camera.presentation.theme.YanbaoPurple
  * 核心結構：三層空間定義 (Spatial Layout)
  * - 底層 (LBS 地圖層)：全屏背景，粉色發光點地圖
  * - 中層 (瀑布流層)：72/28 比例，雁宝记忆 + 一般相冊
- * - 頂層 (交互抽屜)：5 標籤導航 + 功能切換
+ * - 頂層 (交互抽屜)：5 标签导航 + 功能切換
  * 
  * 功能模組切換邏輯：
  * - 雙指縮小 (Zoom Out)：一般相冊 → LBS 地圖（照片縮成發光圖釘）
  * - 雙指放大 (Zoom In)：進入雁宝记忆（全屏沉浸 + 70dp 高斯模糊）
  * 
  * 視覺規格：
- * - 雁宝记忆：大卡片流，漸變邊框 + 29D 參數註釋
- * - 一般相冊：3 列網格，12dp 圓角，粉色光暈
+ * - 雁宝记忆：大卡片流，漸變邊框 + 29D 参数注释
+ * - 一般相冊：3 列网格，12dp 圓角，粉色光暈
  * - LBS 地圖：深黑背景 + 霓虹粉 (#FFB6C1) 座標點
  */
 @Composable
 fun YanbaoGalleryScreen(
-    onPhotoClick: (String) -> Unit = {},
+    onPhotoClick: (String) -> Unit = { photoId ->
+        // TODO: 导航到照片详情页
+        android.util.Log.d("YanbaoGalleryScreen", "Photo clicked: $photoId")
+    },
     modifier: Modifier = Modifier
 ) {
     var currentMode by remember { mutableStateOf(GalleryMode.Normal) }
@@ -59,7 +62,7 @@ fun YanbaoGalleryScreen(
         
         // Layer 2: 中層可滾動的相冊內容
         Column(modifier = Modifier.fillMaxSize()) {
-            // 頂部切換 Tab (雁宝记忆 | 一般 | LBS)
+            // 顶部切換 Tab (雁宝记忆 | 一般 | LBS)
             YanbaoAlbumTabs(
                 currentMode = currentMode,
                 onModeChange = { currentMode = it },
@@ -128,7 +131,7 @@ fun LbsMapView(modifier: Modifier = Modifier) {
 }
 
 /**
- * 頂部切換 Tab
+ * 顶部切換 Tab
  * 
  * 雁宝记忆 | 一般 | LBS
  */
@@ -189,7 +192,7 @@ fun TabItem(
 /**
  * 雁宝记忆大卡片流
  * 
- * 大卡片流，漸變邊框 + 29D 參數註釋
+ * 大卡片流，漸變邊框 + 29D 参数注释
  */
 @Composable
 fun MemoryCarousel(
@@ -274,9 +277,9 @@ fun MemoryCard(
 }
 
 /**
- * 一般相冊網格
+ * 一般相冊网格
  * 
- * 3 列網格，12dp 圓角，粉色光暈
+ * 3 列网格，12dp 圓角，粉色光暈
  */
 @Composable
 fun PhotoGrid(
@@ -302,7 +305,7 @@ fun PhotoGrid(
 }
 
 /**
- * 相冊網格項目
+ * 相冊网格項目
  */
 @Composable
 fun PhotoGridItem(

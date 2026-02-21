@@ -5,8 +5,8 @@ import com.yanbao.camera.data.model.Render29D
 /**
  * 91 個大師濾鏡系統
  * 
- * 每個濾鏡都是一組 29D 參數矩陣的預設種子（Preset Seeds）
- * 通過 GPU Shader 實時映射，而非簡單的 LUT 或圖片濾鏡
+ * 每個濾鏡都是一組 29D 参数矩陣的預設種子（Preset Seeds）
+ * 通過 GPU Shader 實時映射，而非簡單的 LUT 或图片濾鏡
  */
 object MasterFilterPresets {
     

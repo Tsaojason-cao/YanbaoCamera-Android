@@ -268,7 +268,9 @@ fun YanbaoProfileScreen(
     uid: String = "YB888888",
     days: Int = 365,
     avatarUri: String? = null,
-    onBackClick: () -> Unit = {},
+    onBackClick: () -> Unit = {
+        android.util.Log.d("YanbaoProfileScreen", "Back button clicked")
+    },
     modifier: Modifier = Modifier
 ) {
     Box(

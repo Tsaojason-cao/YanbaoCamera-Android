@@ -142,7 +142,7 @@ fun TopUserAction(
         modifier = modifier
             .size(48.dp)
             .drawBehind {
-                // ✅ 1:1 還原：粉色發光邊框
+                // ✅ 1:1 还原：粉色發光邊框
                 drawCircle(
                     color = YanbaoPink,
                     style = Stroke(width = 4f),

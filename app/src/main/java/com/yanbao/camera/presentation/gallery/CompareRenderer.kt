@@ -13,12 +13,12 @@ import java.nio.FloatBuffer
  * 相冊長按對比渲染器
  * 
  * 🚨 用戶要求：
- * 實現「長按對比」功能，實時對比編輯前後效果（調用雙緩衝紋理）
+ * 实现「長按對比」功能，實時對比编辑前後效果（調用雙緩衝紋理）
  * 
  * 驗收閉環：
- * - 長按照片 → 顯示編輯前的原圖
- * - 鬆開手指 → 恢復顯示編輯後的圖片
- * - 使用雙緩衝紋理實現無延遲切換
+ * - 長按照片 → 显示编辑前的原圖
+ * - 鬆開手指 → 恢復显示编辑後的图片
+ * - 使用雙緩衝紋理实现無延遲切換
  */
 class CompareRenderer(private val context: Context) {
     
@@ -47,8 +47,8 @@ class CompareRenderer(private val context: Context) {
             precision mediump float;
             
             uniform sampler2D uTextureOriginal;  // 原圖紋理
-            uniform sampler2D uTextureEdited;    // 編輯後紋理
-            uniform float uShowOriginal;         // 0.0 = 顯示編輯後, 1.0 = 顯示原圖
+            uniform sampler2D uTextureEdited;    // 编辑後紋理
+            uniform float uShowOriginal;         // 0.0 = 显示编辑後, 1.0 = 显示原圖
             
             in vec2 vTexCoord;
             out vec4 fragColor;
@@ -76,7 +76,7 @@ class CompareRenderer(private val context: Context) {
     private lateinit var vertexBuffer: FloatBuffer
     private lateinit var texCoordBuffer: FloatBuffer
     
-    // 當前是否顯示原圖
+    // 當前是否显示原圖
     private var showOriginal = false
     
     init {
@@ -130,7 +130,7 @@ class CompareRenderer(private val context: Context) {
         GLES30.glAttachShader(programId, fragmentShader)
         GLES30.glLinkProgram(programId)
         
-        // 檢查鏈接狀態
+        // 检查鏈接状态
         val linkStatus = IntArray(1)
         GLES30.glGetProgramiv(programId, GLES30.GL_LINK_STATUS, linkStatus, 0)
         if (linkStatus[0] == 0) {
@@ -159,7 +159,7 @@ class CompareRenderer(private val context: Context) {
         GLES30.glShaderSource(shader, shaderCode)
         GLES30.glCompileShader(shader)
         
-        // 檢查編譯狀態
+        // 检查編譯状态
         val compileStatus = IntArray(1)
         GLES30.glGetShaderiv(shader, GLES30.GL_COMPILE_STATUS, compileStatus, 0)
         if (compileStatus[0] == 0) {
@@ -193,7 +193,7 @@ class CompareRenderer(private val context: Context) {
     }
     
     /**
-     * 設置編輯後紋理
+     * 設置编辑後紋理
      */
     fun setEditedBitmap(bitmap: Bitmap) {
         if (editedTextureId == 0) {
@@ -213,9 +213,9 @@ class CompareRenderer(private val context: Context) {
     }
     
     /**
-     * 設置是否顯示原圖
+     * 設置是否显示原圖
      * 
-     * @param show true = 顯示原圖, false = 顯示編輯後
+     * @param show true = 显示原圖, false = 显示编辑後
      */
     fun setShowOriginal(show: Boolean) {
         showOriginal = show
@@ -239,12 +239,12 @@ class CompareRenderer(private val context: Context) {
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, originalTextureId)
         GLES30.glUniform1i(originalTextureHandle, 0)
         
-        // 綁定編輯後紋理
+        // 綁定编辑後紋理
         GLES30.glActiveTexture(GLES30.GL_TEXTURE1)
         GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, editedTextureId)
         GLES30.glUniform1i(editedTextureHandle, 1)
         
-        // 設置顯示模式
+        // 設置显示模式
         GLES30.glUniform1f(showOriginalHandle, if (showOriginal) 1.0f else 0.0f)
         
         // 綁定頂點和紋理坐標

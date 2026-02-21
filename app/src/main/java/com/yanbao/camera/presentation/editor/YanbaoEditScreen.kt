@@ -37,7 +37,9 @@ import com.yanbao.camera.presentation.theme.YanbaoPurple
 @Composable
 fun YanbaoEditScreen(
     imageUri: String? = null,
-    onBackClick: () -> Unit = {},
+    onBackClick: () -> Unit = {
+        android.util.Log.d("YanbaoEditScreen", "Back button clicked")
+    },
     modifier: Modifier = Modifier
 ) {
     var selectedToolIndex by remember { mutableIntStateOf(0) }

@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
  * yanbao AI: 29D Memory Schema v1.0
  * 
  * 每張照片的"记忆包 (Memory Package)"
- * 包含 29D 參數矩陣、Git Commit ID、LBS 坐標等核心數據
+ * 包含 29D 参数矩陣、Git Commit ID、LBS 坐標等核心數據
  */
 
 @Serializable
@@ -47,7 +47,7 @@ data class HardwareParams(
 )
 
 /**
- * 29D 參數矩陣
+ * 29D 参数矩陣
  * 
  * D1-D5: 物理光影（曝光、高光壓縮、暗部補償、冷暖、色偏）
  * D6-D15: 色彩空間（RGB 交叉通道、飽和度梯度、肤色保護、色相偏移）
@@ -63,7 +63,7 @@ data class Render29D(
     val masterFilterId: String // "KUROMI_DREAM_91"
 ) {
     /**
-     * 將 29D 參數展平為 Float 數組（供 GPU Shader 使用）
+     * 將 29D 参数展平為 Float 數組（供 GPU Shader 使用）
      */
     fun toFloatArray(): FloatArray {
         return (lightDim1To5 + colorMatrix6To15 + texture16To25 + aiBone26To29).toFloatArray()
@@ -71,7 +71,7 @@ data class Render29D(
     
     companion object {
         /**
-         * 創建默認的 29D 參數（中性參數）
+         * 創建默認的 29D 参数（中性参数）
          */
         fun default() = Render29D(
             lightDim1To5 = listOf(1.0f, 0.0f, 0.0f, 0.0f, 0.0f), // 曝光=1.0，其他為0

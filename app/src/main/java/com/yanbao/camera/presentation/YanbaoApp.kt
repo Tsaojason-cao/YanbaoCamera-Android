@@ -35,12 +35,12 @@ import com.yanbao.camera.presentation.theme.YanbaoPink
  */
 @Composable
 fun YanbaoApp() {
-    var selectedTab by remember { mutableIntStateOf(0) } // ✅ 默認選中首頁
+    var selectedTab by remember { mutableIntStateOf(0) } // ✅ 默認选中首頁
     
     // 🚨 核心：共享 ProfileViewModel 实例，确保数据同步
     val profileViewModel: ProfileViewModel = hiltViewModel()
     
-    // 🚨 UI 還原度自檢
+    // 🚨 UI 还原度自檢
     val context = LocalContext.current
     LaunchedEffect(Unit) {
         verifyYanbaoUi(context)
@@ -62,8 +62,8 @@ fun YanbaoApp() {
                     
                     HomeScreen(
                         onCameraClick = { selectedTab = 2 },      // ✅ 拍攝在 index 2
-                        onEditorClick = { selectedTab = 3 },      // ✅ 編輯在 index 3
-                        onGalleryClick = { /* TODO: 相册功能 */ },
+                        onEditorClick = { selectedTab = 3 },      // ✅ 编辑在 index 3
+                        onGalleryClick = { selectedTab = 5 },     // ✅ 相册功能
                         onSettingsClick = { selectedTab = 4 },    // ✅ 我的在 index 4
                         onRecommendClick = { selectedTab = 1 },   // ✅ 推薦在 index 1
                         onProfileClick = { selectedTab = 4 },
@@ -72,8 +72,9 @@ fun YanbaoApp() {
                 }
                 1 -> RecommendScreen()  // ✅ 推薦
                 2 -> CameraScreen()     // ✅ 拍攝
-                3 -> EditorScreen()     // ✅ 編輯 (需要實現)
+                3 -> EditorScreen()     // ✅ 编辑
                 4 -> ProfileScreen()    // ✅ 我的
+                5 -> GalleryScreen()    // ✅ 相册
             }
         }
     }
@@ -96,7 +97,7 @@ fun YanbaoBottomNavigation(
         BottomNavItem("首页", Icons.Default.Home),        // Home
         BottomNavItem("推荐", Icons.Default.Explore),     // Explore (推薦)
         BottomNavItem("拍攝", Icons.Default.CameraAlt),  // 拍攝 (中間大按鈕)
-        BottomNavItem("编辑", Icons.Default.Edit),       // Editor (編輯)
+        BottomNavItem("编辑", Icons.Default.Edit),       // Editor (编辑)
         BottomNavItem("我的", Icons.Default.Person)      // Profile
     )
     

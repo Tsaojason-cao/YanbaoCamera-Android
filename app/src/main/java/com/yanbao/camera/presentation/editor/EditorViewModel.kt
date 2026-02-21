@@ -11,25 +11,25 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 /**
- * 編輯器 ViewModel
+ * 编辑器 ViewModel
  * 
- * 管理 18 個編輯工具的參數和實時預覽
+ * 管理 18 個编辑工具的参数和實時预览
  */
 class EditorViewModel : ViewModel() {
     
-    // 當前編輯的圖像
+    // 當前编辑的图像
     private val _sourceBitmap = MutableStateFlow<Bitmap?>(null)
     val sourceBitmap: StateFlow<Bitmap?> = _sourceBitmap.asStateFlow()
     
-    // 當前編輯參數
+    // 當前编辑参数
     private val _editParams = MutableStateFlow(EditParams())
     val editParams: StateFlow<EditParams> = _editParams.asStateFlow()
     
-    // 當前選中的工具
+    // 當前选中的工具
     private val _selectedTool = MutableStateFlow(EditTool.BRIGHTNESS)
     val selectedTool: StateFlow<EditTool> = _selectedTool.asStateFlow()
     
-    // 預覽圖像
+    // 预览图像
     private val _previewBitmap = MutableStateFlow<Bitmap?>(null)
     val previewBitmap: StateFlow<Bitmap?> = _previewBitmap.asStateFlow()
     
@@ -38,7 +38,7 @@ class EditorViewModel : ViewModel() {
     val isProcessing: StateFlow<Boolean> = _isProcessing.asStateFlow()
     
     /**
-     * 設置源圖像
+     * 設置源图像
      */
     fun setSourceBitmap(bitmap: Bitmap) {
         _sourceBitmap.value = bitmap
@@ -53,13 +53,13 @@ class EditorViewModel : ViewModel() {
     }
     
     /**
-     * 更新參數
+     * 更新参数
      */
     fun updateParam(tool: EditTool, value: Float) {
         val params = _editParams.value.copy()
         
         when (tool) {
-            // 基礎調節
+            // 基礎调节
             EditTool.BRIGHTNESS -> params.brightness = value
             EditTool.CONTRAST -> params.contrast = value
             EditTool.SATURATION -> params.saturation = value
@@ -92,7 +92,7 @@ class EditorViewModel : ViewModel() {
     }
     
     /**
-     * 應用編輯
+     * 應用编辑
      */
     fun applyEdit(renderer: GLRenderer) {
         viewModelScope.launch {
@@ -112,7 +112,7 @@ class EditorViewModel : ViewModel() {
     }
     
     /**
-     * 重置參數
+     * 重置参数
      */
     fun resetParams() {
         _editParams.value = EditParams()
@@ -120,7 +120,7 @@ class EditorViewModel : ViewModel() {
     }
     
     /**
-     * 重置單個工具的參數
+     * 重置單個工具的参数
      */
     fun resetToolParam(tool: EditTool) {
         updateParam(tool, getDefaultValue(tool))
@@ -142,10 +142,10 @@ class EditorViewModel : ViewModel() {
 }
 
 /**
- * 編輯工具枚舉
+ * 编辑工具枚舉
  */
 enum class EditTool(val displayName: String, val minValue: Float, val maxValue: Float) {
-    // 基礎調節
+    // 基礎调节
     BRIGHTNESS("亮度", -1f, 1f),
     CONTRAST("對比度", 0f, 2f),
     SATURATION("飽和度", 0f, 2f),
@@ -191,7 +191,7 @@ enum class EditTool(val displayName: String, val minValue: Float, val maxValue: 
  * 工具分類
  */
 enum class ToolCategory(val displayName: String) {
-    BASIC("基礎調節"),
+    BASIC("基礎调节"),
     COLOR("色彩進階"),
     EFFECT("光影特效"),
     PORTRAIT("人像/AI"),

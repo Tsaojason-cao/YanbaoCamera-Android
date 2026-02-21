@@ -1,12 +1,12 @@
 package com.yanbao.camera.core.engine
 
 /**
- * 大師機位參數（用於推薦模塊）
+ * 大師機位参数（用於推薦模塊）
  */
 data class MasterLocationParams(
     val id: String,             // 地點 ID
-    val name: String,           // 參數名稱（如 Master_101）
-    val displayName: String,    // 顯示名稱（如 "101 專屬預設"）
+    val name: String,           // 参数名稱（如 Master_101）
+    val displayName: String,    // 显示名稱（如 "101 專屬預設"）
     val kelvin: Int,            // 色溫（K）
     val exposure: Float,        // 曝光補償（EV）
     val contrast: Float,        // 對比度
@@ -15,7 +15,7 @@ data class MasterLocationParams(
 )
 
 /**
- * 大師機位參數存儲
+ * 大師機位参数存儲
  */
 object MasterLocationParamsStore {
     
@@ -63,7 +63,7 @@ object MasterLocationParamsStore {
     )
     
     /**
-     * 根據地點 ID 獲取大師模式參數
+     * 根據地點 ID 獲取大師模式参数
      */
     fun getMasterParamsByLocationId(locationId: String): MasterLocationParams? {
         return MASTER_LOCATIONS.find { it.id == locationId }

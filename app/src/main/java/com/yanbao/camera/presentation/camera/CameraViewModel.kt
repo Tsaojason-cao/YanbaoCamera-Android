@@ -225,8 +225,16 @@ class CameraViewModel @Inject constructor(
      */
     fun takePhoto(context: Context) {
         viewModelScope.launch {
-            Log.d(TAG, "Taking photo...")
-            camera2Manager?.takePhoto()
+            try {
+                Log.d(TAG, "AUDIT_CAPTURE: Starting photo capture")
+                
+                // 调用 Camera2ManagerEnhanced 拍照
+                camera2Manager?.takePhoto()
+                
+                Log.d(TAG, "AUDIT_CAPTURE: Photo capture triggered")
+            } catch (e: Exception) {
+                Log.e(TAG, "AUDIT_CAPTURE: Photo capture failed", e)
+            }
         }
     }
     

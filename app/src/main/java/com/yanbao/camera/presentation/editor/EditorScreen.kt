@@ -13,9 +13,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 /**
- * 編輯器頁面（占位符）
+ * 编辑器頁面（占位符）
  * 
- * TODO: 實現完整的編輯器功能
+ * TODO: 实现完整的编辑器功能
  */
 @Composable
 fun EditorScreen() {
@@ -36,7 +36,7 @@ fun EditorScreen() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "編輯器",
+                text = "编辑器",
                 fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White

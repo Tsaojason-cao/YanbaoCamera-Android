@@ -13,7 +13,7 @@ import java.nio.FloatBuffer
  * OpenGL ES 3.0 渲染器
  * 
  * 負責加載 fragment_shader_29d.glsl 並綁定所有 29 個 Uniform 變量
- * 實現用戶要求的 18 個編輯工具的 GLSL 實時映射
+ * 实现用戶要求的 18 個编辑工具的 GLSL 實時映射
  */
 class GLRenderer(private val context: Context) {
     
@@ -45,10 +45,10 @@ class GLRenderer(private val context: Context) {
     private var textureHandle = 0
     
     // ========================================
-    // 18 個編輯工具的 Uniform 句柄
+    // 18 個编辑工具的 Uniform 句柄
     // ========================================
     
-    // 基礎調節
+    // 基礎调节
     private var uBrightnessHandle = 0
     private var uContrastHandle = 0
     private var uSaturationHandle = 0
@@ -103,7 +103,7 @@ class GLRenderer(private val context: Context) {
     private lateinit var vertexBuffer: FloatBuffer
     private lateinit var texCoordBuffer: FloatBuffer
     
-    // 當前參數值
+    // 當前参数值
     private val params = EditParams()
     
     init {
@@ -160,7 +160,7 @@ class GLRenderer(private val context: Context) {
         GLES30.glAttachShader(programId, fragmentShader)
         GLES30.glLinkProgram(programId)
         
-        // 檢查鏈接狀態
+        // 检查鏈接状态
         val linkStatus = IntArray(1)
         GLES30.glGetProgramiv(programId, GLES30.GL_LINK_STATUS, linkStatus, 0)
         if (linkStatus[0] == 0) {
@@ -177,10 +177,10 @@ class GLRenderer(private val context: Context) {
         textureHandle = GLES30.glGetUniformLocation(programId, "uTexture")
         
         // ========================================
-        // 綁定 18 個編輯工具的 Uniform 變量
+        // 綁定 18 個编辑工具的 Uniform 變量
         // ========================================
         
-        // 基礎調節
+        // 基礎调节
         uBrightnessHandle = GLES30.glGetUniformLocation(programId, "uBrightness")
         uContrastHandle = GLES30.glGetUniformLocation(programId, "uContrast")
         uSaturationHandle = GLES30.glGetUniformLocation(programId, "uSaturation")
@@ -251,7 +251,7 @@ class GLRenderer(private val context: Context) {
         GLES30.glShaderSource(shader, shaderCode)
         GLES30.glCompileShader(shader)
         
-        // 檢查編譯狀態
+        // 检查編譯状态
         val compileStatus = IntArray(1)
         GLES30.glGetShaderiv(shader, GLES30.GL_COMPILE_STATUS, compileStatus, 0)
         if (compileStatus[0] == 0) {
@@ -265,17 +265,17 @@ class GLRenderer(private val context: Context) {
     }
     
     /**
-     * 更新參數
+     * 更新参数
      */
     fun updateParams(params: EditParams) {
         this.params.copyFrom(params)
     }
     
     /**
-     * 渲染圖像
+     * 渲染图像
      */
     fun render(bitmap: Bitmap): Bitmap {
-        // 上傳原始圖像到紋理
+        // 上傳原始图像到紋理
         if (textureId == 0) {
             val textures = IntArray(1)
             GLES30.glGenTextures(1, textures, 0)
@@ -299,7 +299,7 @@ class GLRenderer(private val context: Context) {
         // 設置所有 Uniform 變量
         // ========================================
         
-        // 基礎調節
+        // 基礎调节
         GLES30.glUniform1f(uBrightnessHandle, params.brightness)
         GLES30.glUniform1f(uContrastHandle, params.contrast)
         GLES30.glUniform1f(uSaturationHandle, params.saturation)
@@ -387,10 +387,10 @@ class GLRenderer(private val context: Context) {
 }
 
 /**
- * 編輯參數數據類
+ * 编辑参数數據類
  */
 data class EditParams(
-    // 基礎調節
+    // 基礎调节
     var brightness: Float = 0f,
     var contrast: Float = 1f,
     var saturation: Float = 1f,

@@ -8,12 +8,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
-// ✅ 1:1 設計稿色值 - 嚴格執行
+// ✅ 1:1 设计稿色值 - 嚴格执行
 val YanbaoPink = Color(0xFFFFB6C1)      // 淺粉
 val YanbaoPurple = Color(0xFFE0B0FF)    // 淡紫
 val YanbaoDeepBg = Color(0xFF121212)    // 沉浸式暗黑背景
 
-// 垂直漸變流光 (用於啟動頁和首頁背景)
+// 垂直漸變流光 (用於启动頁和首頁背景)
 val YanbaoMainGradient = Brush.verticalGradient(
     colors = listOf(YanbaoPink, YanbaoPurple)
 )

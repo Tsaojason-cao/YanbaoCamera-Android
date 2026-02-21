@@ -49,8 +49,13 @@ enum class EditTool(val displayName: String, val icon: String) {
 @Composable
 fun EditScreen(
     bitmap: Bitmap? = null,
-    onBack: () -> Unit = {},
-    onSave: (Bitmap) -> Unit = {}
+    onBack: () -> Unit = {
+        android.util.Log.d("EditScreen", "Back button clicked")
+    },
+    onSave: (Bitmap) -> Unit = { editedBitmap ->
+        android.util.Log.d("EditScreen", "Save button clicked")
+        // TODO: 保存编辑后的图片
+    }
 ) {
     var selectedTool by remember { mutableStateOf<EditTool?>(null) }
     var previewBitmap by remember { mutableStateOf(bitmap) }

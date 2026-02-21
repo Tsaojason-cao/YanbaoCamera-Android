@@ -27,21 +27,23 @@ import kotlin.math.sin
 /**
  * yanbao AI 拍照界面
  * 
- * 根據真實設計圖（unnamed.jpg）1:1 還原
+ * 根據真實设计圖（unnamed.jpg）1:1 还原
  * 
  * 空間分層：
  * - Layer 0: 100% 全屏取景空間
- * - Layer 1: 頂部參數氣泡 + 右上角發光頭像
+ * - Layer 1: 顶部参数气泡 + 右上角發光頭像
  * - Layer 2: 底部 28% 曜石黑控制舱
  */
 @Composable
-fun YanbaoCameraScreen() {
+fun YanbaoCameraScreen(
+    onTakePhoto: () -> Unit = {}
+) {
     Box(modifier = Modifier.fillMaxSize()) {
         
         // === Layer 0: 全屏取景空間 (100%) ===
         CameraPreviewLayer(modifier = Modifier.fillMaxSize())
         
-        // === Layer 1: 頂部參數氣泡 ===
+        // === Layer 1: 顶部参数气泡 ===
         TopParameterBubbles(modifier = Modifier.align(Alignment.TopStart))
         
         // === Layer 1: 右上角發光頭像 ===
@@ -53,6 +55,7 @@ fun YanbaoCameraScreen() {
         
         // === Layer 2: 底部 28% 控制舱 ===
         BottomControlPanel(
+            onTakePhoto = onTakePhoto,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
@@ -62,7 +65,7 @@ fun YanbaoCameraScreen() {
 }
 
 /**
- * Layer 0: 全屏取景空間（Camera2 預覽）
+ * Layer 0: 全屏取景空間（Camera2 预览）
  */
 @Composable
 fun CameraPreviewLayer(modifier: Modifier = Modifier) {
@@ -79,9 +82,9 @@ fun CameraPreviewLayer(modifier: Modifier = Modifier) {
 }
 
 /**
- * Layer 1: 頂部參數氣泡
+ * Layer 1: 顶部参数气泡
  * 
- * 顯示：ISO 100、快門 1/250、焦距 35mm
+ * 显示：ISO 100、快門 1/250、焦距 35mm
  */
 @Composable
 fun TopParameterBubbles(modifier: Modifier = Modifier) {
@@ -89,19 +92,19 @@ fun TopParameterBubbles(modifier: Modifier = Modifier) {
         modifier = modifier.padding(top = 60.dp, start = 20.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        // ISO 氣泡
+        // ISO 气泡
         ParameterBubble(
             label = "ISO 100",
             subtitle = "f2.0 自X"
         )
         
-        // 快門氣泡
+        // 快門气泡
         ParameterBubble(
             label = "1/250",
             subtitle = "2.9D±0.8"
         )
         
-        // 焦距氣泡
+        // 焦距气泡
         ParameterBubble(
             label = "35mm",
             subtitle = "2.9D±0.8"
@@ -110,7 +113,7 @@ fun TopParameterBubbles(modifier: Modifier = Modifier) {
 }
 
 /**
- * 參數氣泡組件
+ * 参数气泡組件
  */
 @Composable
 fun ParameterBubble(label: String, subtitle: String) {
@@ -183,7 +186,10 @@ fun GlowingAvatarButton(modifier: Modifier = Modifier) {
  * Layer 2: 底部 28% 控制舱
  */
 @Composable
-fun BottomControlPanel(modifier: Modifier = Modifier) {
+fun BottomControlPanel(
+    onTakePhoto: () -> Unit = {},
+    modifier: Modifier = Modifier
+) {
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp))
@@ -207,7 +213,7 @@ fun BottomControlPanel(modifier: Modifier = Modifier) {
         
         Spacer(modifier = Modifier.height(16.dp))
         
-        // 底部導航欄
+        // 底部导航欄
         BottomNavigation()
     }
 }
@@ -259,7 +265,7 @@ fun ArcScaleRuler() {
                 )
             }
     ) {
-        // 左側數值標籤
+        // 左側數值标签
         Text(
             text = "-100",
             color = Color.White.copy(alpha = 0.5f),
@@ -267,7 +273,7 @@ fun ArcScaleRuler() {
             modifier = Modifier.align(Alignment.BottomStart).padding(start = 40.dp)
         )
         
-        // 中央數值標籤
+        // 中央數值标签
         Text(
             text = currentValue.toInt().toString(),
             color = Color(0xFFFFB6C1),
@@ -276,7 +282,7 @@ fun ArcScaleRuler() {
             modifier = Modifier.align(Alignment.BottomCenter)
         )
         
-        // 右側數值標籤
+        // 右側數值标签
         Text(
             text = "+105",
             color = Color.White.copy(alpha = 0.5f),
@@ -295,19 +301,19 @@ fun CentralShutterArea() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // 模式切換標籤
+        // 模式切換标签
         ModeSwitchTabs()
         
         // 库洛米快門按鈕
-        KuromiShutterButton()
+        KuromiShutterButton(onClick = onTakePhoto)
         
-        // Git Syncing 狀態
+        // Git Syncing 状态
         GitSyncingStatus()
     }
 }
 
 /**
- * 模式切換標籤
+ * 模式切換标签
  */
 @Composable
 fun ModeSwitchTabs() {
@@ -342,7 +348,7 @@ fun ModeSwitchTabs() {
  * 库洛米快門按鈕
  */
 @Composable
-fun KuromiShutterButton() {
+fun KuromiShutterButton(onClick: () -> Unit = {}) {
     val infiniteTransition = rememberInfiniteTransition(label = "shutter_glow")
     val glowRadius by infiniteTransition.animateFloat(
         initialValue = 36f,
@@ -357,6 +363,7 @@ fun KuromiShutterButton() {
     Box(
         modifier = Modifier
             .size(72.dp)
+            .clickable { onClick() }
             .drawBehind {
                 // 粉紫流光環繞
                 drawCircle(
@@ -387,7 +394,7 @@ fun KuromiShutterButton() {
 }
 
 /**
- * Git Syncing 狀態
+ * Git Syncing 状态
  */
 @Composable
 fun GitSyncingStatus() {
@@ -410,7 +417,7 @@ fun GitSyncingStatus() {
 }
 
 /**
- * 底部導航欄
+ * 底部导航欄
  */
 @Composable
 fun BottomNavigation() {
@@ -430,7 +437,7 @@ fun BottomNavigation() {
 }
 
 /**
- * 導航項目
+ * 导航項目
  */
 @Composable
 fun NavItem(icon: String, label: String, isActive: Boolean = false) {

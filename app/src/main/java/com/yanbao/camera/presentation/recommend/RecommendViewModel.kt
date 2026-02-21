@@ -46,7 +46,7 @@ class RecommendViewModel @Inject constructor(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    // 選中的拍攝點（用於一鍵拍攝）
+    // 选中的拍攝點（用於一鍵拍攝）
     private val _selectedSpot = MutableStateFlow<PhotoSpot?>(null)
     val selectedSpot: StateFlow<PhotoSpot?> = _selectedSpot.asStateFlow()
 
@@ -143,21 +143,21 @@ class RecommendViewModel @Inject constructor(
      * 🚨 核心逻辑：一鍵拍攝攜帶 master_params_id
      * 
      * 用戶要求：
-     * 點擊「一鍵拍攝」時，必須攜帶該地點的 master_params_id 自動跳轉並鎖死相機參數
+     * 點擊「一鍵拍攝」時，必须攜帶該地點的 master_params_id 自動跳轉並鎖死相機参数
      * 
      * 驗收閉環：
      * - 點擊「一鍵拍攝」→ 自動跳轉到相機模塊
-     * - 相機參數自動設置為該地點的大師模式參數
-     * - 參數鎖定，用戶無法修改（或顯示為「大師模式」標識）
+     * - 相機参数自動設置為該地點的大師模式参数
+     * - 参数鎖定，用戶無法修改（或显示為「大師模式」標識）
      */
     fun onQuickCapture(spot: PhotoSpot): CameraParams? {
         _selectedSpot.value = spot
         
-        // 從 MasterLocationParamsStore 獲取該地點的大師模式參數
+        // 從 MasterLocationParamsStore 獲取該地點的大師模式参数
         val masterParams = com.yanbao.camera.core.engine.MasterLocationParamsStore.getMasterParamsByLocationId(spot.id)
         
         if (masterParams != null) {
-            // 轉換為相機參數
+            // 轉換為相機参数
             return CameraParams(
                 locationId = spot.id,
                 locationName = spot.title,
@@ -167,7 +167,7 @@ class RecommendViewModel @Inject constructor(
                 contrast = masterParams.contrast,
                 iso = masterParams.iso,
                 shutterSpeed = masterParams.shutterSpeed,
-                isLocked = true // 鎖定參數
+                isLocked = true // 鎖定参数
             )
         }
         
@@ -175,7 +175,7 @@ class RecommendViewModel @Inject constructor(
     }
 
     /**
-     * 清除選中的拍攝點
+     * 清除选中的拍攝點
      */
     fun clearSelectedSpot() {
         _selectedSpot.value = null

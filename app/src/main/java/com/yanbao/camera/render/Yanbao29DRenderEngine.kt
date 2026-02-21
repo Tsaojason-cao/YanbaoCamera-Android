@@ -12,11 +12,11 @@ import java.nio.FloatBuffer
 /**
  * yanbao AI 29D 渲染引擎
  * 
- * 負責將 29D 參數矩陣通過 GPU Shader 實時映射到取景器畫面
+ * 負責將 29D 参数矩陣通過 GPU Shader 實時映射到取景器畫面
  * 
  * 核心功能：
  * 1. 加載 GLSL Shader
- * 2. 將 29D 參數注入 Uniform 變量
+ * 2. 將 29D 参数注入 Uniform 變量
  * 3. 實時渲染取景器畫面
  */
 class Yanbao29DRenderEngine(private val context: Context) {
@@ -25,7 +25,7 @@ class Yanbao29DRenderEngine(private val context: Context) {
     private var params29DLocation: Int = 0
     private var textureLocation: Int = 0
     
-    // 當前的 29D 參數
+    // 當前的 29D 参数
     private var current29DParams: FloatArray = Render29D.default().toFloatArray()
     
     // 環境自動偏移量（來自 LBS/AR 空間）
@@ -94,7 +94,7 @@ class Yanbao29DRenderEngine(private val context: Context) {
     }
     
     /**
-     * 更新 29D 參數（來自用戶調節或濾鏡切換）
+     * 更新 29D 参数（來自用戶调节或濾鏡切換）
      */
     fun update29DParams(render29D: Render29D) {
         current29DParams = render29D.toFloatArray()
@@ -108,7 +108,7 @@ class Yanbao29DRenderEngine(private val context: Context) {
         environmentOffset.clear()
         environmentOffset.putAll(offset)
         
-        // 將偏移量疊加到當前參數
+        // 將偏移量疊加到當前参数
         val finalParams = current29DParams.copyOf()
         offset.forEach { (index, value) ->
             if (index in finalParams.indices) {
@@ -122,20 +122,20 @@ class Yanbao29DRenderEngine(private val context: Context) {
     }
     
     /**
-     * 更新單個維度的參數（實時調節）
+     * 更新單個維度的参数（實時调节）
      */
     fun updateDimension(index: Int, value: Float) {
         if (index in current29DParams.indices) {
             current29DParams[index] = value
             
-            // 立即注入到 Shader（實現 16ms 內完成映射）
+            // 立即注入到 Shader（实现 16ms 內完成映射）
             GLES20.glUseProgram(shaderProgram)
             GLES20.glUniform1fv(params29DLocation, 29, current29DParams, 0)
         }
     }
     
     /**
-     * 渲染畫面（將 29D 參數應用到輸入紋理）
+     * 渲染畫面（將 29D 参数應用到輸入紋理）
      */
     fun renderFrame(inputTexture: Int): Int {
         GLES20.glUseProgram(shaderProgram)
@@ -145,7 +145,7 @@ class Yanbao29DRenderEngine(private val context: Context) {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, inputTexture)
         GLES20.glUniform1i(textureLocation, 0)
         
-        // 注入 29D 參數
+        // 注入 29D 参数
         GLES20.glUniform1fv(params29DLocation, 29, current29DParams, 0)
         
         // 繪製全屏四邊形
@@ -188,7 +188,7 @@ class Yanbao29DRenderEngine(private val context: Context) {
     }
     
     /**
-     * 獲取當前 29D 參數（用於保存到 JSON）
+     * 獲取當前 29D 参数（用於保存到 JSON）
      */
     fun getCurrent29DParams(): FloatArray {
         return current29DParams.copyOf()

@@ -35,17 +35,17 @@ import com.yanbao.camera.presentation.theme.YanbaoPurple
  * 
  * 雁宝记忆詳情頁
  * 
- * 核心：動態高斯模糊背景 + 29D 參數玻璃面板
+ * 核心：動態高斯模糊背景 + 29D 参数玻璃面板
  * 
  * 空間分層邏輯：
  * - Layer 1（底層）：80dp 高斯模糊動態背景
  * - Layer 2（中層）：全屏高清相片（支持雙指縮放）
  * - Layer 3（頂層）：底部 30% 曜石黑玻璃面板
  * 
- * 設計規範：
- * - 參數標籤：10sp 灰白色 (#888888)
- * - 參數數值：16sp 粉色 (#FFB6C1) + Monospace
- * - 手勢：左右滑動切換相片，上下滑動隱藏/顯示面板
+ * 设计规范：
+ * - 参数标签：10sp 灰白色 (#888888)
+ * - 参数數值：16sp 粉色 (#FFB6C1) + Monospace
+ * - 手勢：左右滑动切換相片，上下滑动隱藏/显示面板
  */
 @Composable
 fun YanbaoMemoryDetailScreen(
@@ -57,7 +57,9 @@ fun YanbaoMemoryDetailScreen(
     aperture: String = "f/1.4",
     focus: String = "35mm",
     color29D: String = "+1.2",
-    onBackClick: () -> Unit = {},
+    onBackClick: () -> Unit = {
+        android.util.Log.d("YanbaoMemoryDetailScreen", "Back button clicked")
+    },
     modifier: Modifier = Modifier
 ) {
     var scale by remember { mutableFloatStateOf(1f) }
@@ -112,7 +114,7 @@ fun YanbaoMemoryDetailScreen(
             )
         }
         
-        // Layer 3: 底部 30% 專業參數控制艙
+        // Layer 3: 底部 30% 專業参数控制艙
         if (isPanelVisible) {
             Column(
                 modifier = Modifier
@@ -125,7 +127,7 @@ fun YanbaoMemoryDetailScreen(
                     .padding(20.dp)
                     .alpha(uiAlpha)
             ) {
-                // 頂部：拍攝地點與日期
+                // 顶部：拍攝地點與日期
                 LocationDateHeader(
                     location = location,
                     date = date
@@ -133,7 +135,7 @@ fun YanbaoMemoryDetailScreen(
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 
-                // 核心：29D 物理參數橫向捲軸
+                // 核心：29D 物理参数橫向捲軸
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
@@ -151,7 +153,7 @@ fun YanbaoMemoryDetailScreen(
             }
         }
         
-        // 頂部返回按鈕
+        // 顶部返回按鈕
         IconButton(
             onClick = onBackClick,
             modifier = Modifier
@@ -222,12 +224,12 @@ fun LocationDateHeader(
 }
 
 /**
- * 29D 參數項目
+ * 29D 参数項目
  * 
  * 類徕卡字體排版
  * 
- * @param label 參數標籤（如 "ISO"）
- * @param value 參數數值（如 "100"）
+ * @param label 参数标签（如 "ISO"）
+ * @param value 参数數值（如 "100"）
  */
 @Composable
 fun ParameterItem(
@@ -239,7 +241,7 @@ fun ParameterItem(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // 參數標籤：10sp 灰白色 (#888888)
+        // 参数标签：10sp 灰白色 (#888888)
         Text(
             text = label,
             color = Color(0xFF888888),
@@ -249,7 +251,7 @@ fun ParameterItem(
         
         Spacer(modifier = Modifier.height(4.dp))
         
-        // 參數數值：16sp 粉色 (#FFB6C1) + Monospace
+        // 参数數值：16sp 粉色 (#FFB6C1) + Monospace
         Text(
             text = value,
             color = YanbaoPink,
@@ -287,11 +289,11 @@ fun ActionButtonsRow(
             onClick = { /* LBS 分享邏輯 */ }
         )
         
-        // 編輯按鈕
+        // 编辑按鈕
         ActionButton(
             icon = "✏️",
             label = "Edit",
-            onClick = { /* 編輯邏輯 */ }
+            onClick = { /* 编辑邏輯 */ }
         )
     }
 }

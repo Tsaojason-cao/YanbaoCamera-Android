@@ -5,12 +5,12 @@ import android.util.Log
 import com.yanbao.camera.presentation.profile.ProfileViewModel
 
 /**
- * UI 還原度自檢工具
+ * UI 还原度自檢工具
  * 
- * 用於驗證 UI 實現是否符合設計規範：
- * 1. 底部導航欄必須有 5 個標籤
- * 2. UID 必須基於硬件指紋生成，不能是 hardcode
- * 3. 頭像必須從 ProfileViewModel 讀取
+ * 用於验证 UI 实现是否符合设计规范：
+ * 1. 底部导航欄必须有 5 個标签
+ * 2. UID 必须基於硬件指紋生成，不能是 hardcode
+ * 3. 頭像必须從 ProfileViewModel 讀取
  * 
  * 使用方法：
  * ```kotlin
@@ -27,68 +27,68 @@ class UiIntegrityChecker(private val context: Context) {
     }
     
     /**
-     * 執行完整的 UI 還原度自檢
+     * 执行完整的 UI 还原度自檢
      * 
-     * @throws IllegalStateException 如果檢測到 UI 實現不符合規範
+     * @throws IllegalStateException 如果检测到 UI 实现不符合规范
      */
     fun verifyUiIntegrity() {
-        Log.d(TAG, "開始 UI 還原度自檢...")
+        Log.d(TAG, "開始 UI 还原度自檢...")
         
-        // 1. 檢查底部導航欄數量
+        // 1. 检查底部导航欄数量
         verifyNavigationBarCount()
         
-        // 2. 檢查 UID 是否 hardcode
+        // 2. 检查 UID 是否 hardcode
         verifyUidIntegrity()
         
-        // 3. 檢查頭像連接
+        // 3. 检查頭像連接
         verifyAvatarConnection()
         
-        Log.d(TAG, "✅ UI 還原度與通電邏輯自檢通過")
+        Log.d(TAG, "✅ UI 还原度與通電邏輯自檢通過")
     }
     
     /**
-     * 檢查底部導航欄數量
+     * 检查底部导航欄数量
      * 
-     * 要求：必須有 5 個標籤（首頁、相機、相冊、推薦、我的）
+     * 要求：必须有 5 個标签（首頁、相機、相冊、推薦、我的）
      */
     private fun verifyNavigationBarCount() {
         // 注意：這裡我們無法直接訪問 Compose UI 組件
-        // 實際檢查應該在 YanbaoApp 中進行
+        // 實際检查應該在 YanbaoApp 中進行
         // 這裡只是記錄預期值
-        Log.d(TAG, "預期導航欄數量: $EXPECTED_NAV_COUNT")
+        Log.d(TAG, "預期导航欄数量: $EXPECTED_NAV_COUNT")
     }
     
     /**
-     * 檢查 UID 是否 hardcode
+     * 检查 UID 是否 hardcode
      * 
-     * 要求：UID 必須基於 ANDROID_ID 生成，不能是固定的 "YB-888888"
+     * 要求：UID 必须基於 ANDROID_ID 生成，不能是固定的 "YB-888888"
      * 
-     * @throws IllegalStateException 如果檢測到 hardcode UID
+     * @throws IllegalStateException 如果检测到 hardcode UID
      */
     private fun verifyUidIntegrity() {
         val currentUid = DeviceUidGenerator.generateUid(context)
         
         if (currentUid == HARDCODED_UID) {
             throw IllegalStateException(
-                "Manus, 檢測到 Hardcode UID！必須連接硬件指紋。\n" +
+                "Manus, 检测到 Hardcode UID！必须連接硬件指紋。\n" +
                 "當前 UID: $currentUid\n" +
                 "這個 UID 不應該是固定值，應該基於設備的 ANDROID_ID 生成。"
             )
         }
         
-        Log.d(TAG, "✅ UID 檢查通過: $currentUid")
+        Log.d(TAG, "✅ UID 检查通過: $currentUid")
     }
     
     /**
-     * 檢查頭像連接
+     * 检查頭像連接
      * 
-     * 要求：頭像必須從 ProfileViewModel 讀取，不能是靜態圖片
+     * 要求：頭像必须從 ProfileViewModel 讀取，不能是靜態图片
      */
     private fun verifyAvatarConnection() {
-        // 注意：這裡我們無法直接檢查 Compose UI 的連接
-        // 實際檢查應該在 HomeScreen 中進行
-        // 這裡只是記錄檢查項
-        Log.d(TAG, "頭像連接檢查項：必須從 ProfileViewModel.profile.avatarUri 讀取")
+        // 注意：這裡我們無法直接检查 Compose UI 的連接
+        // 實際检查應該在 HomeScreen 中進行
+        // 這裡只是記錄检查項
+        Log.d(TAG, "頭像連接检查項：必须從 ProfileViewModel.profile.avatarUri 讀取")
     }
     
     /**
@@ -101,12 +101,12 @@ class UiIntegrityChecker(private val context: Context) {
         
         return buildString {
             appendLine("=".repeat(50))
-            appendLine("Yanbao AI 相機 - UI 還原度自檢報告")
+            appendLine("Yanbao AI 相機 - UI 还原度自檢報告")
             appendLine("=".repeat(50))
             appendLine()
-            appendLine("1. 底部導航欄")
-            appendLine("   預期數量: $EXPECTED_NAV_COUNT 個標籤")
-            appendLine("   標籤名稱: 首頁、相機、相冊、推薦、我的")
+            appendLine("1. 底部导航欄")
+            appendLine("   預期数量: $EXPECTED_NAV_COUNT 個标签")
+            appendLine("   标签名稱: 首頁、相機、相冊、推薦、我的")
             appendLine()
             appendLine("2. UID 硬件指紋")
             appendLine("   當前 UID: $uid")
@@ -115,17 +115,17 @@ class UiIntegrityChecker(private val context: Context) {
             appendLine()
             appendLine("3. 頭像連接")
             appendLine("   數據源: ProfileViewModel.profile.avatarUri")
-            appendLine("   顯示位置: 首頁右上角 48dp 圓形頭像")
+            appendLine("   显示位置: 首頁右上角 48dp 圓形頭像")
             appendLine()
-            appendLine("4. 啟動頁")
+            appendLine("4. 启动頁")
             appendLine("   背景: 粉紫漸變 + 流光 Shader 效果")
             appendLine("   形象: 库洛米（R.drawable.kuromi）")
-            appendLine("   進度條: 粉紫漸變流光進度條")
+            appendLine("   进度條: 粉紫漸變流光进度條")
             appendLine()
             appendLine("5. 首頁")
-            appendLine("   頂部: 'yanbao AI' 品牌名 + 48dp 頭像")
+            appendLine("   顶部: 'yanbao AI' 品牌名 + 48dp 頭像")
             appendLine("   中部: 四宮格功能卡片（毛玻璃效果）")
-            appendLine("   底部: 5 標籤導航欄（粉紫漸變背景）")
+            appendLine("   底部: 5 标签导航欄（粉紫漸變背景）")
             appendLine()
             appendLine("=".repeat(50))
             appendLine("自檢完成時間: ${System.currentTimeMillis()}")
@@ -160,8 +160,8 @@ fun verifyYanbaoUi(context: Context) {
         val report = checker.generateReport()
         Log.d("Yanbao_Audit", "\n$report")
     } catch (e: IllegalStateException) {
-        // 如果檢測到問題，拋出異常
-        Log.e("Yanbao_Audit", "❌ UI 還原度自檢失敗", e)
+        // 如果检测到問題，拋出異常
+        Log.e("Yanbao_Audit", "❌ UI 还原度自檢失敗", e)
         throw e
     }
 }
