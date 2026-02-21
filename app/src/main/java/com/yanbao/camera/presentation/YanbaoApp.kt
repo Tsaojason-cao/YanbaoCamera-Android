@@ -20,6 +20,7 @@ import com.yanbao.camera.presentation.profile.ProfileViewModel
 import com.yanbao.camera.presentation.recommend.RecommendScreen
 import com.yanbao.camera.core.util.verifyYanbaoUi
 import androidx.compose.ui.platform.LocalContext
+import com.yanbao.camera.presentation.theme.YanbaoPink
 
 /**
  * 雁寶AI相机主应用框架
@@ -33,7 +34,7 @@ import androidx.compose.ui.platform.LocalContext
  */
 @Composable
 fun YanbaoApp() {
-    var selectedTab by remember { mutableIntStateOf(1) } // 默认选中相机
+    var selectedTab by remember { mutableIntStateOf(0) } // ✅ 默認選中首頁
     
     // 🚨 核心：共享 ProfileViewModel 实例，确保数据同步
     val profileViewModel: ProfileViewModel = hiltViewModel()
@@ -120,7 +121,7 @@ fun YanbaoBottomNavigation(
                         imageVector = item.icon,
                         contentDescription = item.label,
                         tint = if (selectedTab == index) {
-                            Color(0xFFEC4899) // 粉色
+                            YanbaoPink // ✅ 使用正確的粉色 #FFB6C1
                         } else {
                             Color.White.copy(alpha = 0.5f)
                         }
@@ -130,7 +131,7 @@ fun YanbaoBottomNavigation(
                     Text(
                         text = item.label,
                         color = if (selectedTab == index) {
-                            Color(0xFFEC4899) // 粉色
+                            YanbaoPink // ✅ 使用正確的粉色 #FFB6C1
                         } else {
                             Color.White.copy(alpha = 0.5f)
                         }
@@ -139,8 +140,8 @@ fun YanbaoBottomNavigation(
                 selected = selectedTab == index,
                 onClick = { onTabSelected(index) },
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = Color(0xFFEC4899),
-                    selectedTextColor = Color(0xFFEC4899),
+                    selectedIconColor = YanbaoPink, // ✅ 使用正確的粉色
+                    selectedTextColor = YanbaoPink, // ✅ 使用正確的粉色
                     indicatorColor = Color.Transparent,
                     unselectedIconColor = Color.White.copy(alpha = 0.5f),
                     unselectedTextColor = Color.White.copy(alpha = 0.5f)

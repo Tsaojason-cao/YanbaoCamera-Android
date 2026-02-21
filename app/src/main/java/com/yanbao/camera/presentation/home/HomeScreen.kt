@@ -23,6 +23,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.graphics.drawscope.Stroke
+import com.yanbao.camera.presentation.theme.YanbaoPink
+import com.yanbao.camera.presentation.theme.YanbaoDeepBg
 
 /**
  * 首页
@@ -107,7 +111,7 @@ fun TopBar(
             color = Color.White,
             style = androidx.compose.ui.text.TextStyle(
                 shadow = androidx.compose.ui.graphics.Shadow(
-                    color = Color(0xFFEC4899),
+                    color = YanbaoPink, // ✅ 使用正確的粉色
                     offset = Offset(0f, 4f),
                     blurRadius = 12f
                 )
@@ -136,9 +140,16 @@ fun TopUserAction(
 ) {
     Box(
         modifier = modifier
-            .size(48.dp) // 严格按照图 3 标注尺寸
+            .size(48.dp)
+            .drawBehind {
+                // ✅ 1:1 還原：粉色發光邊框
+                drawCircle(
+                    color = YanbaoPink,
+                    style = Stroke(width = 4f),
+                    alpha = 0.8f
+                )
+            }
             .clip(CircleShape)
-            .border(2.dp, Color(0xFFE0B0FF), CircleShape) // 粉紫色发光描边
             .clickable { onProfileClick() }
             .background(Color(0xFF2A2A2A)),
         contentAlignment = Alignment.Center

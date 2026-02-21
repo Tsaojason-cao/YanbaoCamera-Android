@@ -5,13 +5,24 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
+// ✅ 1:1 設計稿色值 - 嚴格執行
+val YanbaoPink = Color(0xFFFFB6C1)      // 淺粉
+val YanbaoPurple = Color(0xFFE0B0FF)    // 淡紫
+val YanbaoDeepBg = Color(0xFF121212)    // 沉浸式暗黑背景
+
+// 垂直漸變流光 (用於啟動頁和首頁背景)
+val YanbaoMainGradient = Brush.verticalGradient(
+    colors = listOf(YanbaoPink, YanbaoPurple)
+)
+
 private val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFFEC4899),
-    secondary = Color(0xFFA78BFA),
+    primary = YanbaoPink,           // 修正：使用 #FFB6C1
+    secondary = YanbaoPurple,       // 修正：使用 #E0B0FF
     tertiary = Color(0xFFF9A8D4),
-    background = Color(0xFF1A1A2E),
+    background = YanbaoDeepBg,      // 修正：使用 #121212
     surface = Color(0xFF16213E),
     onPrimary = Color.White,
     onSecondary = Color.White,
@@ -21,8 +32,8 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Color(0xFFEC4899),
-    secondary = Color(0xFFA78BFA),
+    primary = YanbaoPink,           // 修正：使用 #FFB6C1
+    secondary = YanbaoPurple,       // 修正：使用 #E0B0FF
     tertiary = Color(0xFFF9A8D4),
     background = Color(0xFFFFFBFE),
     surface = Color(0xFFFFFBFE),
