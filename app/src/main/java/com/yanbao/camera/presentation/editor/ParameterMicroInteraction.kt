@@ -339,7 +339,7 @@ fun EnhancedMasterFilter29DParametersPanel(
     modifier: Modifier = Modifier
 ) {
     // 当前参数值（可变）
-    var currentParameters by remember { mutableStateOf(filter.parameters.copyOf()) }
+    var currentParameters by remember { mutableStateOf(filter.matrix29D.copyOf()) }
     
     Column(
         modifier = modifier
@@ -393,7 +393,7 @@ fun EnhancedMasterFilter29DParametersPanel(
                             InteractiveParameterBubble(
                                 parameterName = "D${index + 1}",
                                 parameterValue = currentParameters[index],
-                                seedValue = filter.parameters[index],
+                                seedValue = filter.matrix29D[index],
                                 onValueChanged = { newValue ->
                                     currentParameters[index] = newValue
                                     onParameterChanged(index, newValue)
@@ -425,9 +425,9 @@ fun EnhancedMasterFilter29DParametersPanel(
                 .clip(RoundedCornerShape(12.dp))
                 .background(Color(0xFFEC4899).copy(alpha = 0.3f))
                 .clickable {
-                    currentParameters = filter.parameters.copyOf()
+                    currentParameters = filter.matrix29D.copyOf()
                     (0..28).forEach { index ->
-                        onParameterChanged(index, filter.parameters[index])
+                        onParameterChanged(index, filter.matrix29D[index])
                     }
                     
                     Log.d("EnhancedMasterFilter29DParametersPanel", "🔄 全部重置: ${filter.displayName}")

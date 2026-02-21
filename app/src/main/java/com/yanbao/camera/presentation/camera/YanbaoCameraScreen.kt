@@ -220,7 +220,7 @@ fun BottomControlPanel(
         Spacer(modifier = Modifier.height(16.dp))
         
         // 中央快門區域
-        CentralShutterArea()
+        CentralShutterArea(onTakePhoto = onTakePhoto)
         
         Spacer(modifier = Modifier.height(16.dp))
         
@@ -307,7 +307,9 @@ fun ArcScaleRuler() {
  * 中央快門區域
  */
 @Composable
-fun CentralShutterArea() {
+fun CentralShutterArea(
+    onTakePhoto: () -> Unit = {}
+) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp)
