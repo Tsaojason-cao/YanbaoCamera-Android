@@ -18,6 +18,8 @@ import com.yanbao.camera.presentation.home.HomeScreen
 import com.yanbao.camera.presentation.profile.ProfileScreen
 import com.yanbao.camera.presentation.profile.ProfileViewModel
 import com.yanbao.camera.presentation.recommend.RecommendScreen
+import com.yanbao.camera.core.util.verifyYanbaoUi
+import androidx.compose.ui.platform.LocalContext
 
 /**
  * 雁寶AI相机主应用框架
@@ -35,6 +37,12 @@ fun YanbaoApp() {
     
     // 🚨 核心：共享 ProfileViewModel 实例，确保数据同步
     val profileViewModel: ProfileViewModel = hiltViewModel()
+    
+    // 🚨 UI 還原度自檢
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        verifyYanbaoUi(context)
+    }
     
     Scaffold(
         bottomBar = {
