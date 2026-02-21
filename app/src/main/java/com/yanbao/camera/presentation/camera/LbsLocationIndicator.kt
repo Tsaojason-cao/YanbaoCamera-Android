@@ -26,7 +26,8 @@ import androidx.compose.ui.unit.sp
 import com.yanbao.camera.data.filter.MasterFilter91Database
 import kotlinx.coroutines.delay
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.ui.graphics.alpha
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 /**
  * LBS灵动定位点UI组件

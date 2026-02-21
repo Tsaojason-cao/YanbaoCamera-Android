@@ -13,7 +13,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.ui.graphics.alpha
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 

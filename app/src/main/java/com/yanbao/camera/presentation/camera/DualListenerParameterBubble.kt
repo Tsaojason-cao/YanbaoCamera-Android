@@ -21,10 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import kotlin.math.roundToInt
 import androidx.compose.foundation.clickable
-import androidx.compose.ui.graphics.alpha
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.scaleX
-import androidx.compose.ui.graphics.scaleY
 
 /**
  * 双重监听参数气泡
