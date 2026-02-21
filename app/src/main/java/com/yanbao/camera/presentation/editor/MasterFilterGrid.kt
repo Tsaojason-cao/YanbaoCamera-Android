@@ -246,7 +246,7 @@ fun MasterFilter29DParametersPanel(
                         if (index < 29) {
                             ParameterBubble(
                                 parameterName = "D${index + 1}",
-                                parameterValue = filter.parameters[index],
+                                parameterValue = filter.matrix29D[index],
                                 modifier = Modifier.weight(1f)
                             )
                         } else {

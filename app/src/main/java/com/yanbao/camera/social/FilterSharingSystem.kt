@@ -182,7 +182,7 @@ object FilterSharingSystem {
             
             // 29D参数数组
             val parametersArray = JSONArray()
-            filter.parameters.forEach { parametersArray.put(it) }
+            filter.matrix29D.forEach { parametersArray.put(it) }
             put("parameters", parametersArray)
             
             // 时间戳
