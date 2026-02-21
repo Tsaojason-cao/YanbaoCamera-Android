@@ -360,8 +360,8 @@ private fun getCityName(context: Context, latitude: Double, longitude: Double): 
     
     cityMap.forEach { (city, coords) ->
         val distance = kotlin.math.sqrt(
-            kotlin.math.pow(coords.first - latitude, 2.0) +
-            kotlin.math.pow(coords.second - longitude, 2.0)
+            (coords.first - latitude).pow(2.0) +
+            (coords.second - longitude).pow(2.0)
         )
         if (distance < minDistance) {
             minDistance = distance
