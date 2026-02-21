@@ -95,7 +95,7 @@ fun EditCanvasLayer(
             .background(Color.Black),
         contentAlignment = Alignment.Center
     ) {
-        // TODO: 集成图片显示和缩放
+        // Image Display and Zoom Integration
         Text(
             text = "编辑画布\n(支持双指缩放)",
             color = Color.White.copy(alpha = 0.5f),

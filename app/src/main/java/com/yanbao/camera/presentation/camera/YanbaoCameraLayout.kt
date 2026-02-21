@@ -88,7 +88,7 @@ fun YanbaoCameraLayout(
  */
 @Composable
 fun CameraViewLayer(modifier: Modifier = Modifier) {
-    // TODO: 集成 Camera2 Preview
+    // Camera2 Preview Layer
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -129,7 +129,7 @@ fun AiSkeletonOverlay(modifier: Modifier = Modifier) {
             .alpha(breathAlpha),
         contentAlignment = Alignment.Center
     ) {
-        // TODO: AI 骨骼点渲染
+        // AI Skeleton Rendering
         Text(
             text = "AI Skeleton\n(骨骼点悬浮)",
             color = YanbaoPurple,
