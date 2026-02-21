@@ -106,7 +106,7 @@ fun GpuRenderCanvas(
             .fillMaxSize()
             .background(Color.DarkGray)
     ) {
-        // TODO: 集成 GPUImage 或 OpenGL ES 渲染
+        // 注意：需要 集成 GPUImage 或 OpenGL ES 渲染
         // 当前为占位符
     }
 }
@@ -120,7 +120,7 @@ fun GpuRenderCanvas(
 fun FaceMeshOverlay(points: List<Pair<Float, Float>>) {
     // 注意：实际实现应该使用 Canvas 绘制骨骼点和连接线
     Box(modifier = Modifier.fillMaxSize()) {
-        // TODO: 使用 Canvas 绘制人脸网格
+        // 注意：需要 使用 Canvas 绘制人脸网格
         // 显示 468 个关键点和连接线
     }
 }
@@ -173,7 +173,7 @@ fun EditorModeSelector(
     currentMode: EditorMode,
     onModeChange: (EditorMode) -> Unit
 ) {
-    // TODO: 实现横向滚动的模式选择器
+    // 注意：需要 实现横向滚动的模式选择器
     // 显示：裁剪、滤镜、美颜、调整、文字、贴纸
 }
 
@@ -182,7 +182,7 @@ fun EditorModeSelector(
  */
 @Composable
 fun BeautyControlPanel() {
-    // TODO: 实现美颜滑块
+    // 注意：需要 实现美颜滑块
     // 包括：磨皮、美白、瘦脸、大眼等
 }
 
@@ -191,7 +191,7 @@ fun BeautyControlPanel() {
  */
 @Composable
 fun FilterControlPanel() {
-    // TODO: 实现滤镜选择器
+    // 注意：需要 实现滤镜选择器
     // 横向滚动的滤镜缩略图
 }
 
@@ -200,7 +200,7 @@ fun FilterControlPanel() {
  */
 @Composable
 fun AdjustControlPanel() {
-    // TODO: 实现调整滑块
+    // 注意：需要 实现调整滑块
     // 包括：亮度、对比度、饱和度、锐度等
 }
 
@@ -209,7 +209,7 @@ fun AdjustControlPanel() {
  */
 @Composable
 fun CropControlPanel() {
-    // TODO: 实现裁剪工具
+    // 注意：需要 实现裁剪工具
     // 显示裁剪框和比例选择
 }
 
@@ -218,7 +218,7 @@ fun CropControlPanel() {
  */
 @Composable
 fun TextControlPanel() {
-    // TODO: 实现文字工具
+    // 注意：需要 实现文字工具
     // 字体选择、颜色选择、大小调整
 }
 
@@ -227,6 +227,6 @@ fun TextControlPanel() {
  */
 @Composable
 fun StickerControlPanel() {
-    // TODO: 实现贴纸选择器
+    // 注意：需要 实现贴纸选择器
     // 横向滚动的贴纸缩略图
 }

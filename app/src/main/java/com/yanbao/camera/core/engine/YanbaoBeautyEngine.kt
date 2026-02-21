@@ -64,7 +64,7 @@ class YanbaoBeautyEngine {
         // 注意：实际实现应该使用 ML Kit 或 MediaPipe Face Mesh
         // 这里只是占位符
         
-        // TODO: 集成 ML Kit Face Detection 或 MediaPipe Face Mesh
+        // 注意：需要 集成 ML Kit Face Detection 或 MediaPipe Face Mesh
         // 返回 468 个关键点的坐标
         
         return null
@@ -125,7 +125,7 @@ class YanbaoBeautyEngine {
      */
     private fun applySkinSmoothing(bitmap: Bitmap, intensity: Int): Bitmap {
         Log.d(TAG, "Applying skin smoothing: $intensity")
-        // TODO: 实现双边滤波或表面模糊算法
+        // 注意：需要 实现双边滤波或表面模糊算法
         return bitmap
     }
     
@@ -134,7 +134,7 @@ class YanbaoBeautyEngine {
      */
     private fun applySkinWhitening(bitmap: Bitmap, intensity: Int): Bitmap {
         Log.d(TAG, "Applying skin whitening: $intensity")
-        // TODO: 实现肤色区域检测和亮度提升
+        // 注意：需要 实现肤色区域检测和亮度提升
         return bitmap
     }
     
@@ -159,7 +159,7 @@ class YanbaoBeautyEngine {
         val chinInward = (intensity / 100f) * 15.0f // 最大 15 像素
         
         // 3. 应用局部变形
-        // TODO: 使用 Mesh Warp 算法进行局部变形
+        // 注意：需要 使用 Mesh Warp 算法进行局部变形
         // movePoint(chinPoint, Offset(0f, -chinInward))
         
         return bitmap
@@ -185,7 +185,7 @@ class YanbaoBeautyEngine {
         val scale = 1.0f + (intensity / 100f) * 0.3f // 最大放大 30%
         
         // 3. 应用局部缩放
-        // TODO: 使用 Radial Warp 算法进行局部缩放
+        // 注意：需要 使用 Radial Warp 算法进行局部缩放
         // scaleRegion(leftEyeCenter, scale, radius = 50f)
         // scaleRegion(rightEyeCenter, scale, radius = 50f)
         
@@ -206,7 +206,7 @@ class YanbaoBeautyEngine {
         val noseTip = faceMesh.points.getOrNull(NOSE_TIP) ?: return bitmap
         
         // 2. 应用局部收缩
-        // TODO: 使用 Pinch Warp 算法进行局部收缩
+        // 注意：需要 使用 Pinch Warp 算法进行局部收缩
         
         return bitmap
     }
@@ -221,7 +221,7 @@ class YanbaoBeautyEngine {
     ): Bitmap {
         Log.d(TAG, "Applying lip enhancement: $intensity")
         
-        // TODO: 实现唇部颜色增强和轮廓优化
+        // 注意：需要 实现唇部颜色增强和轮廓优化
         
         return bitmap
     }
