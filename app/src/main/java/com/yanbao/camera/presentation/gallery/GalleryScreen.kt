@@ -54,8 +54,8 @@ fun GalleryScreen(
     ) {
         // --- 顶部搜索与返回栏 ---
         GalleryTopBar(
-            onBackClick = { navController.navigateUp() },
-            onHomeClick = { navController.navigate("home") },
+            onBackClick = { /* 返回 */ },
+            onHomeClick = { /* 跳转首页 */ },
             onSearchClick = { /* 搜索逻辑 */ }
         )
 
