@@ -24,7 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.yanbao.camera.presentation.theme.YanbaoPink
 
 /**
- * 雁寶AI相机主应用框架
+ * 雁宝AI相机主应用框架
  * 
  * 包含 5 个底部导航标签：
  * 1. 首页 (Home)

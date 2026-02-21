@@ -31,7 +31,7 @@ import kotlin.math.sin
  * 視覺元素：
  * 1. 粉紫垂直漸變背景 + 流動波紋
  * 2. 頂部 "yanbao AI" 文字
- * 3. 中央庫洛米拿相機形象 (300dp)
+ * 3. 中央库洛米拿相機形象 (300dp)
  * 4. 底部圓角進度條
  * 5. "Loading..." 文字
  * 6. ❌ 沒有星星
@@ -76,7 +76,7 @@ fun YanbaoSplashScreen(onNext: () -> Unit) {
                 .padding(top = 80.dp)
         )
         
-        // 3. 中央庫洛米拿相機形象
+        // 3. 中央库洛米拿相機形象
         Image(
             painter = painterResource(id = R.drawable.kuromi),
             contentDescription = "Kuromi with Camera",

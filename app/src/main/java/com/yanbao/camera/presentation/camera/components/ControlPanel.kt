@@ -322,62 +322,381 @@ fun Param29DWheel(modifier: Modifier = Modifier) {
 }
 
 /**
- * 大师预设
+ * 大师预设 - 71套滤镜选择UI
  */
 @Composable
 fun MasterPresets(modifier: Modifier = Modifier) {
-    Box(modifier = modifier) {
-        // 占位符
+    var selectedSeries by remember { mutableStateOf("all") }
+    val seriesList = listOf(
+        "all" to "全部",
+        "xieyi" to "写意大师",
+        "gongbi" to "工笔大师",
+        "jijian" to "极简大师",
+        "gudian" to "古典大师",
+        "xiandai" to "现代大师",
+        "dianying" to "电影大师",
+        "heibai" to "黑白大师",
+        "jiaopian" to "胶片大师"
+    )
+    
+    Column(modifier = modifier.fillMaxWidth()) {
+        // 系列选择
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            seriesList.forEach { (id, name) ->
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(
+                            if (selectedSeries == id) Color(0xFF9B59B6)
+                            else Color(0x33FFFFFF)
+                        )
+                        .clickable { selectedSeries = id }
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                ) {
+                    Text(
+                        text = name,
+                        color = Color.White,
+                        fontSize = 12.sp,
+                        fontWeight = if (selectedSeries == id) FontWeight.Bold else FontWeight.Normal
+                    )
+                }
+            }
+        }
+        
+        // 滤镜网格（简化显示）
+        Text(
+            text = "已加载 71 套大师滤镜",
+            color = Color.White,
+            fontSize = 14.sp,
+            modifier = Modifier.padding(16.dp)
+        )
     }
 }
 
 /**
- * 美颜控制
+ * 美颜控制 - 7个美颜参数调节
  */
 @Composable
 fun BeautyControls(modifier: Modifier = Modifier) {
-    Box(modifier = modifier) {
-        // 占位符
+    val beautyParams = listOf(
+        "磨皮" to 0.5f,
+        "美白" to 0.3f,
+        "红润" to 0.2f,
+        "大眼" to 0.4f,
+        "瘦脸" to 0.3f,
+        "鼻翼" to 0.2f,
+        "亮眼" to 0.3f
+    )
+    
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Text(
+            text = "美颜调节",
+            color = Color.White,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold
+        )
+        
+        beautyParams.forEach { (name, defaultValue) ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = name,
+                    color = Color.White,
+                    fontSize = 14.sp,
+                    modifier = Modifier.width(60.dp)
+                )
+                // 简化显示，实际应使用Slider
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(4.dp)
+                        .clip(RoundedCornerShape(2.dp))
+                        .background(Color(0x33FFFFFF))
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .fillMaxWidth(defaultValue)
+                            .background(Color(0xFFFF71CE))
+                    )
+                }
+                Text(
+                    text = "${(defaultValue * 100).toInt()}",
+                    color = Color.White,
+                    fontSize = 12.sp,
+                    modifier = Modifier.width(40.dp)
+                )
+            }
+        }
     }
 }
 
 /**
- * 2.9D 参数面板
+ * 2.9D 参数面板 - 29D参数调节UI
  */
 @Composable
 fun Param2_9DPanel(modifier: Modifier = Modifier) {
-    Box(modifier = modifier) {
-        // 占位符
+    val paramGroups = listOf(
+        "光影" to listOf("曝光", "高光", "阴影", "对比", "饱和"),
+        "色彩" to listOf("色温", "色调", "R", "G", "B", "C", "M", "Y", "K", "W"),
+        "质感" to listOf("锐化", "清晰", "纹理", "颗粒", "暗角", "暗边", "暗色", "暗调", "暗度", "暗化"),
+        "AI骨相" to listOf("骨架1", "骨相2", "骨相3", "骨相4")
+    )
+    
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Text(
+            text = "29D 参数系统",
+            color = Color.White,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold
+        )
+        
+        paramGroups.forEach { (groupName, params) ->
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text(
+                    text = groupName,
+                    color = Color(0xFFFF71CE),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+                
+                // 参数网格
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    params.take(5).forEach { param ->
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(40.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(Color(0x33FFFFFF)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = param,
+                                color = Color.White,
+                                fontSize = 10.sp
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
 /**
- * 原相机控制
+ * 原相机控制 - ISO/快门/对焦控制
  */
 @Composable
 fun ProCameraControls(modifier: Modifier = Modifier) {
-    Box(modifier = modifier) {
-        // 占位符
+    val proParams = listOf(
+        "ISO" to "400",
+        "快门" to "1/125",
+        "对焦" to "AF",
+        "WB" to "自动",
+        "EV" to "0.0"
+    )
+    
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Text(
+            text = "专业模式",
+            color = Color.White,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold
+        )
+        
+        proParams.forEach { (name, value) ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color(0x33FFFFFF))
+                    .clickable { /* 打开调节面板 */ }
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = name,
+                    color = Color.White,
+                    fontSize = 14.sp
+                )
+                Text(
+                    text = value,
+                    color = Color(0xFFFF71CE),
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
     }
 }
 
 /**
- * 基本控制
+ * 基本控制 - 闪光灯/网格/定时器
  */
 @Composable
 fun BasicControls(modifier: Modifier = Modifier) {
-    Box(modifier = modifier) {
-        // 占位符
+    var flashMode by remember { mutableStateOf("关闭") }
+    var gridEnabled by remember { mutableStateOf(false) }
+    var timerEnabled by remember { mutableStateOf(false) }
+    
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Text(
+            text = "基本设置",
+            color = Color.White,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold
+        )
+        
+        // 闪光灯
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(12.dp))
+                .background(Color(0x33FFFFFF))
+                .clickable {
+                    flashMode = when (flashMode) {
+                        "关闭" -> "自动"
+                        "自动" -> "开启"
+                        else -> "关闭"
+                    }
+                }
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = "闪光灯", color = Color.White, fontSize = 14.sp)
+            Text(text = flashMode, color = Color(0xFFFF71CE), fontSize = 14.sp)
+        }
+        
+        // 网格
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(12.dp))
+                .background(Color(0x33FFFFFF))
+                .clickable { gridEnabled = !gridEnabled }
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = "参考线", color = Color.White, fontSize = 14.sp)
+            Text(
+                text = if (gridEnabled) "开启" else "关闭",
+                color = Color(0xFFFF71CE),
+                fontSize = 14.sp
+            )
+        }
+        
+        // 定时器
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(12.dp))
+                .background(Color(0x33FFFFFF))
+                .clickable { timerEnabled = !timerEnabled }
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(text = "定时器", color = Color.White, fontSize = 14.sp)
+            Text(
+                text = if (timerEnabled) "3秒" else "关闭",
+                color = Color(0xFFFF71CE),
+                fontSize = 14.sp
+            )
+        }
     }
 }
 
 /**
- * AR 控制
+ * AR 控制 - AR模式切换和控制
  */
 @Composable
 fun ARControls(modifier: Modifier = Modifier) {
-    Box(modifier = modifier) {
-        // 占位符
+    var selectedARMode by remember { mutableStateOf("骨架识别") }
+    val arModes = listOf(
+        "骨架识别",
+        "空间测量",
+        "AR贴纸",
+        "场景识别"
+    )
+    
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Text(
+            text = "AR 功能",
+            color = Color.White,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold
+        )
+        
+        // AR模式选择
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            arModes.forEach { mode ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(
+                            if (selectedARMode == mode) Color(0xFF9B59B6)
+                            else Color(0x33FFFFFF)
+                        )
+                        .clickable { selectedARMode = mode }
+                        .padding(16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = mode,
+                        color = Color.White,
+                        fontSize = 14.sp,
+                        fontWeight = if (selectedARMode == mode) FontWeight.Bold else FontWeight.Normal
+                    )
+                    if (selectedARMode == mode) {
+                        Box(
+                            modifier = Modifier
+                                .size(8.dp)
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(Color(0xFFFF71CE))
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 

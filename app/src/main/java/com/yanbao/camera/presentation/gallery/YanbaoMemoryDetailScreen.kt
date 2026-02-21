@@ -33,7 +33,7 @@ import com.yanbao.camera.presentation.theme.YanbaoPurple
 /**
  * Yanbao Memory Detail Screen - Specification v1.0
  * 
- * 雁寶記憶詳情頁
+ * 雁宝记忆詳情頁
  * 
  * 核心：動態高斯模糊背景 + 29D 參數玻璃面板
  * 
@@ -224,7 +224,7 @@ fun LocationDateHeader(
 /**
  * 29D 參數項目
  * 
- * 類徠卡字體排版
+ * 類徕卡字體排版
  * 
  * @param label 參數標籤（如 "ISO"）
  * @param value 參數數值（如 "100"）

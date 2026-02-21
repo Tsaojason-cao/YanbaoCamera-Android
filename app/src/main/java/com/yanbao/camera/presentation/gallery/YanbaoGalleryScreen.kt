@@ -29,15 +29,15 @@ import com.yanbao.camera.presentation.theme.YanbaoPurple
  * 
  * 核心結構：三層空間定義 (Spatial Layout)
  * - 底層 (LBS 地圖層)：全屏背景，粉色發光點地圖
- * - 中層 (瀑布流層)：72/28 比例，雁寶記憶 + 一般相冊
+ * - 中層 (瀑布流層)：72/28 比例，雁宝记忆 + 一般相冊
  * - 頂層 (交互抽屜)：5 標籤導航 + 功能切換
  * 
  * 功能模組切換邏輯：
  * - 雙指縮小 (Zoom Out)：一般相冊 → LBS 地圖（照片縮成發光圖釘）
- * - 雙指放大 (Zoom In)：進入雁寶記憶（全屏沉浸 + 70dp 高斯模糊）
+ * - 雙指放大 (Zoom In)：進入雁宝记忆（全屏沉浸 + 70dp 高斯模糊）
  * 
  * 視覺規格：
- * - 雁寶記憶：大卡片流，漸變邊框 + 29D 參數註釋
+ * - 雁宝记忆：大卡片流，漸變邊框 + 29D 參數註釋
  * - 一般相冊：3 列網格，12dp 圓角，粉色光暈
  * - LBS 地圖：深黑背景 + 霓虹粉 (#FFB6C1) 座標點
  */
@@ -59,7 +59,7 @@ fun YanbaoGalleryScreen(
         
         // Layer 2: 中層可滾動的相冊內容
         Column(modifier = Modifier.fillMaxSize()) {
-            // 頂部切換 Tab (雁寶記憶 | 一般 | LBS)
+            // 頂部切換 Tab (雁宝记忆 | 一般 | LBS)
             YanbaoAlbumTabs(
                 currentMode = currentMode,
                 onModeChange = { currentMode = it },
@@ -80,7 +80,7 @@ fun YanbaoGalleryScreen(
  * 相冊模式枚舉
  */
 enum class GalleryMode {
-    Memory,  // 雁寶記憶
+    Memory,  // 雁宝记忆
     Normal,  // 一般相冊
     Lbs      // LBS 地圖
 }
@@ -130,7 +130,7 @@ fun LbsMapView(modifier: Modifier = Modifier) {
 /**
  * 頂部切換 Tab
  * 
- * 雁寶記憶 | 一般 | LBS
+ * 雁宝记忆 | 一般 | LBS
  */
 @Composable
 fun YanbaoAlbumTabs(
@@ -146,7 +146,7 @@ fun YanbaoAlbumTabs(
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         TabItem(
-            label = "雁寶記憶",
+            label = "雁宝记忆",
             isSelected = currentMode == GalleryMode.Memory,
             onClick = { onModeChange(GalleryMode.Memory) }
         )
@@ -187,7 +187,7 @@ fun TabItem(
 }
 
 /**
- * 雁寶記憶大卡片流
+ * 雁宝记忆大卡片流
  * 
  * 大卡片流，漸變邊框 + 29D 參數註釋
  */
@@ -214,7 +214,7 @@ fun MemoryCarousel(
 }
 
 /**
- * 雁寶記憶卡片
+ * 雁宝记忆卡片
  */
 @Composable
 fun MemoryCard(

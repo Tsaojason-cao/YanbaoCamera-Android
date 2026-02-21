@@ -119,7 +119,7 @@ class UiIntegrityChecker(private val context: Context) {
             appendLine()
             appendLine("4. 啟動頁")
             appendLine("   背景: 粉紫漸變 + 流光 Shader 效果")
-            appendLine("   形象: 庫洛米（R.drawable.kuromi）")
+            appendLine("   形象: 库洛米（R.drawable.kuromi）")
             appendLine("   進度條: 粉紫漸變流光進度條")
             appendLine()
             appendLine("5. 首頁")
