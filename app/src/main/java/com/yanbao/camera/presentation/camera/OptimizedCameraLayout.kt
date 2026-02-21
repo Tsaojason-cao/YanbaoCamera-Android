@@ -248,14 +248,14 @@ fun AiRecommendedFiltersRow(
         )
         
         recommendedFilters.forEach { filterId ->
-            androidx.compose.foundation.clickable.clickable {
-                onFilterSelected(filterId)
-            }
             androidx.compose.material3.Text(
                 text = "滤镜$filterId",
                 fontSize = 12.sp,
                 fontWeight = androidx.compose.ui.text.font.FontWeight.Normal,
-                color = Color.White.copy(alpha = 0.8f)
+                color = Color.White.copy(alpha = 0.8f),
+                modifier = Modifier.clickable {
+                    onFilterSelected(filterId)
+                }
             )
         }
     }

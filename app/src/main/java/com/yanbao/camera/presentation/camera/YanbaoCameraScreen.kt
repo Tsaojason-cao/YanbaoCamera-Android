@@ -198,6 +198,9 @@ fun BottomControlPanel(
     onTakePhoto: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
+    val themeConfig = remember { ThemeConfig.load(context) }
+    
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp))
