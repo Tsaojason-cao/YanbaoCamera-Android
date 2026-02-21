@@ -1,5 +1,9 @@
 package com.yanbao.camera.presentation.camera
 
+import android.content.Context
+import androidx.compose.ui.platform.LocalContext
+import com.yanbao.camera.core.config.ThemeConfig
+
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -38,6 +42,8 @@ import kotlin.math.sin
 fun YanbaoCameraScreen(
     onTakePhoto: () -> Unit = {}
 ) {
+    val context = LocalContext.current
+    val themeConfig = remember { ThemeConfig.load(context) }
     Box(modifier = Modifier.fillMaxSize()) {
         
         // === Layer 0: 全屏取景空間 (100%) ===
@@ -59,7 +65,7 @@ fun YanbaoCameraScreen(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .fillMaxHeight(0.28f)
+                .fillMaxHeight(themeConfig.ui_logic.control_panel_ratio) // 从JSON读取28%
         )
     }
 }
@@ -194,7 +200,7 @@ fun BottomControlPanel(
         modifier = modifier
             .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp))
             .background(Color(0xCC0A0A0A)) // 曜石黑
-            .blur(30.dp) // 高斯模糊
+            .blur(themeConfig.theme_palette.glass_blur_sigma.dp) // 从JSON读取40px高斯模糊
             .border(
                 0.5.dp,
                 Color.White.copy(alpha = 0.1f),

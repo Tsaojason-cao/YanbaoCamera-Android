@@ -1,0 +1,36 @@
+{
+  "app_name": "yanbao AI",
+  "version": "1.0.0_Industrial",
+  "ui_logic": {
+    "viewport_ratio": 0.72,
+    "control_panel_ratio": 0.28,
+    "global_corner_radius": 24,
+    "haptic_feedback": true
+  },
+  "theme_palette": {
+    "gradient_start": "#A78BFA",
+    "gradient_end": "#EC4899",
+    "overlay_opacity": 0.85,
+    "glass_blur_sigma": 40.0
+  },
+  "camera_29d_engine": {
+    "realtime_bubble_enabled": true,
+    "bubble_offset_y": -12,
+    "rgb_curve_interactive": {
+      "node_size": 32,
+      "node_glow_color": "#EC489977",
+      "realtime_shader_sync": true
+    }
+  },
+  "git_sync_protocol": {
+    "auto_commit_on_capture": true,
+    "metadata_format": "JSON_V2",
+    "branch_default": "master",
+    "remote_backup_enabled": true
+  },
+  "lbs_module": {
+    "precision": "high",
+    "master_filter_mapping": "91_countries_matrix",
+    "auto_refresh_radius_km": 5
+  }
+}
