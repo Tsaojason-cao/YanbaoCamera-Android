@@ -1,0 +1,47 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- 相机主体 -->
+    <path
+        android:fillColor="#1A1A1A"
+        android:pathData="M20,6 L17.5,6 L16,4 L8,4 L6.5,6 L4,6 Q3,6 3,7 L3,19 Q3,20 4,20 L20,20 Q21,20 21,19 L21,7 Q21,6 20,6 Z" />
+
+    <!-- 镜头外圈 -->
+    <path
+        android:fillColor="#EC4899"
+        android:pathData="M12,8 m-4,0 a4,4 0 1,0 8,0 a4,4 0 1,0 -8,0" />
+
+    <!-- 镜头内圈 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12,8 m-2.5,0 a2.5,2.5 0 1,0 5,0 a2.5,2.5 0 1,0 -5,0" />
+
+    <!-- 镜头高光 -->
+    <path
+        android:fillColor="#EC4899"
+        android:pathData="M12,8 m-1.5,0 a1.5,1.5 0 1,0 3,0 a1.5,1.5 0 1,0 -3,0" />
+
+    <!-- 闪光灯 -->
+    <path
+        android:fillColor="#EC4899"
+        android:pathData="M17,8 L18.5,8 L18.5,9.5 L17,9.5 Z" />
+
+    <!-- 库洛米耳朵（左） -->
+    <path
+        android:fillColor="#1A1A1A"
+        android:pathData="M8,4 Q7.5,2 9,2.5 Q8.8,3.5 8,4 Z" />
+
+    <!-- 库洛米耳朵（右） -->
+    <path
+        android:fillColor="#1A1A1A"
+        android:pathData="M16,4 Q16.5,2 15,2.5 Q15.2,3.5 16,4 Z" />
+
+    <!-- 蝴蝶结 -->
+    <path
+        android:fillColor="#EC4899"
+        android:pathData="M11,2.5 Q12,1.8 13,2.5 Q12,3.2 11,2.5 Z" />
+
+</vector>

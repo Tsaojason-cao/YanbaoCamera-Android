@@ -1,0 +1,47 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- 房子主体轮廓 -->
+    <path
+        android:fillColor="#1A1A1A"
+        android:pathData="M12,3 L3,10 L3,21 L9,21 L9,15 L15,15 L15,21 L21,21 L21,10 Z" />
+
+    <!-- 房门 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M10.5,21 L10.5,16.5 Q10.5,15.5 11.5,15.5 L12.5,15.5 Q13.5,15.5 13.5,16.5 L13.5,21 Z" />
+
+    <!-- 库洛米耳朵（左） -->
+    <path
+        android:fillColor="#1A1A1A"
+        android:pathData="M7,3.5 Q7.5,1 9,2 Q8.5,3.5 7,3.5 Z" />
+
+    <!-- 库洛米耳朵（右） -->
+    <path
+        android:fillColor="#1A1A1A"
+        android:pathData="M17,3.5 Q16.5,1 15,2 Q15.5,3.5 17,3.5 Z" />
+
+    <!-- 粉色蝴蝶结 -->
+    <path
+        android:fillColor="#EC4899"
+        android:pathData="M10.5,2.5 Q12,1.5 13.5,2.5 Q12,3.5 10.5,2.5 Z" />
+    <path
+        android:fillColor="#EC4899"
+        android:pathData="M11.5,2.8 L12.5,2.8 L12,3.2 Z" />
+
+    <!-- 窗户 -->
+    <path
+        android:fillColor="#EC4899"
+        android:fillAlpha="0.6"
+        android:pathData="M10,12 L10,9 L14,9 L14,12 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M11,12 L11,9 L12,9 L12,12 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M10,10.5 L14,10.5" />
+
+</vector>
