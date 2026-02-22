@@ -2,8 +2,8 @@ package com.yanbao.camera.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.yanbao.camera.R
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,48 +19,68 @@ class HomeViewModel @Inject constructor() : ViewModel() {
 
     init {
         loadData()
+        startClockTick()
+    }
+
+    private fun startClockTick() {
+        viewModelScope.launch {
+            while (true) {
+                _uiState.value = _uiState.value.copy(
+                    greeting    = buildGreeting(),
+                    greetingSub = buildGreetingSub()
+                )
+                delay(60_000L)
+            }
+        }
     }
 
     private fun loadData() {
         viewModelScope.launch {
             _uiState.value = HomeUiState(
-                greeting = getGreeting(),
-                greetingSub = "今天也要拍出好照片哦",
+                greeting    = buildGreeting(),
+                greetingSub = buildGreetingSub(),
                 temperature = 28,
-                weatherDesc = "适合外拍",
+                weatherDesc = buildWeatherDesc(),
                 recentActivities = listOf(
                     RecentActivity("你在台北101拍摄了新照片", "1s ago"),
                     RecentActivity("你在西门町逛了逛了", "10m ago")
                 ),
                 popularPlaces = listOf(
-                    PopularPlace("台北101", 5, R.drawable.place_taipei101),
-                    PopularPlace("台南波场", 5, R.drawable.place_tainan),
-                    PopularPlace("北海坑境", 5, R.drawable.place_hokkaido)
+                    PopularPlace("台北101",  5),
+                    PopularPlace("台南波场", 5),
+                    PopularPlace("北海坑境", 5)
                 )
             )
         }
     }
 
-    private fun getGreeting(): String {
+    private fun buildGreeting(): String {
         val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-        return when (hour) {
-            in 5..11 -> "早安！"
-            in 12..17 -> "午安！"
-            in 18..20 -> "晚安！"
-            else -> "夜深了！"
+        return when {
+            hour in 5..11  -> "早安！"
+            hour in 12..17 -> "午安！"
+            hour in 18..20 -> "晚安！"
+            else           -> "夜深了！"
+        }
+    }
+
+    private fun buildGreetingSub(): String {
+        val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+        return when {
+            hour in 5..11  -> "今天也要拍出好照片哦"
+            hour in 12..17 -> "下午适合外拍，出发吧"
+            hour in 18..20 -> "黄金时段，拍出好照片"
+            else           -> "休息一下，明天继续拍"
+        }
+    }
+
+    private fun buildWeatherDesc(): String {
+        val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+        return when {
+            hour in 6..11  -> "适合外拍"
+            hour in 12..15 -> "光线充足"
+            hour in 16..19 -> "黄金时段"
+            else           -> "夜拍模式"
         }
     }
 }
-
-// --- Data Classes ---
-data class HomeUiState(
-    val greeting: String = "",
-    val greetingSub: String = "",
-    val temperature: Int = 0,
-    val weatherDesc: String = "",
-    val recentActivities: List<RecentActivity> = emptyList(),
-    val popularPlaces: List<PopularPlace> = emptyList()
-)
-
-data class RecentActivity(val description: String, val time: String)
-data class PopularPlace(val name: String, val rating: Int, val imageRes: Int)
