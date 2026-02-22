@@ -81,7 +81,7 @@ fun HomeScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
-                        painter = painterResource(R.drawable.avatar_anime),
+                        painter = painterResource(R.drawable.avatar_user),
                         contentDescription = "头像",
                         modifier = Modifier
                             .size(112.dp)
@@ -96,7 +96,7 @@ fun HomeScreen(
                         text = "yanbao AI",
                         fontSize = 26.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Black
+                        color = Color.White
                     )
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(text = "☀️", fontSize = 26.sp)
@@ -105,13 +105,13 @@ fun HomeScreen(
                             text = "${uiState.temperature}°C",
                             fontSize = 34.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF222222)
+                            color = Color.White
                         )
                     }
                     Text(
                         text = uiState.weatherDesc,
                         fontSize = 20.sp,
-                        color = Color(0xFF444444)
+                        color = Color.White
                     )
                 }
             }
@@ -123,13 +123,13 @@ fun HomeScreen(
                 text = uiState.greeting,
                 fontSize = 64.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black,
+                color = Color.White,
                 lineHeight = 72.sp
             )
             Text(
                 text = uiState.greetingSub,
                 fontSize = 22.sp,
-                color = Color(0xFF444444)
+                color = Color.White
             )
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -275,7 +275,7 @@ private fun SectionHeader(title: String, onMore: () -> Unit = {}) {
             text = title,
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.Black
+            color = Color.White
         )
         Icon(
             painter = painterResource(R.drawable.ic_arrow_right),
@@ -322,7 +322,7 @@ private fun RecentActivityCard(activity: RecentActivity) {
                 Text(
                     text = activity.description,
                     fontSize = 20.sp,
-                    color = Color(0xFF222222),
+                    color = Color.White,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f)
@@ -332,7 +332,7 @@ private fun RecentActivityCard(activity: RecentActivity) {
             Text(
                 text = "Time ${activity.time}",
                 fontSize = 18.sp,
-                color = Color(0xFF999999),
+                color = Color(0xFFEEEEEE),
                 modifier = Modifier.align(Alignment.End)
             )
         }
@@ -390,7 +390,7 @@ private fun PopularPlaceCard(place: PopularPlace, onClick: () -> Unit) {
                     text = place.name,
                     fontSize = 22.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = Color.White
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Row(
