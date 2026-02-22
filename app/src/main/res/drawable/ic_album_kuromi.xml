@@ -1,0 +1,14 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- 相册图标 -->
+    <path android:fillColor="#888888"
+        android:pathData="M22,16V4c0-1.1-0.9-2-2-2H8c-1.1,0-2,0.9-2,2v12c0,1.1 0.9,2 2,2h12c1.1,0 2,-0.9 2,-2z"/>
+    <path android:fillColor="#888888"
+        android:pathData="M2,6v14c0,1.1 0.9,2 2,2h14v-2H4V6H2z"/>
+    <!-- 库洛米蝴蝶结 -->
+    <path android:fillColor="#EC4899"
+        android:pathData="M9,3 L11,1.5 L13,3 L11,4.5 Z"/>
+</vector>
