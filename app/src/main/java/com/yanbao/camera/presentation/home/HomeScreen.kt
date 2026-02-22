@@ -161,7 +161,7 @@ fun HomeScreen(
                 ) {
                     BigActionCard(
                         title = "AI推荐",
-                        iconRes = R.drawable.ic_tab_recommend_kuromi,
+                        iconRes = R.drawable.ic_tab_recommend_kuromi_nobg,
                         gradient = listOf(Color(0xFFD4A020), Color(0xFFB88010)),
                         onClick = { navController.navigate("lbs") },
                         modifier = Modifier.weight(1f)
@@ -442,7 +442,7 @@ fun HomeBottomNavigation(
                 Triple("拍照",  R.drawable.ic_tab_camera_kuromi,    "camera"),
                 Triple("编辑",  R.drawable.ic_tab_edit_kuromi,      "editor"),
                 Triple("相册",  R.drawable.ic_tab_album_kuromi,     "gallery"),
-                Triple("推荐",  R.drawable.ic_tab_recommend_kuromi, "lbs"),
+                Triple("推荐",  R.drawable.ic_tab_recommend_kuromi_nobg, "lbs"),
                 Triple("我的",  R.drawable.ic_tab_profile_kuromi,   "profile")
             )
             items.forEach { (label, iconRes, route) ->
