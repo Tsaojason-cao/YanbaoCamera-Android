@@ -9,6 +9,6 @@
         <!-- 图标动画持续时间 -->
         <item name="windowSplashScreenAnimationDuration">1000</item>
         <!-- 启动后切换到主题 -->
-        <item name="postSplashScreenTheme">@style/Theme.YanbaoAI</item>
+        <item name="postSplashScreenTheme">@style/Theme.YanbaoCamera</item>
     </style>
 </resources>
