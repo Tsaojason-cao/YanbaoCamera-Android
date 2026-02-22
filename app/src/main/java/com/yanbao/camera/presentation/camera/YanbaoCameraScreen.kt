@@ -61,12 +61,12 @@ fun YanbaoCameraScreen(
     val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
     
     LaunchedEffect(Unit) {
-        if (!cameraPermissionState.hasPermission) {
+        if (!cameraPermissionState.status.isGranted) {
             cameraPermissionState.launchPermissionRequest()
         }
     }
     
-    if (cameraPermissionState.hasPermission) {
+    if (cameraPermissionState.status.isGranted) {
         YanbaoCameraContent(modifier = modifier)
     } else {
         Box(
