@@ -1,6 +1,5 @@
 package com.yanbao.camera.presentation.edit
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -18,6 +17,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import coil.compose.AsyncImage
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -54,8 +54,8 @@ fun EditScreen(
                 .background(Color.DarkGray)
         ) {
             // 占位图片（实际应加载用户图片）
-            Image(
-                painter = painterResource(id = R.drawable.placeholder_photo),
+            AsyncImage(
+                model = R.drawable.placeholder_photo,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize()
