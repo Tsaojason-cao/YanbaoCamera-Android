@@ -1,0 +1,26 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <!-- 相机轮廓 -->
+  <path
+      android:fillColor="@android:color/transparent"
+      android:pathData="M20,7 L17.5,7 L16,5 L8,5 L6.5,7 L4,7 C2.9,7 2,7.9 2,9 L2,18 C2,19.1 2.9,20 4,20 L20,20 C21.1,20 22,19.1 22,18 L22,9 C22,7.9 21.1,7 20,7 Z"
+      android:strokeColor="#FFFFFF"
+      android:strokeWidth="1.8"
+      android:strokeLineCap="round"/>
+  <!-- 翻转箭头 -->
+  <path
+      android:fillColor="@android:color/transparent"
+      android:pathData="M12,10 A3,3 0 0,1 15,13"
+      android:strokeColor="#EC4899"
+      android:strokeWidth="1.8"
+      android:strokeLineCap="round"/>
+  <path
+      android:fillColor="#EC4899"
+      android:pathData="M15,11 L15,13 L17,13 Z"/>
+  <!-- 小耳朵 -->
+  <circle android:fillColor="#EC4899" android:cx="6" android:cy="5" android:r="1.2"/>
+  <circle android:fillColor="#EC4899" android:cx="9" android:cy="4" android:r="1.2"/>
+</vector>

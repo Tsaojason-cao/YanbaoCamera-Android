@@ -1,0 +1,21 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <!-- 心形记忆 -->
+  <path
+      android:fillColor="@android:color/transparent"
+      android:pathData="M12,21 C12,21 3,15 3,9 C3,6.2 5.2,4 8,4 C9.7,4 11.2,4.9 12,6.2 C12.8,4.9 14.3,4 16,4 C18.8,4 21,6.2 21,9 C21,15 12,21 12,21 Z"
+      android:strokeColor="#EC4899"
+      android:strokeWidth="2"
+      android:strokeLineCap="round"
+      android:strokeLineJoin="round"/>
+  <!-- 蝴蝶结 -->
+  <path
+      android:fillColor="#EC4899"
+      android:pathData="M10,8 L12,10 L14,8 L12,9 Z"/>
+  <!-- 小耳朵 -->
+  <circle android:fillColor="#EC4899" android:cx="8.5" android:cy="3" android:r="1"/>
+  <circle android:fillColor="#EC4899" android:cx="15.5" android:cy="3" android:r="1"/>
+</vector>
