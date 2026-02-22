@@ -14,6 +14,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
@@ -31,27 +32,27 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yanbao.camera.R
 
 // ─────────────────────────────────────────────────────────────
-// 精确色值（严格对标 home_v6.png）
+// 精确色值（严格对标 home_ui_design.png）
 // ─────────────────────────────────────────────────────────────
-private val BG_COLOR      = Color(0xFFF0C8D8)   // 整体背景：粉红
-private val BTN_CAMERA    = Color(0xFFD81B7A)   // 拍照按钮：深品牌粉
-private val BTN_EDITOR    = Color(0xFF1A1A1A)   // 编辑按钮：近黑
-private val BTN_AI        = Color(0xFFB8860B)   // AI推荐：深金
-private val BTN_ALBUM     = Color(0xFF5B9BD5)   // 相册：中蓝
-private val CARD_BG       = Color(0xFFFFFFFF)   // 活动卡片：白
-private val PLACE_CARD_BG = Color(0xFFFFFFFF)   // 地点卡片：白
-private val PINK_ACCENT   = Color(0xFFEC4899)   // 选中态品牌粉
-private val AVATAR_RING   = Color(0xFF9B59B6)   // 头像紫色描边
-private val SECTION_TEXT  = Color(0xFF1A1A1A)   // 章节标题深色
-private val STAR_ON       = Color(0xFFFFCC00)   // 亮星
-private val STAR_OFF      = Color(0xFFDDDDDD)   // 暗星
-private val HEART_PINK    = Color(0xFFEC4899)   // 收藏心形粉
-private val NAV_BG        = Color(0xFFF5E6EB)   // 底部导航浅粉
-
-// 热门地点卡片顶部色块
-private val PLACE_BLUE    = Color(0xFFADD8F0)   // 台北101：天蓝
-private val PLACE_GREEN   = Color(0xFFB0D8B0)   // 台南波场：浅绿
-private val PLACE_PEACH   = Color(0xFFF5C8A8)   // 北海坑境：桃粉
+private val BG_TOP       = Color(0xFF9B7FD4)   // 背景顶部：中紫
+private val BG_MID       = Color(0xFFB88FC0)   // 背景中部：粉紫
+private val BG_BOT       = Color(0xFFF0A0C0)   // 背景底部：粉红
+private val BTN_CAM_1    = Color(0xFFE8A0CC)   // 拍照渐变起点（浅粉紫）
+private val BTN_CAM_2    = Color(0xFFD060A0)   // 拍照渐变终点（深粉）
+private val BTN_EDIT_1   = Color(0xFF2A2A2A)   // 编辑深炭黑
+private val BTN_EDIT_2   = Color(0xFF1A1A1A)
+private val BTN_AI_1     = Color(0xFFD4A020)   // AI推荐金色
+private val BTN_AI_2     = Color(0xFFB88010)
+private val BTN_ALB_1    = Color(0xFF90C0E8)   // 相册天蓝
+private val BTN_ALB_2    = Color(0xFF5090C0)
+private val NAV_BG       = Color(0xFFFAE8F0)   // 底部导航浅粉
+private val CARD_BG      = Color(0xFFF8F0F5)   // 活动卡片背景（浅粉白）
+private val PINK_ACCENT  = Color(0xFFEC4899)   // 品牌粉（选中态）
+private val TEXT_DARK    = Color(0xFF1A1A1A)   // 深色文字
+private val TEXT_GRAY    = Color(0xFF888888)   // 灰色文字
+private val STAR_ON      = Color(0xFFFFCC00)   // 亮星
+private val STAR_OFF     = Color(0xFFDDDDDD)   // 暗星
+private val PIN_PINK     = Color(0xFFFF6699)   // 定位图标粉
 
 // ─────────────────────────────────────────────────────────────
 // 首页主入口
@@ -72,21 +73,26 @@ fun HomeScreen(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(BG_COLOR)
+            .background(
+                Brush.verticalGradient(colors = listOf(BG_TOP, BG_MID, BG_BOT))
+            )
     ) {
+        // 散景光点装饰层
+        BokehDecoration()
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(bottom = 96.dp)
+                .padding(bottom = 100.dp)
         ) {
-            // ── 状态栏区域（9:41 + yanbao AI + 28°C）──
-            StatusBar()
+            // ── 状态栏 ──
+            TopStatusBar()
 
-            // ── 问候语 + 用户头像 ──
-            GreetingSection()
+            // ── 问候区（早安！+ 头像 + 天气）──
+            GreetingRow()
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             // ── 四功能按钮 ──
             FunctionButtonGrid(
@@ -96,10 +102,10 @@ fun HomeScreen(
                 onGalleryClick = onGalleryClick
             )
 
-            Spacer(modifier = Modifier.height(28.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             // ── 最近活动 ──
-            SectionHeader(title = "最近活动")
+            SectionHeader(title = "最近活动 ⭐")
             Spacer(modifier = Modifier.height(12.dp))
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
@@ -110,10 +116,10 @@ fun HomeScreen(
                 }
             }
 
-            Spacer(modifier = Modifier.height(28.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             // ── 热门地点 ──
-            SectionHeader(title = "热门地点")
+            SectionHeader(title = "热门地点 🔥")
             Spacer(modifier = Modifier.height(12.dp))
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
@@ -145,114 +151,146 @@ fun HomeScreen(
 }
 
 // ─────────────────────────────────────────────────────────────
-// 状态栏（9:41 时间 + yanbao AI + 28°C）
+// 散景光点装饰（模拟设计稿中的柔和光晕）
 // ─────────────────────────────────────────────────────────────
 @Composable
-private fun StatusBar() {
+private fun BokehDecoration() {
+    Box(modifier = Modifier.fillMaxSize()) {
+        // 左上角光晕
+        Box(
+            modifier = Modifier
+                .offset((-20).dp, 100.dp)
+                .size(120.dp)
+                .background(
+                    Brush.radialGradient(
+                        colors = listOf(Color(0x40FFFFFF), Color(0x00FFFFFF))
+                    ),
+                    CircleShape
+                )
+        )
+        // 右侧光晕
+        Box(
+            modifier = Modifier
+                .offset(300.dp, 300.dp)
+                .size(100.dp)
+                .background(
+                    Brush.radialGradient(
+                        colors = listOf(Color(0x30FFFFFF), Color(0x00FFFFFF))
+                    ),
+                    CircleShape
+                )
+        )
+        // 左下光晕
+        Box(
+            modifier = Modifier
+                .offset((-10).dp, 700.dp)
+                .size(80.dp)
+                .background(
+                    Brush.radialGradient(
+                        colors = listOf(Color(0x25FFFFFF), Color(0x00FFFFFF))
+                    ),
+                    CircleShape
+                )
+        )
+    }
+}
+
+// ─────────────────────────────────────────────────────────────
+// 状态栏（9:41 + 信号图标）
+// ─────────────────────────────────────────────────────────────
+@Composable
+private fun TopStatusBar() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 12.dp),
+            .padding(horizontal = 20.dp, vertical = 8.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = "9:41",
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color(0xFF333333)
+            fontSize = 18.sp,
+            fontWeight = FontWeight.SemiBold,
+            color = Color.White
         )
-        Column(horizontalAlignment = Alignment.End) {
-            Text(
-                text = "yanbao AI",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color(0xFF333333)
-            )
-            Text(
-                text = "28°C",
-                fontSize = 16.sp,
-                color = Color(0xFF555555)
-            )
+        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text("▪▪▪", fontSize = 14.sp, color = Color.White)
+            Text("▲", fontSize = 14.sp, color = Color.White)
         }
     }
 }
 
 // ─────────────────────────────────────────────────────────────
-// 问候语 + 用户头像（居中）
+// 问候区（早安！💝 + 动漫头像 + ☀️ 28°C）
 // ─────────────────────────────────────────────────────────────
 @Composable
-private fun GreetingSection() {
-    Column(
+private fun GreetingRow() {
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp)
+            .padding(horizontal = 20.dp, vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        // 问候文字
-        Text(
-            text = "早安！",
-            fontSize = 36.sp,
-            fontWeight = FontWeight.ExtraBold,
-            color = Color(0xFF1A1A1A)
-        )
-        Text(
-            text = "适合外拍",
-            fontSize = 16.sp,
-            color = Color(0xFF555555)
-        )
-        Text(
-            text = "今天也要拍出好照片哦",
-            fontSize = 14.sp,
-            color = Color(0xFF888888)
-        )
+        // 左侧：问候语
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = "早安！💝",
+                fontSize = 34.sp,
+                fontWeight = FontWeight.ExtraBold,
+                color = Color.White
+            )
+            Text(
+                text = "今天也要拍出好照片哦",
+                fontSize = 14.sp,
+                color = Color.White.copy(alpha = 0.85f)
+            )
+        }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // 用户头像（居中，紫色描边圆形）
+        // 中间：动漫头像（紫色描边圆形）
         Box(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .size(80.dp)
+                .shadow(8.dp, CircleShape),
             contentAlignment = Alignment.Center
         ) {
+            // 紫色描边
             Box(
                 modifier = Modifier
-                    .size(90.dp)
-                    .shadow(4.dp, CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                // 紫色描边
-                Box(
-                    modifier = Modifier
-                        .size(90.dp)
-                        .background(Color.White, CircleShape)
-                )
-                Box(
-                    modifier = Modifier
-                        .size(86.dp)
-                        .background(Color(0xFFEED6F5), CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "用户",
-                        fontSize = 18.sp,
-                        color = Color(0xFF9B59B6),
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-                // 紫色描边环
-                Box(
-                    modifier = Modifier
-                        .size(90.dp)
-                        .background(Color.Transparent, CircleShape)
-                ) {
-                    // 通过 border 实现描边
-                }
-            }
+                    .size(80.dp)
+                    .background(Color(0xFF9B59B6), CircleShape)
+            )
+            // 头像图片
+            Image(
+                painter = painterResource(id = R.drawable.avatar_anime),
+                contentDescription = "用户头像",
+                modifier = Modifier
+                    .size(74.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
+            )
+        }
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        // 右侧：天气
+        Column(horizontalAlignment = Alignment.End) {
+            Text(
+                text = "☀️ 28°C",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+            Text(
+                text = "适合外拍",
+                fontSize = 13.sp,
+                color = Color.White.copy(alpha = 0.85f)
+            )
         }
     }
 }
 
 // ─────────────────────────────────────────────────────────────
-// 四功能按钮（2×2 网格，无图标只有文字，大圆角胶囊）
+// 四功能按钮（2×2 网格，含图标）
 // ─────────────────────────────────────────────────────────────
 @Composable
 private fun FunctionButtonGrid(
@@ -266,30 +304,34 @@ private fun FunctionButtonGrid(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            BigButton(
+            FunctionButton(
                 modifier = Modifier.weight(1f),
                 label = "拍照",
-                color = BTN_CAMERA,
+                iconRes = R.drawable.ic_camera,
+                gradient = listOf(BTN_CAM_1, BTN_CAM_2),
                 onClick = onCameraClick
             )
-            BigButton(
+            FunctionButton(
                 modifier = Modifier.weight(1f),
                 label = "编辑",
-                color = BTN_EDITOR,
+                iconRes = R.drawable.ic_edit,
+                gradient = listOf(BTN_EDIT_1, BTN_EDIT_2),
                 onClick = onEditorClick
             )
         }
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            BigButton(
+            FunctionButton(
                 modifier = Modifier.weight(1f),
                 label = "AI推荐",
-                color = BTN_AI,
+                iconRes = R.drawable.ic_camera_kuromi,
+                gradient = listOf(BTN_AI_1, BTN_AI_2),
                 onClick = onRecommendClick
             )
-            BigButton(
+            FunctionButton(
                 modifier = Modifier.weight(1f),
                 label = "相册",
-                color = BTN_ALBUM,
+                iconRes = R.drawable.ic_album_kuromi,
+                gradient = listOf(BTN_ALB_1, BTN_ALB_2),
                 onClick = onGalleryClick
             )
         }
@@ -297,26 +339,37 @@ private fun FunctionButtonGrid(
 }
 
 @Composable
-private fun BigButton(
+private fun FunctionButton(
     modifier: Modifier = Modifier,
     label: String,
-    color: Color,
+    iconRes: Int,
+    gradient: List<Color>,
     onClick: () -> Unit
 ) {
     Box(
         modifier = modifier
-            .height(80.dp)
-            .clip(RoundedCornerShape(40.dp))   // 大圆角胶囊形
-            .background(color)
+            .height(120.dp)
+            .shadow(6.dp, RoundedCornerShape(20.dp))
+            .clip(RoundedCornerShape(20.dp))
+            .background(Brush.verticalGradient(gradient))
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = label,
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White
-        )
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(
+                painter = painterResource(id = iconRes),
+                contentDescription = label,
+                tint = Color.White,
+                modifier = Modifier.size(44.dp)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = label,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+        }
     }
 }
 
@@ -334,62 +387,68 @@ private fun SectionHeader(title: String) {
     ) {
         Text(
             text = title,
-            fontSize = 22.sp,
+            fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = SECTION_TEXT
+            color = Color.White
         )
         Icon(
             painter = painterResource(id = R.drawable.ic_arrow_right),
             contentDescription = "更多",
-            tint = Color(0xFF888888),
+            tint = Color.White.copy(alpha = 0.8f),
             modifier = Modifier.size(20.dp)
         )
     }
 }
 
 // ─────────────────────────────────────────────────────────────
-// 最近活动卡片（白色圆角卡片，左侧紫色圆形头像）
+// 最近活动卡片（库洛米图标 + 描述 + 时间）
 // ─────────────────────────────────────────────────────────────
 @Composable
 private fun RecentActivityCard(activity: RecentActivity) {
     Card(
         modifier = Modifier
-            .width(200.dp)
-            .height(100.dp),
+            .width(240.dp)
+            .height(80.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = CARD_BG),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(12.dp),
+                .padding(horizontal = 12.dp, vertical = 10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // 左侧紫色圆形（库洛米头像占位）
-            Box(
+            // 库洛米图标
+            Image(
+                painter = painterResource(id = R.drawable.ic_tab_home_kuromi),
+                contentDescription = null,
                 modifier = Modifier
-                    .size(56.dp)
-                    .background(Color(0xFFD8B4E8), CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                // 空圆形，与 home_v6 一致
-            }
+                    .size(48.dp)
+                    .clip(RoundedCornerShape(10.dp)),
+                contentScale = ContentScale.Fit
+            )
             Spacer(modifier = Modifier.width(10.dp))
             Column(modifier = Modifier.weight(1f)) {
+                // 时间（右对齐）
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Text(
+                        text = "🕐 ${activity.time}",
+                        fontSize = 11.sp,
+                        color = TEXT_GRAY
+                    )
+                }
+                Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = activity.description,
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium,
-                    color = Color(0xFF333333),
+                    color = TEXT_DARK,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
-                )
-                Spacer(modifier = Modifier.height(6.dp))
-                Text(
-                    text = activity.time,
-                    fontSize = 12.sp,
-                    color = Color(0xFF999999)
                 )
             }
         }
@@ -397,51 +456,50 @@ private fun RecentActivityCard(activity: RecentActivity) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// 热门地点卡片（白色圆角卡片，顶部色块+心形收藏+星级）
+// 热门地点卡片（真实景色图 + 库洛米贴纸 + 星级 + 定位图标）
 // ─────────────────────────────────────────────────────────────
 @Composable
 private fun PopularPlaceCard(place: PopularPlace) {
-    val topColor = when (place.name) {
-        "台北101"  -> PLACE_BLUE
-        "台南波场" -> PLACE_GREEN
-        "北海坑境" -> PLACE_PEACH
-        else       -> Color(0xFFDDCCEE)
+    val (photoRes, kuromiRes) = when (place.name) {
+        "台北101"  -> Pair(R.drawable.place_taipei101, R.drawable.ic_tab_home_kuromi)
+        "台南波场" -> Pair(R.drawable.place_tainan,    R.drawable.ic_tab_camera_kuromi)
+        "北海坑境" -> Pair(R.drawable.place_hokkaido,  R.drawable.ic_tab_recommend_kuromi)
+        else       -> Pair(R.drawable.place_taipei101, R.drawable.ic_tab_home_kuromi)
     }
 
     Card(
         modifier = Modifier
-            .width(170.dp)
+            .width(180.dp)
             .wrapContentHeight(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = PLACE_CARD_BG),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column {
-            // 顶部色块（含心形收藏按钮）
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(110.dp)
-                    .background(topColor)
+                    .height(130.dp)
             ) {
-                // 右上角粉色心形收藏
-                Box(
+                // 真实景色图
+                Image(
+                    painter = painterResource(id = photoRes),
+                    contentDescription = place.name,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+                // 库洛米贴纸（右下角）
+                Image(
+                    painter = painterResource(id = kuromiRes),
+                    contentDescription = null,
                     modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(8.dp)
-                        .size(32.dp)
-                        .background(HEART_PINK, CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_like),
-                        contentDescription = "收藏",
-                        tint = Color.White,
-                        modifier = Modifier.size(18.dp)
-                    )
-                }
+                        .align(Alignment.BottomEnd)
+                        .padding(4.dp)
+                        .size(52.dp),
+                    contentScale = ContentScale.Fit
+                )
             }
-            // 底部信息区
+            // 地点信息
             Column(
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
             ) {
@@ -449,10 +507,13 @@ private fun PopularPlaceCard(place: PopularPlace) {
                     text = place.name,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1A1A1A)
+                    color = TEXT_DARK
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                Row {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // 星级
                     repeat(5) { index ->
                         Text(
                             text = "★",
@@ -460,6 +521,13 @@ private fun PopularPlaceCard(place: PopularPlace) {
                             color = if (index < place.rating) STAR_ON else STAR_OFF
                         )
                     }
+                    Spacer(modifier = Modifier.width(6.dp))
+                    // 定位图标
+                    Text(
+                        text = "📍",
+                        fontSize = 16.sp,
+                        color = PIN_PINK
+                    )
                 }
             }
         }
@@ -485,9 +553,12 @@ fun HomeBottomNavigation(
     )
 
     Surface(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 8.dp),
+        shape = RoundedCornerShape(32.dp),
         color = NAV_BG,
-        shadowElevation = 8.dp
+        shadowElevation = 12.dp
     ) {
         Row(
             modifier = Modifier
@@ -507,7 +578,7 @@ fun HomeBottomNavigation(
                     Image(
                         painter = painterResource(id = iconRes),
                         contentDescription = label,
-                        modifier = Modifier.size(if (isSelected) 40.dp else 36.dp),
+                        modifier = Modifier.size(if (isSelected) 44.dp else 38.dp),
                         contentScale = ContentScale.Fit,
                         colorFilter = if (!isSelected)
                             ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
@@ -518,7 +589,7 @@ fun HomeBottomNavigation(
                         text = label,
                         fontSize = 11.sp,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                        color = if (isSelected) PINK_ACCENT else Color(0xFF888888)
+                        color = if (isSelected) PINK_ACCENT else TEXT_GRAY
                     )
                 }
             }
