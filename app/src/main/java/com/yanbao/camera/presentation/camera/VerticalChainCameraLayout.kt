@@ -25,6 +25,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.camera.view.PreviewView
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.core.Preview
+import androidx.camera.core.CameraSelector
+import androidx.core.content.ContextCompat
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.compose.foundation.layout.fillMaxSize
@@ -74,20 +81,39 @@ fun VerticalChainCameraLayout(
                 .height(with(density) { viewfinderHeight.toDp() })
                 .align(Alignment.TopCenter)
         ) {
-            // TODO: 真实Camera2预览层（AndroidView封装SurfaceView）
-            // 这里使用占位符，实际开发中必须绑定Camera2的CaptureRequest
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.DarkGray)
-            ) {
-                Text(
-                    text = "Camera2 Preview\n(Real-time)",
-                    color = Color.White,
-                    fontSize = 16.sp,
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
+            // 真实Camera2预览层（使用CameraX）
+            val context = LocalContext.current
+            val lifecycleOwner = LocalLifecycleOwner.current
+            val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
+            
+            AndroidView(
+                factory = { ctx ->
+                    PreviewView(ctx).apply {
+                        implementationMode = PreviewView.ImplementationMode.COMPATIBLE
+                    }
+                },
+                modifier = Modifier.fillMaxSize(),
+                update = { previewView ->
+                    cameraProviderFuture.addListener({
+                        try {
+                            val cameraProvider = cameraProviderFuture.get()
+                            val preview = Preview.Builder().build().also {
+                                it.setSurfaceProvider(previewView.surfaceProvider)
+                            }
+                            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+                            
+                            cameraProvider.unbindAll()
+                            cameraProvider.bindToLifecycle(
+                                lifecycleOwner,
+                                cameraSelector,
+                                preview
+                            )
+                        } catch (e: Exception) {
+                            android.util.Log.e("VerticalChainCameraLayout", "Camera binding failed", e)
+                        }
+                    }, ContextCompat.getMainExecutor(context))
+                }
+            )
             
             // LBS灵动定位点（顶部左侧）
             LbsLocationIndicatorCompact(

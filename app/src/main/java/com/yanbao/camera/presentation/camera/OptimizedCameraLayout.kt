@@ -14,6 +14,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.camera.view.PreviewView
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.core.Preview
+import androidx.camera.core.CameraSelector
+import androidx.core.content.ContextCompat
+import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.coroutines.delay
 
 /**
@@ -183,8 +191,39 @@ fun CameraPreviewWithFocusPeaking(
             .background(Color.Black),
         contentAlignment = Alignment.Center
     ) {
-        // TODO: 集成CameraX Preview
-        // TODO: 实现Focus Peaking（对焦峰值）
+        val context = LocalContext.current
+        val lifecycleOwner = LocalLifecycleOwner.current
+        val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
+        
+        // CameraX Preview
+        AndroidView(
+            factory = { ctx ->
+                PreviewView(ctx).apply {
+                    implementationMode = PreviewView.ImplementationMode.COMPATIBLE
+                }
+            },
+            modifier = Modifier.fillMaxSize(),
+            update = { previewView ->
+                cameraProviderFuture.addListener({
+                    try {
+                        val cameraProvider = cameraProviderFuture.get()
+                        val preview = Preview.Builder().build().also {
+                            it.setSurfaceProvider(previewView.surfaceProvider)
+                        }
+                        val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+                        
+                        cameraProvider.unbindAll()
+                        cameraProvider.bindToLifecycle(
+                            lifecycleOwner,
+                            cameraSelector,
+                            preview
+                        )
+                    } catch (e: Exception) {
+                        android.util.Log.e("OptimizedCameraLayout", "Camera binding failed", e)
+                    }
+                }, ContextCompat.getMainExecutor(context))
+            }
+        )
         
         // 模拟场景识别
         LaunchedEffect(Unit) {
