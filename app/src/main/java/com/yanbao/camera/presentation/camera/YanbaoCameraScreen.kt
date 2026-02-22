@@ -55,7 +55,7 @@ private val SliderThumb    = Color(0xFFEC4899)
 // ─────────────────────────────────────────────
 // 9 大拍摄模式定义
 // ─────────────────────────────────────────────
-enum class CameraMode(
+enum class YanbaoCameraMode(
     val displayName: String,
     val emoji: String,
     val description: String
@@ -177,7 +177,7 @@ private fun YanbaoCameraContent(
     val context = LocalContext.current
     val scope   = rememberCoroutineScope()
 
-    var selectedMode  by remember { mutableStateOf(CameraMode.BASIC) }
+    var selectedMode  by remember { mutableStateOf(YanbaoCameraMode.BASIC) }
     var isFlashOn     by remember { mutableStateOf(false) }
     var show29DPanel  by remember { mutableStateOf(false) }
     var isRecording   by remember { mutableStateOf(false) }
@@ -233,7 +233,7 @@ private fun YanbaoCameraContent(
                 selectedMode = selectedMode,
                 onModeSelected = { mode ->
                     selectedMode = mode
-                    show29DPanel = (mode == CameraMode.PRO_29D)
+                    show29DPanel = (mode == YanbaoCameraMode.PRO_29D)
                     Log.d("YanbaoCameraScreen", "模式切换: ${mode.displayName}")
                 }
             )
@@ -247,7 +247,7 @@ private fun YanbaoCameraContent(
                 on29DToggle = { show29DPanel = !show29DPanel },
                 onCapture  = {
                     scope.launch {
-                        if (selectedMode == CameraMode.VIDEO) {
+                        if (selectedMode == YanbaoCameraMode.VIDEO) {
                             isRecording = !isRecording
                             Log.d("YanbaoCameraScreen", "录像: ${if (isRecording) "开始" else "停止"}")
                         } else {
@@ -293,7 +293,7 @@ private fun YanbaoCameraContent(
 // ─────────────────────────────────────────────
 @Composable
 private fun TopToolbar(
-    mode: CameraMode,
+    mode: YanbaoCameraMode,
     isFlashOn: Boolean,
     onFlashToggle: () -> Unit,
     onBack: () -> Unit,
@@ -359,14 +359,14 @@ private fun TopToolbar(
 // ─────────────────────────────────────────────
 @Composable
 private fun ModeTabBar(
-    selectedMode: CameraMode,
-    onModeSelected: (CameraMode) -> Unit
+    selectedMode: YanbaoCameraMode,
+    onModeSelected: (YanbaoCameraMode) -> Unit
 ) {
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(selectedMode) {
-        val index = CameraMode.entries.indexOf(selectedMode)
+        val index = YanbaoCameraMode.entries.indexOf(selectedMode)
         scope.launch { listState.animateScrollToItem(maxOf(0, index - 1)) }
     }
 
@@ -379,7 +379,7 @@ private fun ModeTabBar(
         contentPadding = PaddingValues(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        itemsIndexed(CameraMode.entries) { _, mode ->
+        itemsIndexed(YanbaoCameraMode.entries) { _, mode ->
             val isSelected = mode == selectedMode
             val bgColor by animateColorAsState(
                 targetValue = if (isSelected) PinkHighlight else Color.Transparent,
@@ -419,7 +419,7 @@ private fun ModeTabBar(
 // ─────────────────────────────────────────────
 @Composable
 private fun BottomControlRow(
-    mode: CameraMode,
+    mode: YanbaoCameraMode,
     isFlashOn: Boolean,
     isRecording: Boolean,
     show29DPanel: Boolean,
@@ -439,7 +439,7 @@ private fun BottomControlRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         // 左侧：29D 开关（仅专业模式显示）或相册缩略图
-        if (mode == CameraMode.PRO_29D || mode == CameraMode.PRO_2_9D) {
+        if (mode == YanbaoCameraMode.PRO_29D || mode == YanbaoCameraMode.PRO_2_9D) {
             Box(
                 modifier = Modifier
                     .size(44.dp)
@@ -506,11 +506,11 @@ private fun BottomControlRow(
 // ─────────────────────────────────────────────
 @Composable
 private fun ShutterButton(
-    mode: CameraMode,
+    mode: YanbaoCameraMode,
     isRecording: Boolean,
     onCapture: () -> Unit
 ) {
-    val isVideo = mode == CameraMode.VIDEO
+    val isVideo = mode == YanbaoCameraMode.VIDEO
     val outerColor = if (isVideo && isRecording) Color.Red else Color.White
     val innerColor = if (isVideo) Color.Red else PinkHighlight
 
@@ -747,11 +747,11 @@ private fun ParamSliderRow(
 // ─────────────────────────────────────────────
 @Composable
 private fun ModeOverlay(
-    mode: CameraMode,
+    mode: YanbaoCameraMode,
     params29D: Map<String, Float>
 ) {
     when (mode) {
-        CameraMode.PRO_29D -> {
+        YanbaoCameraMode.PRO_29D -> {
             // 显示当前 ISO / 快门 / EV 数值气泡
             val iso     = (params29D["iso"]     ?: 100f).toInt()
             val shutter = params29D["shutter"]  ?: 0.5f
@@ -769,7 +769,7 @@ private fun ModeOverlay(
                 }
             }
         }
-        CameraMode.BEAUTY -> {
+        YanbaoCameraMode.BEAUTY -> {
             // 美颜模式：显示美颜强度提示
             Box(
                 modifier = Modifier
@@ -787,7 +787,7 @@ private fun ModeOverlay(
                 }
             }
         }
-        CameraMode.AR -> {
+        YanbaoCameraMode.AR -> {
             // AR 模式：显示 AR 提示
             Box(
                 modifier = Modifier
@@ -865,4 +865,4 @@ fun Camera2SurfacePreview(
 /**
  * 获取相机模式名称（保留向后兼容）
  */
-fun getCameraModeName(index: Int): String = CameraMode.entries.getOrNull(index)?.displayName ?: "未知模式"
+fun getCameraModeName(index: Int): String = YanbaoCameraMode.entries.getOrNull(index)?.displayName ?: "未知模式"

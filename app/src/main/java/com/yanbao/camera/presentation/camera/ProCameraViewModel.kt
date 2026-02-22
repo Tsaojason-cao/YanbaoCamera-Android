@@ -132,12 +132,10 @@ class ProCameraViewModel(application: Application) : AndroidViewModel(applicatio
             contrast?.let { _contrast.value = it }
             saturation?.let { _saturation.value = it }
             
-            // 同步到 GLRenderer
-            glRenderer?.update29DParams(
-                brightness = _brightness.value,
-                contrast = _contrast.value,
-                saturation = _saturation.value
-            )
+            // 同步到 GLRenderer（使用各参数的独立更新方法）
+            brightness?.let { glRenderer?.updateExposure(it) }
+            contrast?.let { glRenderer?.updateSharpness(it) }
+            saturation?.let { glRenderer?.updateSaturation(it) }
             
             Log.d(TAG, "AUDIT_PARAMS: 29D params updated")
         }
