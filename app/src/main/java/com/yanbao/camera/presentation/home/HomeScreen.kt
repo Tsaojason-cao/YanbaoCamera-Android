@@ -464,7 +464,7 @@ fun HomeBottomNavigation(
                         Text(
                             text = label,
                             fontSize = 16.sp,
-                            color = if (selected) Color(0xFFEC4899) else Color(0xFF888888)
+                            color = Color(0xFFEC4899)
                         )
                     },
                     colors = NavigationBarItemDefaults.colors(
