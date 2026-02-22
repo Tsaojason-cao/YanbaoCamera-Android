@@ -262,10 +262,12 @@ class Camera2PreviewManager(private val context: Context) {
     fun getCurrentWhiteBalanceK(): Int = manualWhiteBalanceK
     fun getCurrentEV(): Int = evCompensation
     fun hasFrontCamera(): Boolean = getCameraId(CameraFacing.FRONT) != null
-    fun hasFlash(): Boolean = try {
-        val id = getCameraId(currentCameraFacing) ?: return false
-        cameraManager.getCameraCharacteristics(id).get(CameraCharacteristics.FLASH_INFO_AVAILABLE) == true
-    } catch (e: Exception) { false }
+    fun hasFlash(): Boolean {
+        return try {
+            val id = getCameraId(currentCameraFacing) ?: return false
+            cameraManager.getCameraCharacteristics(id).get(CameraCharacteristics.FLASH_INFO_AVAILABLE) == true
+        } catch (e: Exception) { false }
+    }
 
     private fun startPreview(surface: Surface, previewSize: Size, callback: (Boolean) -> Unit) {
         val camera = cameraDevice ?: run { callback(false); return }
