@@ -42,7 +42,10 @@ import com.yanbao.camera.R
  */
 @Composable
 fun GalleryScreen(
-    viewModel: GalleryViewModel = hiltViewModel()
+    viewModel: GalleryViewModel = hiltViewModel(),
+    onPhotoClick: (String) -> Unit = { photoId ->
+        android.util.Log.d("GalleryScreen", "Photo clicked: $photoId")
+    }
 ) {
     val selectedTab by viewModel.selectedTab.collectAsState()
     val filteredPhotos by viewModel.filteredPhotos.collectAsState()
