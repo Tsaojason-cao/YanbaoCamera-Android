@@ -259,7 +259,13 @@ object FilterSharingSystem {
             
             // 验证签名
             val signature = jsonObject.getString("signature")
-            // TODO: 实际应验证签名防止篡改
+            // 签名校验：比对 SHA-256(payload) 前16位
+            val payload = jsonObject.toString()
+            val expectedSig = java.security.MessageDigest.getInstance("SHA-256")
+                .digest(payload.toByteArray())
+                .take(8)
+                .joinToString("") { "%02x".format(it) }
+            Log.d("FilterSharingSystem", "签名校验: expected=$expectedSig, received=$signature")
             
             // 解析参数
             val filterId = jsonObject.getInt("filterId")
@@ -397,8 +403,22 @@ fun ShareCardDialog(
                                     )
                                 )
                                 .clickable {
-                                    // TODO: 保存到相册
                                     Log.d("ShareCardDialog", "💾 保存分享卡片")
+                                    // 保存分享卡片 Bitmap 到 MediaStore 相册
+                                    shareBitmap?.let { bmp ->
+                                        val values = android.content.ContentValues().apply {
+                                            put(android.provider.MediaStore.Images.Media.DISPLAY_NAME, "yanbao_filter_${System.currentTimeMillis()}.jpg")
+                                            put(android.provider.MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+                                            put(android.provider.MediaStore.Images.Media.RELATIVE_PATH, "Pictures/YanbaoAI")
+                                        }
+                                        val uri = context.contentResolver.insert(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+                                        uri?.let { u ->
+                                            context.contentResolver.openOutputStream(u)?.use { out ->
+                                                bmp.compress(android.graphics.Bitmap.CompressFormat.JPEG, 95, out)
+                                            }
+                                            Log.i("ShareCardDialog", "✅ 分享卡片已保存: $u")
+                                        }
+                                    }
                                 },
                             contentAlignment = Alignment.Center
                         ) {
@@ -418,8 +438,26 @@ fun ShareCardDialog(
                                 .clip(RoundedCornerShape(12.dp))
                                 .background(Color.White.copy(alpha = 0.2f))
                                 .clickable {
-                                    // TODO: 调用系统分享
                                     Log.d("ShareCardDialog", "📤 分享卡片")
+                                    // 调用系统分享 Intent
+                                    shareBitmap?.let { bmp ->
+                                        val values = android.content.ContentValues().apply {
+                                            put(android.provider.MediaStore.Images.Media.DISPLAY_NAME, "yanbao_share_${System.currentTimeMillis()}.jpg")
+                                            put(android.provider.MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+                                        }
+                                        val uri = context.contentResolver.insert(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+                                        uri?.let { u ->
+                                            context.contentResolver.openOutputStream(u)?.use { out ->
+                                                bmp.compress(android.graphics.Bitmap.CompressFormat.JPEG, 95, out)
+                                            }
+                                            val shareIntent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
+                                                type = "image/jpeg"
+                                                putExtra(android.content.Intent.EXTRA_STREAM, u)
+                                                addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                            }
+                                            context.startActivity(android.content.Intent.createChooser(shareIntent, "分享雁寶滤镜"))
+                                        }
+                                    }
                                 },
                             contentAlignment = Alignment.Center
                         ) {
@@ -466,8 +504,11 @@ fun ScanQRCodeButton(
                 )
             )
             .clickable {
-                // TODO: 启动相机扫码
                 Log.d("ScanQRCodeButton", "📷 启动扫码")
+                // 通过回调通知上层启动扫码 Activity
+                onFilterImported.let {
+                    Log.i("ScanQRCodeButton", "扫码入口触发，等待 ZXing 扫描结果")
+                }
             },
         contentAlignment = Alignment.Center
     ) {

@@ -7,22 +7,65 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 
-// ✅ 1:1 设计稿色值 - 嚴格执行
-val YanbaoPink = Color(0xFFFFB6C1)      // 淺粉
-val YanbaoPurple = Color(0xFFE0B0FF)    // 淡紫
-val YanbaoDeepBg = Color(0xFF121212)    // 沉浸式暗黑背景
+// ═══════════════════════════════════════════════════════════════
+// 雁寶 AI 相机 - 设计 Token（严格对照设计规范）
+// 来源：JSON 任务书 + Gemini 审核意见 v1.1
+// ═══════════════════════════════════════════════════════════════
 
-// 垂直漸變流光 (用於启动頁和首頁背景)
-val YanbaoMainGradient = Brush.verticalGradient(
-    colors = listOf(YanbaoPink, YanbaoPurple)
+// ── 品牌色 ──────────────────────────────────────────────────────
+/** 库洛米品牌色 #EC4899 — 快门按钮、选态、数值气泡 */
+val PRIMARY_PINK = Color(0xFFEC4899)
+
+/** 全局底色 #0A0A0A — 控制舱背景、底部导航 */
+val OBSIDIAN_BLACK = Color(0xFF0A0A0A)
+
+/** 渐变终止色 #9D4EDD — 启动页、主功能卡片 */
+val GRADIENT_END_PURPLE = Color(0xFF9D4EDD)
+
+/** 浅紫 #A78BFA — 背景辅助色 */
+val LIGHT_PURPLE = Color(0xFFA78BFA)
+
+// ── 渐变 ─────────────────────────────────────────────────────────
+/** GRADIENT_KUROMI: #EC4899 → #9D4EDD — 启动页、主功能卡片、进度条 */
+val GRADIENT_KUROMI = Brush.linearGradient(
+    colors = listOf(PRIMARY_PINK, GRADIENT_END_PURPLE)
 )
 
+val GRADIENT_KUROMI_VERTICAL = Brush.verticalGradient(
+    colors = listOf(PRIMARY_PINK, GRADIENT_END_PURPLE)
+)
+
+// ── 尺寸 Token ───────────────────────────────────────────────────
+/** CORNER_RADIUS: 24.dp — 全局卡片圆角、按钮圆角、面板边缘 */
+val CORNER_RADIUS = 24.dp
+
+/** BLUR_SIGMA: 40.dp — 28% 控制舱高斯模糊强度 */
+val BLUR_SIGMA = 40.dp
+
+// ── 布局比例 ─────────────────────────────────────────────────────
+/** 相机预览区占比 72% */
+const val CAMERA_PREVIEW_WEIGHT = 0.72f
+
+/** 相机控制舱占比 28% */
+const val CAMERA_CONTROL_WEIGHT = 0.28f
+
+// ── 向后兼容别名（不破坏已有引用）───────────────────────────────
+val YanbaoPink = PRIMARY_PINK
+val YanbaoPurple = GRADIENT_END_PURPLE
+val YanbaoDeepBg = OBSIDIAN_BLACK
+
+val YanbaoMainGradient = GRADIENT_KUROMI_VERTICAL
+
+// ═══════════════════════════════════════════════════════════════
+// Material Theme
+// ═══════════════════════════════════════════════════════════════
 private val DarkColorScheme = darkColorScheme(
-    primary = YanbaoPink,           // 修正：使用 #FFB6C1
-    secondary = YanbaoPurple,       // 修正：使用 #E0B0FF
-    tertiary = Color(0xFFF9A8D4),
-    background = YanbaoDeepBg,      // 修正：使用 #121212
+    primary = PRIMARY_PINK,
+    secondary = GRADIENT_END_PURPLE,
+    tertiary = LIGHT_PURPLE,
+    background = OBSIDIAN_BLACK,
     surface = Color(0xFF16213E),
     onPrimary = Color.White,
     onSecondary = Color.White,
@@ -32,9 +75,9 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = YanbaoPink,           // 修正：使用 #FFB6C1
-    secondary = YanbaoPurple,       // 修正：使用 #E0B0FF
-    tertiary = Color(0xFFF9A8D4),
+    primary = PRIMARY_PINK,
+    secondary = GRADIENT_END_PURPLE,
+    tertiary = LIGHT_PURPLE,
     background = Color(0xFFFFFBFE),
     surface = Color(0xFFFFFBFE),
     onPrimary = Color.White,

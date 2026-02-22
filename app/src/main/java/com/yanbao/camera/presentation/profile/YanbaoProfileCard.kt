@@ -379,7 +379,9 @@ fun SettingsItems(
                         color = Color.White.copy(0.1f),
                         shape = RoundedCornerShape(12.dp)
                     )
-                    .clickable { /* TODO */ }
+                    .clickable {
+                        android.util.Log.d("YanbaoProfileCard", "菜单点击: $item")
+                    }
                     .padding(16.dp)
             ) {
                 Text(

@@ -39,6 +39,7 @@ fun CameraControlsOverlay(
     onFlashModeChange: (Camera2PreviewManager.FlashMode) -> Unit,
     onPreviewSizeChange: (android.util.Size) -> Unit,
     onCaptureClick: () -> Unit,
+    onGalleryClick: () -> Unit = { android.util.Log.d("CameraControlsOverlay", "相册导航") },
     modifier: Modifier = Modifier
 ) {
     val currentFlashMode by remember { mutableStateOf(previewManager.getCurrentFlashMode()) }
@@ -82,13 +83,16 @@ fun CameraControlsOverlay(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // 相册按钮（占位）
+            // 相册按钮（真实点击事件）
             IconButton(
-                onClick = { /* TODO: 打开相册 */ },
+                onClick = {
+                    android.util.Log.d("CameraControlsOverlay", "相册入口点击")
+                    onGalleryClick()
+                },
                 modifier = Modifier.size(48.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.PhotoLibrary,
+                    painter = androidx.compose.ui.res.painterResource(id = com.yanbao.camera.R.drawable.ic_gallery),
                     contentDescription = "Gallery",
                     tint = Color.White,
                     modifier = Modifier.size(32.dp)
