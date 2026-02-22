@@ -91,16 +91,7 @@ fun HomeScreen(
             Spacer(modifier = Modifier.weight(1f))
         }
         
-        // 3. 底部导航栏（6个标签）
-        BottomNavigationBar(
-            currentTab = "Home",
-            onHomeClick = { /* 已在首页 */ },
-            onCameraClick = onCameraClick,
-            onEditorClick = onEditorClick,
-            onGalleryClick = onGalleryClick,
-            onRecommendClick = onRecommendClick,
-            onProfileClick = onProfileClick,
-            modifier = Modifier.align(Alignment.BottomCenter)
+        // 3. 底部导航栏已在YanbaoApp中统一管理，此处不需要重复添加    modifier = Modifier.align(Alignment.BottomCenter)
         )
     }
 }

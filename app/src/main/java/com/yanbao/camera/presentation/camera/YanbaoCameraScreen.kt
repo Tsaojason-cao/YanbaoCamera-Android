@@ -224,8 +224,7 @@ fun BottomControlPanel(
         
         Spacer(modifier = Modifier.height(16.dp))
         
-        // 底部导航欄
-        BottomNavigation()
+        // 底部导航欄已在YanbaoApp中统一管理，此处不需要重复添加
     }
 }
 
@@ -429,44 +428,4 @@ fun GitSyncingStatus() {
     }
 }
 
-/**
- * 底部导航欄
- */
-@Composable
-fun BottomNavigation() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 32.dp, vertical = 12.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        NavItem(icon = "🖼️", label = "雁宝圖庫")
-        NavItem(icon = "🧭", label = "推薦拍")
-        NavItem(icon = "📷", label = "拍攝頁", isActive = true)
-        NavItem(icon = "✨", label = "美具")
-        NavItem(icon = "📤", label = "分享")
-    }
-}
-
-/**
- * 导航項目
- */
-@Composable
-fun NavItem(icon: String, label: String, isActive: Boolean = false) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        Text(
-            text = icon,
-            fontSize = 20.sp,
-            color = if (isActive) Color(0xFFFFB6C1) else Color.White.copy(alpha = 0.5f)
-        )
-        Text(
-            text = label,
-            fontSize = 9.sp,
-            color = if (isActive) Color(0xFFFFB6C1) else Color.White.copy(alpha = 0.5f)
-        )
-    }
-}
+// 底部导航欄已移除，由YanbaoApp统一管理

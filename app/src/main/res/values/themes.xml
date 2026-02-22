@@ -9,9 +9,13 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
     </style>
 
-    <!-- 启动页主题：全屏无状态栏 -->
+    <!-- 启动页主题：全屏无状态栏，透明系统栏 -->
     <style name="Theme.YanbaoCamera.Splash" parent="Theme.YanbaoCamera">
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowNoTitle">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:windowTranslucentNavigation">true</item>
     </style>
 </resources>
