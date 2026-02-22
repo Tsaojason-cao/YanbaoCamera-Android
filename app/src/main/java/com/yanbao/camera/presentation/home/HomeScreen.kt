@@ -25,7 +25,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.yanbao.camera.R
 
 // --- 设计稿背景渐变色 ---
@@ -43,7 +42,7 @@ fun HomeScreen(
     avatarUri: Uri? = null,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsState()
 
     Box(
         modifier = Modifier
@@ -179,7 +178,7 @@ fun HomeScreen(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp)
             ) {
-                items(uiState.recentActivities) { activity ->
+                items(uiState.recentActivities, key = { it.description }) { activity ->
                     RecentActivityCard(activity)
                 }
             }
@@ -197,7 +196,7 @@ fun HomeScreen(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp)
             ) {
-                items(uiState.popularPlaces) { place ->
+                items(uiState.popularPlaces, key = { it.name }) { place ->
                     PopularPlaceCard(place = place, onClick = onRecommendClick)
                 }
             }
