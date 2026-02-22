@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionStatus
 import com.google.accompanist.permissions.rememberPermissionState
 import kotlin.math.roundToInt
 
@@ -61,12 +62,12 @@ fun YanbaoCameraScreen(
     val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
     
     LaunchedEffect(Unit) {
-        if (!cameraPermissionState.status.isGranted) {
+        if (cameraPermissionState.status !is PermissionStatus.Granted) {
             cameraPermissionState.launchPermissionRequest()
         }
     }
     
-    if (cameraPermissionState.status.isGranted) {
+    if (cameraPermissionState.status is PermissionStatus.Granted) {
         YanbaoCameraContent(modifier = modifier)
     } else {
         Box(
