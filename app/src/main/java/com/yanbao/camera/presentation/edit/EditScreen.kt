@@ -18,6 +18,10 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.platform.LocalContext
+import com.yanbao.camera.core.utils.ImageSaver
+import kotlinx.coroutines.launch
+import android.widget.Toast
 
 /**
  * 编辑工具类型
@@ -53,10 +57,11 @@ fun EditScreen(
         android.util.Log.d("EditScreen", "Back button clicked")
     },
     onSave: (Bitmap) -> Unit = { editedBitmap ->
-        android.util.Log.d("EditScreen", "Save button clicked")
-        // TODO: 保存编辑后的图片
+        android.util.Log.d("EditScreen", "Save button clicked (default handler)")
     }
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     var selectedTool by remember { mutableStateOf<EditTool?>(null) }
     var previewBitmap by remember { mutableStateOf(bitmap) }
     
@@ -82,7 +87,19 @@ fun EditScreen(
             },
             actions = {
                 TextButton(onClick = {
-                    previewBitmap?.let { onSave(it) }
+                    previewBitmap?.let { editedBitmap ->
+                        scope.launch {
+                            val uri = ImageSaver.saveBitmapToGallery(context, editedBitmap)
+                            if (uri != null) {
+                                Toast.makeText(context, "编辑后的图片已保存", Toast.LENGTH_SHORT).show()
+                                onSave(editedBitmap)
+                            } else {
+                                Toast.makeText(context, "保存失败", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    } ?: run {
+                        Toast.makeText(context, "没有可保存的图片", Toast.LENGTH_SHORT).show()
+                    }
                 }) {
                     Text("保存", color = Color(0xFFEC4899))
                 }

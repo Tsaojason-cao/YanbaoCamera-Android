@@ -18,7 +18,9 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.yanbao.camera.core.camera.Camera2PreviewManager
+import com.yanbao.camera.core.utils.ImageSaver
 import kotlinx.coroutines.launch
+import android.widget.Toast
 
 /**
  * 相机主界面（优化版）
@@ -35,6 +37,7 @@ fun CameraScreen(
     onProfileClick: () -> Unit = {},
     viewModel: CameraViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val previewManager = rememberCamera2PreviewManager()
     
@@ -65,7 +68,14 @@ fun CameraScreen(
                     val bitmap = previewManager.takePicture()
                     if (bitmap != null) {
                         Log.d("CameraScreen", "Picture taken: ${bitmap.width}x${bitmap.height}")
-                        // TODO: 保存到相册
+                        val uri = ImageSaver.saveBitmapToGallery(context, bitmap)
+                        if (uri != null) {
+                            Toast.makeText(context, "照片已保存到相册", Toast.LENGTH_SHORT).show()
+                            Log.d("CameraScreen", "Image saved to: $uri")
+                        } else {
+                            Toast.makeText(context, "保存失败", Toast.LENGTH_SHORT).show()
+                            Log.e("CameraScreen", "Failed to save image")
+                        }
                     }
                 }
             },
@@ -125,7 +135,14 @@ fun CameraScreen(
                     val bitmap = previewManager.takePicture()
                     if (bitmap != null) {
                         Log.d("CameraScreen", "Picture taken: ${bitmap.width}x${bitmap.height}")
-                        // TODO: 保存到相册
+                        val uri = ImageSaver.saveBitmapToGallery(context, bitmap)
+                        if (uri != null) {
+                            Toast.makeText(context, "照片已保存到相册", Toast.LENGTH_SHORT).show()
+                            Log.d("CameraScreen", "Image saved to: $uri")
+                        } else {
+                            Toast.makeText(context, "保存失败", Toast.LENGTH_SHORT).show()
+                            Log.e("CameraScreen", "Failed to save image")
+                        }
                     } else {
                         Log.e("CameraScreen", "Failed to take picture")
                     }

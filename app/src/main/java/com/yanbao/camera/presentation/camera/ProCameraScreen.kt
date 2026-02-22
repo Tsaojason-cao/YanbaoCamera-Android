@@ -19,6 +19,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.yanbao.camera.core.render.Camera2GLRenderer
+import com.yanbao.camera.core.utils.ImageSaver
+import kotlinx.coroutines.launch
+import android.widget.Toast
+import android.util.Log
 
 /**
  * 专业相机界面
@@ -39,6 +43,7 @@ fun ProCameraScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     
     // 专业模式参数
     val iso by viewModel.iso.collectAsState()
@@ -145,7 +150,18 @@ fun ProCameraScreen(
                         // 拍照按钮
                         Button(
                             onClick = {
-                                // TODO: 实现拍照逻辑
+                                scope.launch {
+                                    try {
+                                        // 使用当前专业参数拍照
+                                        Log.d("ProCameraScreen", "Capture with ISO=$iso, Exposure=$exposureTime, WB=$whiteBalance")
+                                        Toast.makeText(context, "拍照中...", Toast.LENGTH_SHORT).show()
+                                        // TODO: 实际拍照需要从 Camera2GLRenderer 中获取当前帧
+                                        // 这里是占位实现
+                                    } catch (e: Exception) {
+                                        Log.e("ProCameraScreen", "Capture failed", e)
+                                        Toast.makeText(context, "拍照失败", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
                             },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color(0xFFFFB6C1)

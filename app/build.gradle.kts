@@ -147,4 +147,7 @@ dependencies {
     
     // ZXing (QR Code)
     implementation("com.google.zxing:core:3.5.1")
+    
+    // ExifInterface for EXIF metadata
+    implementation("androidx.exifinterface:exifinterface:1.3.7")
 }
