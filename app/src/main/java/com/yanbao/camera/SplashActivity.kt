@@ -122,7 +122,7 @@ fun YanbaoSplashScreen(onTimeout: () -> Unit = {}) {
                 contentDescription = "Kuromi with Camera",
                 modifier = Modifier
                     .fillMaxWidth(0.6f)
-                    .aspectRatio(1f)
+                    .wrapContentHeight()
             )
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -156,11 +156,26 @@ fun YanbaoSplashScreen(onTimeout: () -> Unit = {}) {
 // ─────────────────────────────────────────────────────────────
 @Composable
 private fun SplashSwirlCanvas() {
-    androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
+    // 无限旋转动画：螺旋线持续旋转，模拟光速流转感
+    val infiniteTransition = rememberInfiniteTransition(label = "swirl")
+    val rotationAngle by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 4000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "swirlRotation"
+    )
+    androidx.compose.foundation.Canvas(
+        modifier = Modifier
+            .fillMaxSize()
+            .graphicsLayer { rotationZ = rotationAngle * 0.3f } // 慢速旋转，优雅感
+    ) {
         val cx = size.width / 2f
         val cy = size.height * 0.40f
         for (arm in 0 until 3) {
-            val baseAngle = arm * (2.0 * PI / 3.0)
+            val baseAngle = arm * (2.0 * PI / 3.0) + Math.toRadians(rotationAngle.toDouble())
             val pts = (0 until 200).map { ti ->
                 val t = ti / 200.0 * 2.5 * PI + baseAngle
                 val r = 80.0 + 40.0 * sin(t * 2.0)
