@@ -9,13 +9,14 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
     </style>
 
-    <!-- 启动页主题：全屏无状态栏，透明系统栏 -->
-    <style name="Theme.YanbaoCamera.Splash" parent="Theme.YanbaoCamera">
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowNoTitle">true</item>
+    <!-- 启动页主题：Edge-to-edge全屏显示，粉紫背景 -->
+    <style name="Theme.YanbaoCamera.Splash" parent="Theme.AppCompat.NoActionBar">
+        <!-- 背景色设为粉紫色 -->
+        <item name="android:windowBackground">#E8B4F5</item>
+        <!-- 透明状态栏和导航栏 -->
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:windowTranslucentStatus">true</item>
-        <item name="android:windowTranslucentNavigation">true</item>
+        <!-- 启用绘制系统栏背景 -->
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
     </style>
 </resources>

@@ -61,19 +61,19 @@ fun YanbaoApp() {
                     val profile by profileViewModel.profile.collectAsState()
                     
                     HomeScreen(
-                        onCameraClick = { selectedTab = 2 },      // ✅ 拍攝在 index 2
-                        onEditorClick = { selectedTab = 3 },      // ✅ 编辑在 index 3
-                        onGalleryClick = { selectedTab = 5 },     // ✅ 相册功能
-                        onRecommendClick = { selectedTab = 1 },   // ✅ 推薦在 index 1
-                        onProfileClick = { selectedTab = 4 },     // ✅ 我的在 index 4
+                        onCameraClick = { selectedTab = 1 },      // ✅ 拍照在 index 1
+                        onEditorClick = { selectedTab = 2 },      // ✅ 编辑在 index 2
+                        onGalleryClick = { selectedTab = 3 },     // ✅ 相册在 index 3
+                        onRecommendClick = { selectedTab = 4 },   // ✅ 推荐在 index 4
+                        onProfileClick = { selectedTab = 5 },     // ✅ 我的在 index 5
                         avatarUri = profile.avatarUri
                     )
                 }
-                1 -> RecommendScreen()  // ✅ 推薦
-                2 -> CameraScreen()     // ✅ 拍攝
-                3 -> EditorScreen()     // ✅ 编辑
-                4 -> ProfileScreen()    // ✅ 我的
-                5 -> GalleryScreen()    // ✅ 相册
+                1 -> CameraScreen()     // ✅ 拍照
+                2 -> EditorScreen()     // ✅ 编辑
+                3 -> GalleryScreen()    // ✅ 相册
+                4 -> RecommendScreen()  // ✅ 推荐
+                5 -> ProfileScreen()    // ✅ 我的
             }
         }
     }
@@ -94,9 +94,10 @@ fun YanbaoBottomNavigation(
 ) {
     val tabs = listOf(
         BottomNavItem("首页", Icons.Default.Home),        // Home
-        BottomNavItem("推荐", Icons.Default.Explore),     // Explore (推薦)
-        BottomNavItem("拍攝", Icons.Default.CameraAlt),  // 拍攝 (中間大按鈕)
-        BottomNavItem("编辑", Icons.Default.Edit),       // Editor (编辑)
+        BottomNavItem("拍照", Icons.Default.CameraAlt),  // Camera
+        BottomNavItem("编辑", Icons.Default.Edit),       // Editor
+        BottomNavItem("相册", Icons.Default.PhotoLibrary), // Gallery
+        BottomNavItem("推荐", Icons.Default.Explore),     // Recommend
         BottomNavItem("我的", Icons.Default.Person)      // Profile
     )
     

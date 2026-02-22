@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Splash Screen Theme -->
+    <style name="Theme.YanbaoAI.Starting" parent="Theme.SplashScreen">
+        <!-- 启动画面背景颜色（粉紫渐变的主色调） -->
+        <item name="windowSplashScreenBackground">#E8B4F5</item>
+        <!-- 启动画面图标 -->
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <!-- 图标动画持续时间 -->
+        <item name="windowSplashScreenAnimationDuration">1000</item>
+        <!-- 启动后切换到主题 -->
+        <item name="postSplashScreenTheme">@style/Theme.YanbaoAI</item>
+    </style>
+</resources>

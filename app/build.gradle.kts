@@ -113,6 +113,9 @@ dependencies {
 
     // Accompanist - permissions
     implementation("com.google.accompanist:accompanist-permissions:0.34.0")
+    
+    // Splash Screen API
+    implementation("androidx.core:core-splashscreen:1.0.1")
 
     // Google Play Services - Location
     implementation("com.google.android.gms:play-services-location:21.1.0")

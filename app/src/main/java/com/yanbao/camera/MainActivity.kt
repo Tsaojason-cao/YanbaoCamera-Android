@@ -15,6 +15,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.yanbao.camera.presentation.YanbaoApp
 import com.yanbao.camera.presentation.theme.YanbaoTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,6 +33,9 @@ class MainActivity : ComponentActivity() {
     }
     
     override fun onCreate(savedInstanceState: Bundle?) {
+        // ✅ 安装Splash Screen API（必须在super.onCreate之前）
+        installSplashScreen()
+        
         super.onCreate(savedInstanceState)
         
         // 设置全屏显示，edge-to-edge
