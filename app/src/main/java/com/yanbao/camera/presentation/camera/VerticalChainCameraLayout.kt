@@ -208,8 +208,8 @@ fun ControlPanelWithVerticalChain(
             }
                 .fillMaxWidth()
         )
-                // 5. 底部导航栏已在YanbaoApp中统一管理        .height(56.dp)
-        )
+        
+        // 5. 底部导航栏已在YanbaoApp中统一管理
     }
 }
 
