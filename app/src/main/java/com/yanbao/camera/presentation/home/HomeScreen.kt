@@ -1,6 +1,5 @@
 package com.yanbao.camera.presentation.home
 
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -39,7 +38,7 @@ fun HomeScreen(
     onGalleryClick: () -> Unit = {},
     onRecommendClick: () -> Unit = {},
     onProfileClick: () -> Unit = {},
-    avatarUri: Uri? = null,
+    avatarUri: String? = null,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
