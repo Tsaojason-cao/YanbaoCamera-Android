@@ -324,6 +324,7 @@ fun ShareCardDialog(
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val saveContext = androidx.compose.ui.platform.LocalContext.current
     var shareCardBitmap by remember { mutableStateOf<Bitmap?>(null) }
     var isGenerating by remember { mutableStateOf(true) }
     
@@ -405,15 +406,16 @@ fun ShareCardDialog(
                                 .clickable {
                                     Log.d("ShareCardDialog", "💾 保存分享卡片")
                                     // 保存分享卡片 Bitmap 到 MediaStore 相册
-                                    shareBitmap?.let { bmp ->
+                                    shareCardBitmap?.let { bmp ->
+                                        val ctx = saveContext
                                         val values = android.content.ContentValues().apply {
                                             put(android.provider.MediaStore.Images.Media.DISPLAY_NAME, "yanbao_filter_${System.currentTimeMillis()}.jpg")
                                             put(android.provider.MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
                                             put(android.provider.MediaStore.Images.Media.RELATIVE_PATH, "Pictures/YanbaoAI")
                                         }
-                                        val uri = context.contentResolver.insert(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+                                        val uri = ctx.contentResolver.insert(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
                                         uri?.let { u ->
-                                            context.contentResolver.openOutputStream(u)?.use { out ->
+                                            ctx.contentResolver.openOutputStream(u)?.use { out ->
                                                 bmp.compress(android.graphics.Bitmap.CompressFormat.JPEG, 95, out)
                                             }
                                             Log.i("ShareCardDialog", "✅ 分享卡片已保存: $u")
@@ -440,22 +442,23 @@ fun ShareCardDialog(
                                 .clickable {
                                     Log.d("ShareCardDialog", "📤 分享卡片")
                                     // 调用系统分享 Intent
-                                    shareBitmap?.let { bmp ->
+                                    shareCardBitmap?.let { bmp ->
+                                        val ctx = saveContext
                                         val values = android.content.ContentValues().apply {
                                             put(android.provider.MediaStore.Images.Media.DISPLAY_NAME, "yanbao_share_${System.currentTimeMillis()}.jpg")
                                             put(android.provider.MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
                                         }
-                                        val uri = context.contentResolver.insert(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
+                                        val uri = ctx.contentResolver.insert(android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
                                         uri?.let { u ->
-                                            context.contentResolver.openOutputStream(u)?.use { out ->
+                                            ctx.contentResolver.openOutputStream(u)?.use { out ->
                                                 bmp.compress(android.graphics.Bitmap.CompressFormat.JPEG, 95, out)
                                             }
                                             val shareIntent = android.content.Intent(android.content.Intent.ACTION_SEND).apply {
                                                 type = "image/jpeg"
-                                                putExtra(android.content.Intent.EXTRA_STREAM, u)
+                                                putExtra(android.content.Intent.EXTRA_STREAM, u as android.os.Parcelable)
                                                 addFlags(android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION)
                                             }
-                                            context.startActivity(android.content.Intent.createChooser(shareIntent, "分享雁寶滤镜"))
+                                            ctx.startActivity(android.content.Intent.createChooser(shareIntent, "分享雁寶滤镜"))
                                         }
                                     }
                                 },
