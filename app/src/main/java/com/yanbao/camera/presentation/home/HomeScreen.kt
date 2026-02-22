@@ -46,8 +46,9 @@ fun HomeScreen(
             .background(
                 Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFFFDF5F7),
-                        Color(0xFFF9F0F5)
+                        Color(0xFFF0D6E8),
+                        Color(0xFFE8C8E0),
+                        Color(0xFFF5D0E8)
                     )
                 )
             )
@@ -384,11 +385,12 @@ fun HomeBottomNavigation(
         modifier = modifier.height(60.dp)
     ) {
         val items = listOf(
-            BottomNavItem("首页", R.drawable.ic_home_kuromi,     "home"),
-            BottomNavItem("拍照", R.drawable.ic_camera_kuromi,   "camera"),
-            BottomNavItem("推荐", R.drawable.ic_location_kuromi, "lbs"),
-            BottomNavItem("相册", R.drawable.ic_album_kuromi,    "gallery"),
-            BottomNavItem("我的", R.drawable.ic_profile_kuromi,  "profile")
+            BottomNavItem("首页", R.drawable.ic_tab_home_kuromi,      "home"),
+            BottomNavItem("拍照", R.drawable.ic_tab_camera_kuromi,    "camera"),
+            BottomNavItem("编辑", R.drawable.ic_tab_edit_kuromi,      "editor"),
+            BottomNavItem("相册", R.drawable.ic_tab_album_kuromi,     "gallery"),
+            BottomNavItem("推荐", R.drawable.ic_tab_recommend_kuromi, "lbs"),
+            BottomNavItem("我的", R.drawable.ic_tab_profile_kuromi,   "profile")
         )
         items.forEach { item ->
             NavigationBarItem(
