@@ -253,7 +253,7 @@ private fun BigActionCard(
             Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = title,
-                fontSize = 32.sp,
+                fontSize = 54.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
             )
@@ -273,7 +273,7 @@ private fun SectionHeader(title: String, onMore: () -> Unit = {}) {
     ) {
         Text(
             text = title,
-            fontSize = 32.sp,
+            fontSize = 54.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White
         )
@@ -331,7 +331,7 @@ private fun RecentActivityCard(activity: RecentActivity) {
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "Time ${activity.time}",
-                fontSize = 18.sp,
+                fontSize = 24.sp,
                 color = Color(0xFFEEEEEE),
                 modifier = Modifier.align(Alignment.End)
             )
