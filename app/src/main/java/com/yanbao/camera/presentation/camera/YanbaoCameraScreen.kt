@@ -1,431 +1,307 @@
+// app/src/main/java/com/yanbao/camera/presentation/camera/YanbaoCameraScreen.kt
 package com.yanbao.camera.presentation.camera
 
-import android.content.Context
-import androidx.compose.ui.platform.LocalContext
-import com.yanbao.camera.core.config.ThemeConfig
-
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.*
+import android.Manifest
+import android.util.Log
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FlashOn
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import kotlin.math.cos
-import kotlin.math.sin
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberPermissionState
+import kotlin.math.roundToInt
 
 /**
- * yanbao AI 拍照界面
+ * Yanbao AI Camera Screen - Industrial Design Implementation
  * 
- * 根據真實设计圖（unnamed.jpg）1:1 还原
- * 
- * 空間分層：
- * - Layer 0: 100% 全屏取景空間
- * - Layer 1: 顶部参数气泡 + 右上角發光頭像
- * - Layer 2: 底部 28% 曜石黑控制舱
+ * Features:
+ * - 100% fullscreen camera preview (Layer 0)
+ * - 28% bottom control panel with blur effect (Layer 1)
+ * - 9-mode dial with horizontal scroll
+ * - 29D value bubble (Layer 2)
+ * - Pink highlight for selected mode (#EC4899)
  */
+
+private val PinkHighlight = Color(0xFFEC4899)
+private val ObsidianBlack = Color(0xFF0F0F0F)
+
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun YanbaoCameraScreen(
-    onTakePhoto: () -> Unit = {}
+    modifier: Modifier = Modifier,
+    onNavigateBack: () -> Unit = {}
 ) {
-    val context = LocalContext.current
-    val themeConfig = remember { ThemeConfig.load(context) }
-    Box(modifier = Modifier.fillMaxSize()) {
-        
-        // === Layer 0: 全屏取景空間 (100%) ===
-        CameraPreviewLayer(modifier = Modifier.fillMaxSize())
-        
-        // === Layer 1: 顶部参数气泡 ===
-        TopParameterBubbles(modifier = Modifier.align(Alignment.TopStart))
-        
-        // === Layer 1: 右上角發光頭像 ===
-        GlowingAvatarButton(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(top = 60.dp, end = 20.dp)
+    val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
+    
+    LaunchedEffect(Unit) {
+        if (!cameraPermissionState.hasPermission) {
+            cameraPermissionState.launchPermissionRequest()
+        }
+    }
+    
+    if (cameraPermissionState.hasPermission) {
+        YanbaoCameraContent(modifier = modifier)
+    } else {
+        Box(
+            modifier = modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "需要相机权限才能使用此功能",
+                color = Color.White,
+                fontSize = 16.sp
+            )
+        }
+    }
+}
+
+@Composable
+private fun YanbaoCameraContent(modifier: Modifier = Modifier) {
+    var selectedModeIndex by remember { mutableStateOf(0) }
+    var isFlashOn by remember { mutableStateOf(false) }
+    var value29D by remember { mutableStateOf(0.5f) }
+    
+    val bottomPanelHeightFraction = 0.28f
+    
+    Box(modifier = modifier.fillMaxSize()) {
+        // Layer 0: Fullscreen camera preview
+        CameraPreviewLayer(
+            modifier = Modifier.fillMaxSize()
         )
         
-        // === Layer 2: 底部 28% 控制舱 ===
-        BottomControlPanel(
-            onTakePhoto = onTakePhoto,
+        // Layer 1: Bottom 28% control panel with blur
+        Box(
             modifier = Modifier
-                .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .fillMaxHeight(themeConfig.ui_logic.control_panel_ratio) // 从JSON读取28%
-        )
-    }
-}
-
-/**
- * Layer 0: 全屏取景空間（Camera2 预览）
- */
-@Composable
-fun CameraPreviewLayer(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier.background(Color.Black),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "Camera2 Preview",
-            color = Color.White.copy(alpha = 0.3f),
-            fontSize = 24.sp
-        )
-    }
-}
-
-/**
- * Layer 1: 顶部参数气泡
- * 
- * 显示：ISO 100、快門 1/250、焦距 35mm
- */
-@Composable
-fun TopParameterBubbles(modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier.padding(top = 60.dp, start = 20.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        // ISO 气泡
-        ParameterBubble(
-            label = "ISO 100",
-            subtitle = "f2.0 自X"
-        )
+                .fillMaxHeight(bottomPanelHeightFraction)
+                .align(Alignment.BottomCenter)
+                .background(ObsidianBlack.copy(alpha = 0.85f))
+                .blur(40.dp)
+        ) {
+            ControlPanel(
+                modifier = Modifier.fillMaxSize(),
+                selectedModeIndex = selectedModeIndex,
+                onModeSelected = { selectedModeIndex = it },
+                isFlashOn = isFlashOn,
+                onFlashToggle = { isFlashOn = !isFlashOn },
+                onSettingsClick = {
+                    Log.d("YanbaoCamera", "Settings clicked")
+                },
+                onCaptureClick = {
+                    Log.d("YanbaoCamera", "Capture clicked in mode: $selectedModeIndex")
+                    // TODO: Implement capture logic based on selectedModeIndex
+                }
+            )
+        }
         
-        // 快門气泡
-        ParameterBubble(
-            label = "1/250",
-            subtitle = "2.9D±0.8"
-        )
-        
-        // 焦距气泡
-        ParameterBubble(
-            label = "35mm",
-            subtitle = "2.9D±0.8"
-        )
+        // Layer 2: 29D value bubble (above bottom panel)
+        // Position it 60dp above the bottom panel
+        val bubbleOffsetY = with(LocalDensity.current) { 
+            (bottomPanelHeightFraction * LocalConfiguration.current.screenHeightDp).dp.toPx() 
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .align(Alignment.BottomCenter)
+                .offset(y = (-60).dp)
+                .padding(horizontal = 16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            ValueBubble(value = value29D)
+        }
     }
 }
 
-/**
- * 参数气泡組件
- */
 @Composable
-fun ParameterBubble(label: String, subtitle: String) {
-    Column(
-        modifier = Modifier
-            .clip(RoundedCornerShape(12.dp))
-            .background(Color(0x33000000)) // 半透明黑色
-            .border(1.dp, Color(0xFFFFB6C1).copy(alpha = 0.5f), RoundedCornerShape(12.dp))
-            .padding(horizontal = 12.dp, vertical = 6.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = label,
-            color = Color.White,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Bold
-        )
-        Text(
-            text = subtitle,
-            color = Color.White.copy(alpha = 0.7f),
-            fontSize = 9.sp
-        )
+private fun CameraPreviewLayer(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val previewView = remember { PreviewView(context) }
+    
+    LaunchedEffect(Unit) {
+        val cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+        cameraProviderFuture.addListener({
+            try {
+                val cameraProvider = cameraProviderFuture.get()
+                val preview = Preview.Builder().build().also {
+                    it.setSurfaceProvider(previewView.surfaceProvider)
+                }
+                val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+                
+                cameraProvider.unbindAll()
+                cameraProvider.bindToLifecycle(
+                    lifecycleOwner,
+                    cameraSelector,
+                    preview
+                )
+            } catch (e: Exception) {
+                Log.e("YanbaoCamera", "Camera binding failed", e)
+            }
+        }, ContextCompat.getMainExecutor(context))
     }
+    
+    AndroidView(
+        factory = { previewView },
+        modifier = modifier
+    )
 }
 
-/**
- * Layer 1: 右上角發光頭像
- */
 @Composable
-fun GlowingAvatarButton(modifier: Modifier = Modifier) {
-    val infiniteTransition = rememberInfiniteTransition(label = "glow")
-    val glowAlpha by infiniteTransition.animateFloat(
-        initialValue = 0.3f,
-        targetValue = 0.8f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1000, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "glowAlpha"
+private fun ControlPanel(
+    modifier: Modifier = Modifier,
+    selectedModeIndex: Int,
+    onModeSelected: (Int) -> Unit,
+    isFlashOn: Boolean,
+    onFlashToggle: () -> Unit,
+    onSettingsClick: () -> Unit,
+    onCaptureClick: () -> Unit,
+) {
+    val modes = listOf(
+        "基本相机",
+        "原相机",
+        "雁宝记忆",
+        "29D",
+        "2.9D",
+        "大师滤镜",
+        "一键美颜",
+        "录像",
+        "AR空间"
     )
     
-    Box(
-        modifier = modifier
-            .size(48.dp)
-            .drawBehind {
-                // 粉色發光環
-                drawCircle(
-                    brush = Brush.radialGradient(
-                        colors = listOf(
-                            Color(0xFFFFB6C1).copy(alpha = glowAlpha),
-                            Color.Transparent
-                        )
-                    ),
-                    radius = size.minDimension * 0.7f
-                )
-            }
-            .clip(CircleShape)
-            .background(Color(0xFF333333))
-            .border(2.dp, Color(0xFFFFB6C1), CircleShape),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "👤",
-            fontSize = 24.sp
-        )
-    }
-}
-
-/**
- * Layer 2: 底部 28% 控制舱
- */
-@Composable
-fun BottomControlPanel(
-    onTakePhoto: () -> Unit = {},
-    modifier: Modifier = Modifier
-) {
-    val context = LocalContext.current
-    val themeConfig = remember { ThemeConfig.load(context) }
-    
     Column(
-        modifier = modifier
-            .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp))
-            .background(Color(0xCC0A0A0A)) // 曜石黑
-            .blur(themeConfig.theme_palette.glass_blur_sigma.dp) // 从JSON读取40px高斯模糊
-            .border(
-                0.5.dp,
-                Color.White.copy(alpha = 0.1f),
-                RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp)
-            )
-            .padding(top = 16.dp),
+        modifier = modifier.padding(vertical = 12.dp),
+        verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // 弧形刻度尺
-        ArcScaleRuler()
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        // 中央快門區域
-        CentralShutterArea(onTakePhoto = onTakePhoto)
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        // 底部导航欄已在YanbaoApp中统一管理，此处不需要重复添加
-    }
-}
-
-/**
- * 弧形刻度尺（-100 到 +105）
- */
-@Composable
-fun ArcScaleRuler() {
-    var currentValue by remember { mutableStateOf(0f) }
-    
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(60.dp)
-            .drawBehind {
-                val centerX = size.width / 2
-                val centerY = size.height
-                val radius = size.width * 0.4f
+        // Mode dial - horizontal scrollable row
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            itemsIndexed(modes) { index, mode ->
+                val isSelected = index == selectedModeIndex
+                val textColor = if (isSelected) PinkHighlight else Color.White
+                val borderColor = if (isSelected) PinkHighlight else Color.Transparent
                 
-                // 繪製弧形刻度線
-                for (i in -100..105 step 5) {
-                    val angle = (i / 205f) * 180f - 90f
-                    val angleRad = Math.toRadians(angle.toDouble())
-                    
-                    val startX = centerX + (radius * cos(angleRad)).toFloat()
-                    val startY = centerY + (radius * sin(angleRad)).toFloat()
-                    val endX = centerX + ((radius - 10f) * cos(angleRad)).toFloat()
-                    val endY = centerY + ((radius - 10f) * sin(angleRad)).toFloat()
-                    
-                    drawLine(
-                        color = if (i == currentValue.toInt()) Color(0xFFFFB6C1) else Color.White.copy(alpha = 0.3f),
-                        start = Offset(startX, startY),
-                        end = Offset(endX, endY),
-                        strokeWidth = if (i % 20 == 0) 2f else 1f
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                        .clip(CircleShape)
+                        .border(width = 2.dp, color = borderColor, shape = CircleShape)
+                        .background(Color.Transparent)
+                        .clickable { onModeSelected(index) }
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = mode,
+                        color = textColor,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Center
                     )
                 }
-                
-                // 繪製當前值指示器
-                val currentAngle = (currentValue / 205f) * 180f - 90f
-                val currentAngleRad = Math.toRadians(currentAngle.toDouble())
-                val indicatorX = centerX + (radius * cos(currentAngleRad)).toFloat()
-                val indicatorY = centerY + (radius * sin(currentAngleRad)).toFloat()
-                
-                drawCircle(
-                    color = Color(0xFFFFB6C1),
-                    radius = 6f,
-                    center = Offset(indicatorX, indicatorY)
+            }
+        }
+        
+        // Bottom controls row: Flash, Capture, Settings
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 32.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            IconButton(
+                onClick = onFlashToggle,
+                modifier = Modifier.size(36.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.FlashOn,
+                    contentDescription = if (isFlashOn) "关闭闪光灯" else "开启闪光灯",
+                    tint = if (isFlashOn) PinkHighlight else Color.White
                 )
             }
-    ) {
-        // 左側數值标签
-        Text(
-            text = "-100",
-            color = Color.White.copy(alpha = 0.5f),
-            fontSize = 10.sp,
-            modifier = Modifier.align(Alignment.BottomStart).padding(start = 40.dp)
-        )
-        
-        // 中央數值标签
-        Text(
-            text = currentValue.toInt().toString(),
-            color = Color(0xFFFFB6C1),
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
-        
-        // 右側數值标签
-        Text(
-            text = "+105",
-            color = Color.White.copy(alpha = 0.5f),
-            fontSize = 10.sp,
-            modifier = Modifier.align(Alignment.BottomEnd).padding(end = 40.dp)
-        )
+            
+            // Capture button - big pink circle
+            Box(
+                modifier = Modifier
+                    .size(72.dp)
+                    .clip(CircleShape)
+                    .background(PinkHighlight)
+                    .clickable(onClick = onCaptureClick),
+                contentAlignment = Alignment.Center
+            ) {
+                // Inner smaller white circle for style
+                Box(
+                    modifier = Modifier
+                        .size(56.dp)
+                        .clip(CircleShape)
+                        .background(Color.White.copy(alpha = 0.15f))
+                )
+            }
+            
+            IconButton(
+                onClick = onSettingsClick,
+                modifier = Modifier.size(36.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = "设置",
+                    tint = Color.White
+                )
+            }
+        }
     }
 }
 
-/**
- * 中央快門區域
- */
 @Composable
-fun CentralShutterArea(
-    onTakePhoto: () -> Unit = {}
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        // 模式切換标签
-        ModeSwitchTabs()
-        
-        // 库洛米快門按鈕
-        KuromiShutterButton(onClick = onTakePhoto)
-        
-        // Git Syncing 状态
-        GitSyncingStatus()
-    }
-}
-
-/**
- * 模式切換标签
- */
-@Composable
-fun ModeSwitchTabs() {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = "雁宝修飾",
-            color = Color.White,
-            fontSize = 12.sp
-        )
-        Text(
-            text = "美顏",
-            color = Color.White.copy(alpha = 0.5f),
-            fontSize = 12.sp
-        )
-        Text(
-            text = "29D",
-            color = Color.White.copy(alpha = 0.5f),
-            fontSize = 12.sp
-        )
-        Text(
-            text = "更多",
-            color = Color.White.copy(alpha = 0.5f),
-            fontSize = 12.sp
-        )
-    }
-}
-
-/**
- * 库洛米快門按鈕
- */
-@Composable
-fun KuromiShutterButton(onClick: () -> Unit = {}) {
-    val infiniteTransition = rememberInfiniteTransition(label = "shutter_glow")
-    val glowRadius by infiniteTransition.animateFloat(
-        initialValue = 36f,
-        targetValue = 42f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1000, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "glowRadius"
-    )
-    
+private fun ValueBubble(value: Float) {
+    // Bubble style: pink border, black semi-transparent background, white text
     Box(
         modifier = Modifier
-            .size(72.dp)
-            .clickable { onClick() }
-            .drawBehind {
-                // 粉紫流光環繞
-                drawCircle(
-                    brush = Brush.radialGradient(
-                        colors = listOf(
-                            Color(0xFFFFB6C1),
-                            Color(0xFFE0B0FF),
-                            Color.Transparent
-                        )
-                    ),
-                    radius = glowRadius
-                )
-            }
             .clip(CircleShape)
-            .background(
-                Brush.linearGradient(
-                    colors = listOf(Color(0xFFFFB6C1), Color(0xFFE0B0FF))
-                )
-            )
-            .border(3.dp, Color.White.copy(alpha = 0.5f), CircleShape),
-        contentAlignment = Alignment.Center
+            .background(Color.Black.copy(alpha = 0.7f))
+            .border(width = 2.dp, color = PinkHighlight, shape = CircleShape)
+            .padding(horizontal = 24.dp, vertical = 12.dp)
     ) {
         Text(
-            text = "🐰",
-            fontSize = 32.sp
+            text = String.format("29D: %.2f", value),
+            color = Color.White,
+            fontWeight = FontWeight.Bold,
+            fontSize = 16.sp,
+            textAlign = TextAlign.Center
         )
     }
 }
-
-/**
- * Git Syncing 状态
- */
-@Composable
-fun GitSyncingStatus() {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = "✓",
-            color = Color(0xFFFFB6C1),
-            fontSize = 12.sp
-        )
-        Text(
-            text = "Git Syncing...",
-            color = Color.White.copy(alpha = 0.7f),
-            fontSize = 11.sp,
-            fontFamily = FontFamily.Monospace
-        )
-    }
-}
-
-// 底部导航欄已移除，由YanbaoApp统一管理
