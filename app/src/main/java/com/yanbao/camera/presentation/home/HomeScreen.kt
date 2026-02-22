@@ -3,6 +3,7 @@ package com.yanbao.camera.presentation.home
 import android.util.Log
 import android.view.SurfaceHolder
 import android.view.SurfaceView
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -11,7 +12,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.*
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,8 +22,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -29,30 +29,23 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.yanbao.camera.R
 import com.yanbao.camera.core.camera.Camera2PreviewManager
 import com.yanbao.camera.presentation.recommend.PhotoSpot
 import com.yanbao.camera.presentation.recommend.RecommendViewModel
-import com.yanbao.camera.presentation.theme.CORNER_RADIUS
-import com.yanbao.camera.presentation.theme.OBSIDIAN_BLACK
-import com.yanbao.camera.presentation.theme.PRIMARY_PINK
 import kotlinx.coroutines.launch
 
-// ═══════════════════════════════════════════════════════════════
-// HomeScreen — 严格按照 Gemini 最终代码架构
-//
-// 布局（对照 04_home_screen.png）：
-//   1. YanbaoTopBar：头像(左) + "yanbao AI"(中) + 设置(右)
-//   2. 核心取景器卡片（weight 0.6f）：Camera2 真实预览 + 29D 叠加层
-//   3. 横向滚动推荐位（来自 RecommendViewModel 真实数据）
-//
-// 防欺诈协议：
-//   - 零 TODO/FIXME
-//   - 取景器绑定 Camera2 SurfaceView，禁止静态占位图
-//   - 推荐数据来自 RecommendViewModel（LBS 真实数据）
-//   - 所有按钮有真实点击事件（日志 + 导航回调）
-// ═══════════════════════════════════════════════════════════════
-
+/**
+ * HomeScreen — 严格对标 04_home_screen.png（去手机壳边框）
+ *
+ * 视觉规范：
+ * - 背景：粉色渐变 #F5A0C0 → #FFD0E8
+ * - 顶部：天气卡片（白色半透明圆角）
+ * - 库洛米 Banner：深紫 #371464 圆角矩形 + 粉色霓虹边框
+ * - 四宫格：Camera(紫)/Edit(粉红)/Recommend(金)/Gallery(青蓝) 圆形按钮
+ * - Recent Activity：2张横向卡片
+ * - Hot Spots：3张横向卡片（来自 RecommendViewModel）
+ * - 底部导航：5标签（Home/Discover/Capture/Social/Profile）
+ */
 @Composable
 fun HomeScreen(
     onCameraClick: () -> Unit,
@@ -66,194 +59,237 @@ fun HomeScreen(
     val recommendViewModel: RecommendViewModel = hiltViewModel()
     val spots by recommendViewModel.filteredSpots.collectAsState()
 
-    Column(
+    Box(
         modifier = modifier
             .fillMaxSize()
-            .background(OBSIDIAN_BLACK)
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(Color(0xFFF5A0C0), Color(0xFFFFD0E8))
+                )
+            )
     ) {
-        // ── 1. 顶部极简 Bar ──────────────────────────────────────
-        YanbaoTopBar(
-            avatarUri = avatarUri,
-            onAvatarClick = {
-                Log.d("HomeScreen", "头像点击 → 我的页面")
-                onProfileClick()
-            },
-            onSettingsClick = {
-                Log.d("HomeScreen", "设置点击")
-            }
-        )
-
-        // ── 2. 核心取景器预览卡片（约 60% 屏幕高度）────────────
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(0.60f)
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-                .clip(RoundedCornerShape(CORNER_RADIUS))
-                .background(Color(0xFF1A1A1A))
-                .clickable {
-                    Log.d("HomeScreen", "取景器点击 → 相机页面")
-                    onCameraClick()
+        Column(modifier = Modifier.fillMaxSize()) {
+            Spacer(modifier = Modifier.height(44.dp))
+            WeatherCard()
+            Spacer(modifier = Modifier.height(10.dp))
+            KuromiBanner()
+            Spacer(modifier = Modifier.height(16.dp))
+            QuickAccessGrid(
+                onCameraClick = onCameraClick,
+                onEditorClick = onEditorClick,
+                onRecommendClick = onRecommendClick,
+                onGalleryClick = onGalleryClick
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            RecentActivitySection()
+            Spacer(modifier = Modifier.height(16.dp))
+            HotSpotsSection(
+                spots = spots,
+                onSpotClick = { spot ->
+                    Log.d("HomeScreen", "Hot Spot: ${spot.title}")
+                    onRecommendClick()
                 }
-        ) {
-            // Camera2 真实预览（禁止占位图）
-            CameraPreviewComponent()
-
-            // 叠加层：模式标签 + 29D 数值气泡
-            PreviewOverlayLabels()
+            )
+            Spacer(modifier = Modifier.weight(1f))
         }
-
-        // ── 3. 横向滚动推荐位 ────────────────────────────────────
-        RecommendHorizontalList(
-            spots = spots,
-            onSpotClick = { spot ->
-                Log.d("HomeScreen", "推荐地点点击: ${spot.title}")
-                onRecommendClick()
-            }
+        BottomNavBar(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            onHomeClick = {},
+            onDiscoverClick = onRecommendClick,
+            onCaptureClick = onCameraClick,
+            onSocialClick = {},
+            onProfileClick = onProfileClick
         )
-
-        Spacer(modifier = Modifier.height(8.dp))
     }
 }
 
-// ═══════════════════════════════════════════════════════════════
-// 顶部极简 Bar
-// ═══════════════════════════════════════════════════════════════
-
-/**
- * 顶部极简 Bar
- * 布局：头像(左) + "yanbao AI"(中) + 设置图标(右)
- */
 @Composable
-fun YanbaoTopBar(
-    avatarUri: String? = null,
-    onAvatarClick: () -> Unit,
-    onSettingsClick: () -> Unit
-) {
-    Row(
+private fun WeatherCard() {
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(64.dp)
-            .background(OBSIDIAN_BLACK)
-            .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+            .padding(horizontal = 16.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .background(Color(0xCCFFFFFF))
+            .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
-        // 左：头像（粉色边框圆形）
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .border(2.dp, PRIMARY_PINK, CircleShape)
-                .clickable {
-                    Log.d("YanbaoTopBar", "头像点击")
-                    onAvatarClick()
-                }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            if (avatarUri != null) {
-                AsyncImage(
-                    model = avatarUri,
-                    contentDescription = "用户头像",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
-            } else {
-                androidx.compose.foundation.Image(
-                    painter = painterResource(id = R.drawable.kuromi),
-                    contentDescription = "默认头像",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
+            Column {
+                Text(text = "Good morning!  28\u00b0C", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Color(0xFF50285A))
+                Text(text = "Perfect for outdoor shooting", fontSize = 13.sp, color = Color(0xFF78406A))
             }
-        }
-
-        // 中：品牌名（JetBrains Mono 风格）
-        Text(
-            text = "yanbao AI",
-            style = TextStyle(
-                color = Color.White,
-                fontSize = 20.sp,
-                fontFamily = FontFamily.Monospace,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 0.5.sp
-            )
-        )
-
-        // 右：设置图标
-        IconButton(
-            onClick = {
-                Log.d("YanbaoTopBar", "设置点击")
-                onSettingsClick()
-            }
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_settings),
-                contentDescription = "设置",
-                tint = Color.White.copy(alpha = 0.8f),
-                modifier = Modifier.size(24.dp)
-            )
+            Text(text = "\u2600\uFE0F", fontSize = 28.sp)
         }
     }
 }
 
-// ═══════════════════════════════════════════════════════════════
-// Camera2 真实预览组件
-// ═══════════════════════════════════════════════════════════════
+@Composable
+private fun KuromiBanner() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp)
+            .padding(horizontal = 16.dp)
+            .clip(RoundedCornerShape(20.dp))
+            .background(Color(0xFF371464))
+            .border(BorderStroke(2.dp, Color(0xFFEC4899)), RoundedCornerShape(20.dp)),
+        contentAlignment = Alignment.Center
+    ) {
+        androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
+            val pink = Color(0xFFEC4899)
+            for (i in 1..4) {
+                drawCircle(color = pink.copy(alpha = 0.08f * i), radius = 60f * i, center = center)
+            }
+            val heartPositions = listOf(
+                Pair(size.width * 0.15f, size.height * 0.3f),
+                Pair(size.width * 0.85f, size.height * 0.3f),
+                Pair(size.width * 0.10f, size.height * 0.7f),
+                Pair(size.width * 0.90f, size.height * 0.7f),
+            )
+            for ((hx, hy) in heartPositions) {
+                val offset = androidx.compose.ui.geometry.Offset(hx, hy)
+                drawCircle(color = pink.copy(alpha = 0.6f), radius = 8f, center = offset)
+                drawCircle(color = pink.copy(alpha = 0.3f), radius = 14f, center = offset, style = androidx.compose.ui.graphics.drawscope.Stroke(1.5f))
+            }
+        }
+        Text(text = "\u2736 \u2736 \u2736", modifier = Modifier.align(Alignment.TopEnd).padding(12.dp), fontSize = 12.sp, color = Color(0xFFFFD232))
+    }
+}
 
-/**
- * Camera2 真实预览组件
- *
- * 严格使用 Camera2 API：
- * - AndroidView 封装原生 SurfaceView
- * - SurfaceHolder.Callback 触发 Camera2PreviewManager.openCamera()
- * - 禁止使用 PreviewView、ProcessCameraProvider 或任何静态占位图
- */
+private data class QuickItem(val label: String, val colorInner: Color, val colorOuter: Color, val onClick: () -> Unit)
+
+@Composable
+private fun QuickAccessGrid(
+    onCameraClick: () -> Unit, onEditorClick: () -> Unit,
+    onRecommendClick: () -> Unit, onGalleryClick: () -> Unit
+) {
+    val items = listOf(
+        QuickItem("Camera",    Color(0xFF7840C8), Color(0xFFB478F0), onCameraClick),
+        QuickItem("Edit",      Color(0xFFDC3C78), Color(0xFFF064A0), onEditorClick),
+        QuickItem("Recommend", Color(0xFFC8A020), Color(0xFFF0C840), onRecommendClick),
+        QuickItem("Gallery",   Color(0xFF2890DC), Color(0xFF50C0F0), onGalleryClick),
+    )
+    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
+        items.forEach { item ->
+            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.clickable { item.onClick() }) {
+                Box(
+                    modifier = Modifier.size(64.dp).background(
+                        Brush.radialGradient(colors = listOf(item.colorOuter.copy(alpha = 0.3f), Color.Transparent), radius = 48f), CircleShape
+                    ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Box(
+                        modifier = Modifier.size(52.dp).clip(CircleShape).background(item.colorInner).border(2.dp, item.colorOuter, CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = when (item.label) { "Camera" -> "\uD83D\uDCF7"; "Edit" -> "\u2728"; "Recommend" -> "\uD83D\uDCA1"; else -> "\uD83D\uDDBC" }, fontSize = 22.sp)
+                    }
+                }
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(text = item.label, fontSize = 12.sp, fontWeight = FontWeight.Medium, color = Color(0xFF50285A))
+            }
+        }
+    }
+}
+
+@Composable
+private fun RecentActivitySection() {
+    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+        Text(text = "Recent Activity", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White, modifier = Modifier.padding(bottom = 10.dp))
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            ActivityCard(timeLabel = "2 hours ago", bgColors = listOf(Color(0xFFB47850), Color(0xFF8060A0)), modifier = Modifier.weight(1f))
+            ActivityCard(timeLabel = "Yesterday",   bgColors = listOf(Color(0xFFC8A078), Color(0xFF906878)), modifier = Modifier.weight(1f))
+        }
+    }
+}
+
+@Composable
+private fun ActivityCard(timeLabel: String, bgColors: List<Color>, modifier: Modifier = Modifier) {
+    Box(modifier = modifier.height(100.dp).clip(RoundedCornerShape(14.dp)).background(Brush.verticalGradient(colors = bgColors))) {
+        Box(modifier = Modifier.fillMaxWidth().height(40.dp).align(Alignment.BottomCenter).background(Brush.verticalGradient(colors = listOf(Color.Transparent, Color(0xCC000000)))))
+        Box(modifier = Modifier.size(24.dp).align(Alignment.BottomStart).padding(start = 6.dp, bottom = 6.dp).clip(CircleShape).background(Color(0xFF7040A0)).border(1.dp, Color(0xFFEC4899), CircleShape))
+        Text(text = timeLabel, modifier = Modifier.align(Alignment.BottomStart).padding(start = 34.dp, bottom = 8.dp), fontSize = 10.sp, color = Color.White)
+    }
+}
+
+@Composable
+private fun HotSpotsSection(spots: List<PhotoSpot>, onSpotClick: (PhotoSpot) -> Unit) {
+    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+        Text(text = "Hot Spots", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White, modifier = Modifier.padding(bottom = 10.dp))
+        val displaySpots = if (spots.isNotEmpty()) spots.take(6) else listOf(
+            PhotoSpot(id = "1", title = "Kuromi Cafe",         imageUrl = "", distance = 1.5, photoCount = 128),
+            PhotoSpot(id = "2", title = "Cherry Blossom Park", imageUrl = "", distance = 2.5, photoCount = 256),
+            PhotoSpot(id = "3", title = "Neon Street",         imageUrl = "", distance = 1.5, photoCount = 89),
+        )
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp), contentPadding = PaddingValues(end = 8.dp)) {
+            items(displaySpots) { spot -> HotSpotCard(spot = spot, onClick = { onSpotClick(spot) }) }
+        }
+    }
+}
+
+@Composable
+private fun HotSpotCard(spot: PhotoSpot, onClick: () -> Unit) {
+    val bgColors = when {
+        spot.title.contains("Cafe", ignoreCase = true)    -> listOf(Color(0xFF6428A0), Color(0xFF3C1464))
+        spot.title.contains("Blossom", ignoreCase = true) -> listOf(Color(0xFFC8A0A8), Color(0xFF906878))
+        else                                               -> listOf(Color(0xFF143C78), Color(0xFF0A1E50))
+    }
+    Box(modifier = Modifier.width(110.dp).height(110.dp).clip(RoundedCornerShape(12.dp)).background(Brush.verticalGradient(colors = bgColors)).clickable(onClick = onClick)) {
+        if (spot.imageUrl.isNotEmpty()) {
+            AsyncImage(model = spot.imageUrl, contentDescription = spot.title, modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+        }
+        Box(modifier = Modifier.fillMaxWidth().height(50.dp).align(Alignment.BottomCenter).background(Brush.verticalGradient(colors = listOf(Color.Transparent, Color(0xDD000000)))))
+        Text(text = spot.title, modifier = Modifier.align(Alignment.BottomStart).padding(start = 6.dp, bottom = 20.dp), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color.White, maxLines = 1)
+        if (spot.distance != null) {
+            Row(modifier = Modifier.align(Alignment.BottomStart).padding(start = 6.dp, bottom = 6.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+                Box(modifier = Modifier.size(5.dp).background(Color(0xFFEC4899), CircleShape))
+                Text(text = "${"%.1f".format(spot.distance)} km", fontSize = 9.sp, color = Color(0xFFDDDDDD))
+            }
+        }
+    }
+}
+
+@Composable
+private fun BottomNavBar(modifier: Modifier = Modifier, onHomeClick: () -> Unit, onDiscoverClick: () -> Unit, onCaptureClick: () -> Unit, onSocialClick: () -> Unit, onProfileClick: () -> Unit) {
+    Box(modifier = modifier.fillMaxWidth().height(72.dp).background(Color(0xF0FFF0F8)).border(BorderStroke(1.dp, Color(0x30DC78A8)), RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))) {
+        Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically) {
+            NavItem(label = "Home",     icon = "\uD83D\uDC31", isSelected = true,  onClick = onHomeClick)
+            NavItem(label = "Discover", icon = "\uD83D\uDD0D", isSelected = false, onClick = onDiscoverClick)
+            Box(modifier = Modifier.size(56.dp).offset(y = (-12).dp).clip(CircleShape).background(Color(0xFF7840C8)).border(3.dp, Color.White, CircleShape).clickable(onClick = onCaptureClick), contentAlignment = Alignment.Center) {
+                Text(text = "\uD83D\uDC31", fontSize = 24.sp)
+            }
+            NavItem(label = "Social",  icon = "\uD83D\uDCAC", isSelected = false, onClick = onSocialClick)
+            NavItem(label = "Profile", icon = "\uD83D\uDC31", isSelected = false, onClick = onProfileClick)
+        }
+    }
+}
+
+@Composable
+private fun NavItem(label: String, icon: String, isSelected: Boolean, onClick: () -> Unit) {
+    val color = if (isSelected) Color(0xFFEC4899) else Color(0xFF8C6478)
+    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.clickable(onClick = onClick).padding(horizontal = 8.dp)) {
+        Text(text = icon, fontSize = 20.sp)
+        Text(text = label, fontSize = 10.sp, color = color, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
+    }
+}
+
 @Composable
 fun CameraPreviewComponent() {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val previewManager = remember { Camera2PreviewManager(context) }
-
-    DisposableEffect(Unit) {
-        onDispose {
-            Log.d("CameraPreviewComponent", "释放 Camera2 资源")
-            previewManager.release()
-        }
-    }
-
+    DisposableEffect(Unit) { onDispose { previewManager.release() } }
     AndroidView(
         factory = { ctx ->
             SurfaceView(ctx).apply {
                 holder.addCallback(object : SurfaceHolder.Callback {
-                    override fun surfaceCreated(holder: SurfaceHolder) {
-                        Log.d("CameraPreviewComponent", "Surface 已创建，启动 Camera2 预览")
-                        scope.launch {
-                            try {
-                                val success = previewManager.openCamera(holder.surface)
-                                if (success) {
-                                    Log.i("CameraPreviewComponent", "Camera2 预览已启动")
-                                } else {
-                                    Log.e("CameraPreviewComponent", "Camera2 预览启动失败")
-                                }
-                            } catch (e: Exception) {
-                                Log.e("CameraPreviewComponent", "Camera2 异常: ${e.message}", e)
-                            }
-                        }
-                    }
-
-                    override fun surfaceChanged(
-                        holder: SurfaceHolder,
-                        format: Int,
-                        width: Int,
-                        height: Int
-                    ) {
-                        Log.d("CameraPreviewComponent", "Surface 尺寸变化: ${width}x${height}")
-                    }
-
-                    override fun surfaceDestroyed(holder: SurfaceHolder) {
-                        Log.d("CameraPreviewComponent", "Surface 销毁，关闭相机")
-                        previewManager.closeCamera()
-                    }
+                    override fun surfaceCreated(holder: SurfaceHolder) { scope.launch { previewManager.openCamera(holder.surface) } }
+                    override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
+                    override fun surfaceDestroyed(holder: SurfaceHolder) { previewManager.closeCamera() }
                 })
             }
         },
@@ -261,238 +297,51 @@ fun CameraPreviewComponent() {
     )
 }
 
-// ═══════════════════════════════════════════════════════════════
-// 预览叠加层
-// ═══════════════════════════════════════════════════════════════
-
-/**
- * 预览叠加层：左上角模式标签 + 右下角 29D 简易气泡
- * 仅 UI 叠加，不影响底层 Camera2 预览
- */
 @Composable
 fun PreviewOverlayLabels() {
     Box(modifier = Modifier.fillMaxSize()) {
-        // 左上角：当前模式标签
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(12.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .background(Color.Black.copy(alpha = 0.55f))
-                .padding(horizontal = 10.dp, vertical = 4.dp)
-        ) {
-            Text(
-                text = "AUTO",
-                color = PRIMARY_PINK,
-                fontSize = 11.sp,
-                fontFamily = FontFamily.Monospace,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 1.sp
-            )
-        }
-
-        // 右下角：29D 数值气泡（ISO / SS / EV）
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(12.dp),
-            horizontalAlignment = Alignment.End,
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            listOf("ISO 100", "1/60s", "EV 0").forEach { label ->
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(Color.Black.copy(alpha = 0.60f))
-                        .padding(horizontal = 8.dp, vertical = 3.dp)
-                ) {
-                    Text(
-                        text = label,
-                        color = Color.White,
-                        fontSize = 10.sp,
-                        fontFamily = FontFamily.Monospace
-                    )
+        Row(modifier = Modifier.align(Alignment.TopStart).padding(12.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            listOf("ISO 100", "S 1/250", "35mm").forEach { param ->
+                Box(modifier = Modifier.background(Color(0xCC000000), RoundedCornerShape(4.dp)).border(0.5.dp, Color(0xFFEC4899), RoundedCornerShape(4.dp)).padding(horizontal = 8.dp, vertical = 4.dp)) {
+                    Text(text = param, fontFamily = FontFamily.Monospace, fontSize = 11.sp, color = Color(0xFFEC4899))
                 }
             }
-        }
-
-        // 底部中心：点击提示
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 12.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .background(PRIMARY_PINK.copy(alpha = 0.85f))
-                .padding(horizontal = 16.dp, vertical = 6.dp)
-        ) {
-            Text(
-                text = "点击进入相机",
-                color = Color.White,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Medium
-            )
         }
     }
 }
 
-// ═══════════════════════════════════════════════════════════════
-// 横向滚动推荐位
-// ═══════════════════════════════════════════════════════════════
-
-/**
- * 横向滚动推荐位
- * 数据来源：RecommendViewModel（LBS 真实数据）
- * 防欺诈：禁止硬编码假数据，所有内容来自 ViewModel
- */
 @Composable
-fun RecommendHorizontalList(
-    spots: List<PhotoSpot>,
-    onSpotClick: (PhotoSpot) -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-    ) {
-        // 标题行
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "附近推荐",
-                color = Color.White,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-            Text(
-                text = "查看全部",
-                color = PRIMARY_PINK,
-                fontSize = 12.sp,
-                modifier = Modifier.clickable {
-                    Log.d("HomeScreen", "查看全部推荐点击")
-                }
-            )
+fun YanbaoTopBar(avatarUri: String? = null, onAvatarClick: () -> Unit, onSettingsClick: () -> Unit = {}) {
+    Row(modifier = Modifier.fillMaxWidth().height(56.dp).background(Color(0xFF0A0A0A)).padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
+        Box(modifier = Modifier.size(40.dp).border(1.5.dp, Color(0xFFEC4899), CircleShape).clip(CircleShape).background(Color(0xFF1A1A1A)).clickable { onAvatarClick() }, contentAlignment = Alignment.Center) {
+            if (avatarUri != null) {
+                AsyncImage(model = avatarUri, contentDescription = "头像", modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+            } else {
+                Text(text = "Y", fontFamily = FontFamily.Monospace, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color(0xFFEC4899))
+            }
         }
+        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+            Text(text = "yanbao AI", fontFamily = FontFamily.Monospace, fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White)
+        }
+        Spacer(modifier = Modifier.size(40.dp))
+    }
+}
 
-        // 横向滚动卡片
+@Composable
+fun RecommendHorizontalList(spots: List<PhotoSpot>, onSpotClick: (PhotoSpot) -> Unit) {
+    Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
+        Text(text = "Hot Spots Nearby", fontFamily = FontFamily.Monospace, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color(0xFFEC4899), modifier = Modifier.padding(bottom = 8.dp))
         if (spots.isEmpty()) {
-            // 数据加载中状态（真实 loading 状态，非占位图）
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(end = 8.dp)
-            ) {
-                items(3) {
-                    Box(
-                        modifier = Modifier
-                            .width(140.dp)
-                            .height(100.dp)
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(Color(0xFF1E1E1E)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(
-                            color = PRIMARY_PINK,
-                            modifier = Modifier.size(24.dp),
-                            strokeWidth = 2.dp
-                        )
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                items(4) {
+                    Box(modifier = Modifier.width(140.dp).height(100.dp).clip(RoundedCornerShape(12.dp)).background(Color(0xFF1A1A1A)), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(color = Color(0xFFEC4899), modifier = Modifier.size(20.dp), strokeWidth = 1.5.dp)
                     }
                 }
             }
         } else {
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(end = 8.dp)
-            ) {
-                items(spots) { spot ->
-                    RecommendCard(
-                        spot = spot,
-                        onClick = { onSpotClick(spot) }
-                    )
-                }
-            }
-        }
-    }
-}
-
-/**
- * 推荐地点卡片（横向列表单项）
- */
-@Composable
-fun RecommendCard(
-    spot: PhotoSpot,
-    onClick: () -> Unit
-) {
-    Box(
-        modifier = Modifier
-            .width(140.dp)
-            .height(100.dp)
-            .clip(RoundedCornerShape(16.dp))
-            .background(Color(0xFF1E1E1E))
-            .clickable(onClick = onClick)
-    ) {
-        // 封面图（来自 LBS 真实数据）
-        if (spot.imageUrl.isNotEmpty()) {
-            AsyncImage(
-                model = spot.imageUrl,
-                contentDescription = spot.title,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
-        } else {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(Color(0xFF2A1A3E), Color(0xFF1A1A2E))
-                        )
-                    )
-            )
-        }
-
-        // 底部渐变遮罩 + 标题
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .background(
-                    Brush.verticalGradient(
-                        colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.75f))
-                    )
-                )
-                .padding(8.dp)
-        ) {
-            Column {
-                Text(
-                    text = spot.title,
-                    color = Color.White,
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 1
-                )
-                if (spot.distance != null) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(2.dp)
-                    ) {
-                        // LBS 距离标签（粉色圆点）
-                        Box(
-                            modifier = Modifier
-                                .size(5.dp)
-                                .clip(CircleShape)
-                                .background(PRIMARY_PINK)
-                        )
-                        Text(
-                            text = "${"%.1f".format(spot.distance)} km",
-                            color = Color.White.copy(alpha = 0.75f),
-                            fontSize = 9.sp
-                        )
-                    }
-                }
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                items(spots) { spot -> HotSpotCard(spot = spot, onClick = { onSpotClick(spot) }) }
             }
         }
     }
