@@ -10,41 +10,50 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
-import com.yanbao.camera.core.camera.Camera2PreviewManager
 import com.yanbao.camera.presentation.recommend.PhotoSpot
 import com.yanbao.camera.presentation.recommend.RecommendViewModel
 import kotlinx.coroutines.launch
 
+// ═══════════════════════════════════════════════════════════════
+// 强制色号（来自 pasted_content_2.txt 技术约束）
+// ═══════════════════════════════════════════════════════════════
+private val NEON_PINK     = Color(0xFFEC4899)
+private val NEON_PURPLE   = Color(0xFFA855F7)
+private val SOFT_BG_START = Color(0xFFF5A0C0)
+private val SOFT_BG_END   = Color(0xFFD8B4FE)
+
 /**
- * HomeScreen — 严格对标 04_home_screen.png（去手机壳边框）
+ * HomeScreen — 严格像素级还原 module2_kuromi_theme.png（满画面，无手机壳）
  *
- * 视觉规范：
- * - 背景：粉色渐变 #F5A0C0 → #FFD0E8
- * - 顶部：天气卡片（白色半透明圆角）
- * - 库洛米 Banner：深紫 #371464 圆角矩形 + 粉色霓虹边框
- * - 四宫格：Camera(紫)/Edit(粉红)/Recommend(金)/Gallery(青蓝) 圆形按钮
- * - Recent Activity：2张横向卡片
- * - Hot Spots：3张横向卡片（来自 RecommendViewModel）
- * - 底部导航：5标签（Home/Discover/Capture/Social/Profile）
+ * 布局（从顶到底）：
+ * 1. 天气毛玻璃卡片（早安！28°C 适合外拍）
+ * 2. 用户头像（霓虹圆框，居中）
+ * 3. 四彩色霓虹按钮：拍照 / 编辑 / AI推荐 / 相册（2×2）
+ * 4. 最近活动（LazyRow，粉色发光边框卡片）
+ * 5. 热门地点（LazyRow，台北101/台南波场/北海坑境）
+ * 6. 底部导航（5标签，半透明粉色磨砂，中间库洛米图标）
  */
 @Composable
 fun HomeScreen(
@@ -59,59 +68,91 @@ fun HomeScreen(
     val recommendViewModel: RecommendViewModel = hiltViewModel()
     val spots by recommendViewModel.filteredSpots.collectAsState()
 
+    // 满画面粉紫径向渐变背景（Modifier.fillMaxSize().background(radialGradient)）
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    colors = listOf(Color(0xFFF5A0C0), Color(0xFFFFD0E8))
+                    colorStops = arrayOf(
+                        0.00f to Color(0xFFB090E8),
+                        0.25f to SOFT_BG_END,
+                        0.55f to SOFT_BG_START,
+                        1.00f to Color(0xFFF8C8DC)
+                    )
                 )
             )
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            Spacer(modifier = Modifier.height(44.dp))
-            WeatherCard()
-            Spacer(modifier = Modifier.height(10.dp))
-            KuromiBanner()
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+        ) {
+            Spacer(modifier = Modifier.height(52.dp))
+
+            // ── 1. 天气毛玻璃卡片 ──
+            WeatherGlassCard()
+
             Spacer(modifier = Modifier.height(16.dp))
-            QuickAccessGrid(
+
+            // ── 2. 用户头像（霓虹圆框，居中）──
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                UserAvatarNeonBadge(avatarUri = avatarUri, onClick = onProfileClick)
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // ── 3. 四彩色霓虹按钮（2×2）──
+            FunctionButtonGrid(
                 onCameraClick = onCameraClick,
                 onEditorClick = onEditorClick,
                 onRecommendClick = onRecommendClick,
                 onGalleryClick = onGalleryClick
             )
-            Spacer(modifier = Modifier.height(16.dp))
-            RecentActivitySection()
-            Spacer(modifier = Modifier.height(16.dp))
-            HotSpotsSection(
-                spots = spots,
-                onSpotClick = { spot ->
-                    Log.d("HomeScreen", "Hot Spot: ${spot.title}")
-                    onRecommendClick()
-                }
-            )
-            Spacer(modifier = Modifier.weight(1f))
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // ── 4. 最近活动 ──
+            SectionHeader(title = "最近活动 ⭐")
+            Spacer(modifier = Modifier.height(10.dp))
+            RecentActivityRow()
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // ── 5. 热门地点 ──
+            SectionHeader(title = "热门地点 🔥")
+            Spacer(modifier = Modifier.height(10.dp))
+            HotSpotsRow(spots = spots, onSpotClick = { onRecommendClick() })
+
+            Spacer(modifier = Modifier.height(88.dp))
         }
+
+        // ── 6. 底部导航（固定底部）──
         BottomNavBar(
             modifier = Modifier.align(Alignment.BottomCenter),
             onHomeClick = {},
-            onDiscoverClick = onRecommendClick,
-            onCaptureClick = onCameraClick,
-            onSocialClick = {},
+            onCameraClick = onCameraClick,
+            onRecommendClick = onRecommendClick,
+            onGalleryClick = onGalleryClick,
             onProfileClick = onProfileClick
         )
     }
 }
 
+// ─────────────────────────────────────────────────────────────
+// 天气毛玻璃卡片
+// ─────────────────────────────────────────────────────────────
 @Composable
-private fun WeatherCard() {
+private fun WeatherGlassCard() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
-            .clip(RoundedCornerShape(16.dp))
+            .shadow(4.dp, RoundedCornerShape(20.dp))
+            .clip(RoundedCornerShape(20.dp))
             .background(Color(0xCCFFFFFF))
-            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .border(1.dp, Color(0x60FFFFFF), RoundedCornerShape(20.dp))
+            .padding(16.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -119,161 +160,313 @@ private fun WeatherCard() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text(text = "Good morning!  28\u00b0C", fontSize = 15.sp, fontWeight = FontWeight.Bold, color = Color(0xFF50285A))
-                Text(text = "Perfect for outdoor shooting", fontSize = 13.sp, color = Color(0xFF78406A))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "早安！", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color(0xFF333333))
+                    Text(text = " ✦✦", fontSize = 16.sp, color = NEON_PINK)
+                }
+                Text(text = "今天也要拍出好照片哦 📷", fontSize = 13.sp, color = Color(0xFF666666))
             }
-            Text(text = "\u2600\uFE0F", fontSize = 28.sp)
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = "☀️", fontSize = 30.sp)
+                Text(text = "28°C", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color(0xFF333333))
+                Text(text = "适合外拍", fontSize = 11.sp, color = Color(0xFF888888))
+            }
         }
     }
 }
 
+// ─────────────────────────────────────────────────────────────
+// 用户头像（霓虹圆框）
+// ─────────────────────────────────────────────────────────────
 @Composable
-private fun KuromiBanner() {
+private fun UserAvatarNeonBadge(avatarUri: String?, onClick: () -> Unit) {
     Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .height(200.dp)
-            .padding(horizontal = 16.dp)
-            .clip(RoundedCornerShape(20.dp))
-            .background(Color(0xFF371464))
-            .border(BorderStroke(2.dp, Color(0xFFEC4899)), RoundedCornerShape(20.dp)),
+            .size(76.dp)
+            .shadow(10.dp, CircleShape, spotColor = NEON_PURPLE, ambientColor = NEON_PINK)
+            .clip(CircleShape)
+            .background(Brush.linearGradient(listOf(NEON_PURPLE, NEON_PINK)))
+            .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
-        androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
-            val pink = Color(0xFFEC4899)
-            for (i in 1..4) {
-                drawCircle(color = pink.copy(alpha = 0.08f * i), radius = 60f * i, center = center)
-            }
-            val heartPositions = listOf(
-                Pair(size.width * 0.15f, size.height * 0.3f),
-                Pair(size.width * 0.85f, size.height * 0.3f),
-                Pair(size.width * 0.10f, size.height * 0.7f),
-                Pair(size.width * 0.90f, size.height * 0.7f),
-            )
-            for ((hx, hy) in heartPositions) {
-                val offset = androidx.compose.ui.geometry.Offset(hx, hy)
-                drawCircle(color = pink.copy(alpha = 0.6f), radius = 8f, center = offset)
-                drawCircle(color = pink.copy(alpha = 0.3f), radius = 14f, center = offset, style = androidx.compose.ui.graphics.drawscope.Stroke(1.5f))
+        Box(
+            modifier = Modifier
+                .size(66.dp)
+                .clip(CircleShape)
+                .background(Color(0xFFEDD8F8)),
+            contentAlignment = Alignment.Center
+        ) {
+            if (avatarUri != null) {
+                AsyncImage(
+                    model = avatarUri,
+                    contentDescription = "用户头像",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            } else {
+                Text(text = "👤", fontSize = 30.sp)
             }
         }
-        Text(text = "\u2736 \u2736 \u2736", modifier = Modifier.align(Alignment.TopEnd).padding(12.dp), fontSize = 12.sp, color = Color(0xFFFFD232))
     }
 }
 
-private data class QuickItem(val label: String, val colorInner: Color, val colorOuter: Color, val onClick: () -> Unit)
+// ─────────────────────────────────────────────────────────────
+// 四彩色霓虹按钮（2×2 网格）
+// ─────────────────────────────────────────────────────────────
+private data class FuncBtn(
+    val label: String,
+    val icon: String,
+    val gradStart: Color,
+    val gradEnd: Color,
+    val onClick: () -> Unit
+)
 
 @Composable
-private fun QuickAccessGrid(
-    onCameraClick: () -> Unit, onEditorClick: () -> Unit,
-    onRecommendClick: () -> Unit, onGalleryClick: () -> Unit
+private fun FunctionButtonGrid(
+    onCameraClick: () -> Unit,
+    onEditorClick: () -> Unit,
+    onRecommendClick: () -> Unit,
+    onGalleryClick: () -> Unit
 ) {
-    val items = listOf(
-        QuickItem("Camera",    Color(0xFF7840C8), Color(0xFFB478F0), onCameraClick),
-        QuickItem("Edit",      Color(0xFFDC3C78), Color(0xFFF064A0), onEditorClick),
-        QuickItem("Recommend", Color(0xFFC8A020), Color(0xFFF0C840), onRecommendClick),
-        QuickItem("Gallery",   Color(0xFF2890DC), Color(0xFF50C0F0), onGalleryClick),
+    val btns = listOf(
+        FuncBtn("拍照",    "📷", Color(0xFFEC4899), Color(0xFF9D4EDD), onCameraClick),
+        FuncBtn("编辑",    "✏️", Color(0xFF3A3A3A), Color(0xFF1A1A1A), onEditorClick),
+        FuncBtn("AI 推荐", "✦",  Color(0xFFD4A020), Color(0xFFF0C840), onRecommendClick),
+        FuncBtn("相册",    "📖", Color(0xFF5090D8), Color(0xFF70B8F0), onGalleryClick),
     )
-    Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.SpaceEvenly) {
-        items.forEach { item ->
-            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.clickable { item.onClick() }) {
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            FuncButtonCard(btn = btns[0], modifier = Modifier.weight(1f))
+            FuncButtonCard(btn = btns[1], modifier = Modifier.weight(1f))
+        }
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            FuncButtonCard(btn = btns[2], modifier = Modifier.weight(1f))
+            FuncButtonCard(btn = btns[3], modifier = Modifier.weight(1f))
+        }
+    }
+}
+
+@Composable
+private fun FuncButtonCard(btn: FuncBtn, modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .height(80.dp)
+            .shadow(8.dp, RoundedCornerShape(24.dp), spotColor = btn.gradStart, ambientColor = btn.gradEnd)
+            .clip(RoundedCornerShape(24.dp))
+            .background(Brush.horizontalGradient(listOf(btn.gradStart, btn.gradEnd)))
+            .border(BorderStroke(1.5.dp, Color(0x80FFFFFF)), RoundedCornerShape(24.dp))
+            .clickable { btn.onClick() }
+            .padding(horizontal = 16.dp),
+        contentAlignment = Alignment.CenterStart
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = btn.label, fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color.White)
+            Text(text = btn.icon, fontSize = 28.sp)
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────
+// 区块标题
+// ─────────────────────────────────────────────────────────────
+@Composable
+private fun SectionHeader(title: String) {
+    Text(
+        text = title,
+        modifier = Modifier.padding(horizontal = 16.dp),
+        fontSize = 18.sp,
+        fontWeight = FontWeight.Bold,
+        color = Color(0xFF333333)
+    )
+}
+
+// ─────────────────────────────────────────────────────────────
+// 最近活动（横向，粉色发光边框卡片）
+// ─────────────────────────────────────────────────────────────
+@Composable
+private fun RecentActivityRow() {
+    val activities = listOf(
+        "you在台北101拍摄了新照片" to "Time 1s ago",
+        "you在台北101拍摄了新照片" to "Time 1s ago",
+    )
+    LazyRow(
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        items(activities) { (title, time) ->
+            Row(
+                modifier = Modifier
+                    .width(220.dp)
+                    .height(80.dp)
+                    .shadow(6.dp, RoundedCornerShape(16.dp), spotColor = NEON_PINK, ambientColor = NEON_PINK)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color(0xF0FFFFFF))
+                    .border(1.5.dp, NEON_PINK.copy(alpha = 0.5f), RoundedCornerShape(16.dp))
+                    .padding(10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
                 Box(
-                    modifier = Modifier.size(64.dp).background(
-                        Brush.radialGradient(colors = listOf(item.colorOuter.copy(alpha = 0.3f), Color.Transparent), radius = 48f), CircleShape
-                    ),
+                    modifier = Modifier
+                        .size(56.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(Color(0xFFDDDDDD))
+                )
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(text = title, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = Color(0xFF333333), maxLines = 2, overflow = TextOverflow.Ellipsis)
+                    Text(text = "🕐 $time", fontSize = 11.sp, color = Color(0xFF999999))
+                }
+            }
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────
+// 热门地点（横向，台北101/台南波场/北海坑境）
+// ─────────────────────────────────────────────────────────────
+@Composable
+private fun HotSpotsRow(spots: List<PhotoSpot>, onSpotClick: (PhotoSpot) -> Unit) {
+    val defaultSpots = listOf(
+        PhotoSpot(id = "1", title = "台北101",  imageUrl = "", distance = 1.2, photoCount = 256),
+        PhotoSpot(id = "2", title = "台南波场",  imageUrl = "", distance = 3.5, photoCount = 189),
+        PhotoSpot(id = "3", title = "北海坑境",  imageUrl = "", distance = 5.8, photoCount = 142),
+    )
+    val displaySpots = if (spots.isNotEmpty()) spots.take(6) else defaultSpots
+    LazyRow(
+        contentPadding = PaddingValues(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        items(displaySpots) { spot ->
+            Column(
+                modifier = Modifier
+                    .width(140.dp)
+                    .shadow(6.dp, RoundedCornerShape(16.dp))
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color.White)
+                    .clickable { onSpotClick(spot) }
+            ) {
+                Box(
+                    modifier = Modifier.fillMaxWidth().height(100.dp).background(Color(0xFFDDDDDD)),
                     contentAlignment = Alignment.Center
                 ) {
-                    Box(
-                        modifier = Modifier.size(52.dp).clip(CircleShape).background(item.colorInner).border(2.dp, item.colorOuter, CircleShape),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(text = when (item.label) { "Camera" -> "\uD83D\uDCF7"; "Edit" -> "\u2728"; "Recommend" -> "\uD83D\uDCA1"; else -> "\uD83D\uDDBC" }, fontSize = 22.sp)
+                    if (spot.imageUrl.isNotEmpty()) {
+                        AsyncImage(model = spot.imageUrl, contentDescription = spot.title, modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+                    } else {
+                        Box(modifier = Modifier.size(44.dp).clip(CircleShape).background(NEON_PINK.copy(alpha = 0.25f)), contentAlignment = Alignment.Center) {
+                            Text(text = "🐱", fontSize = 22.sp)
+                        }
                     }
                 }
-                Spacer(modifier = Modifier.height(6.dp))
-                Text(text = item.label, fontSize = 12.sp, fontWeight = FontWeight.Medium, color = Color(0xFF50285A))
+                Column(modifier = Modifier.padding(8.dp)) {
+                    Text(text = "★★★★★", fontSize = 12.sp, color = Color(0xFFFFD232))
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(text = "📍", fontSize = 11.sp)
+                        Text(text = spot.title, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color(0xFF333333), maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    }
+                }
             }
         }
     }
 }
 
+// ─────────────────────────────────────────────────────────────
+// 底部导航（5标签，半透明粉色磨砂，中间库洛米图标）
+// ─────────────────────────────────────────────────────────────
 @Composable
-private fun RecentActivitySection() {
-    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-        Text(text = "Recent Activity", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White, modifier = Modifier.padding(bottom = 10.dp))
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            ActivityCard(timeLabel = "2 hours ago", bgColors = listOf(Color(0xFFB47850), Color(0xFF8060A0)), modifier = Modifier.weight(1f))
-            ActivityCard(timeLabel = "Yesterday",   bgColors = listOf(Color(0xFFC8A078), Color(0xFF906878)), modifier = Modifier.weight(1f))
-        }
-    }
-}
-
-@Composable
-private fun ActivityCard(timeLabel: String, bgColors: List<Color>, modifier: Modifier = Modifier) {
-    Box(modifier = modifier.height(100.dp).clip(RoundedCornerShape(14.dp)).background(Brush.verticalGradient(colors = bgColors))) {
-        Box(modifier = Modifier.fillMaxWidth().height(40.dp).align(Alignment.BottomCenter).background(Brush.verticalGradient(colors = listOf(Color.Transparent, Color(0xCC000000)))))
-        Box(modifier = Modifier.size(24.dp).align(Alignment.BottomStart).padding(start = 6.dp, bottom = 6.dp).clip(CircleShape).background(Color(0xFF7040A0)).border(1.dp, Color(0xFFEC4899), CircleShape))
-        Text(text = timeLabel, modifier = Modifier.align(Alignment.BottomStart).padding(start = 34.dp, bottom = 8.dp), fontSize = 10.sp, color = Color.White)
-    }
-}
-
-@Composable
-private fun HotSpotsSection(spots: List<PhotoSpot>, onSpotClick: (PhotoSpot) -> Unit) {
-    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-        Text(text = "Hot Spots", fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color.White, modifier = Modifier.padding(bottom = 10.dp))
-        val displaySpots = if (spots.isNotEmpty()) spots.take(6) else listOf(
-            PhotoSpot(id = "1", title = "Kuromi Cafe",         imageUrl = "", distance = 1.5, photoCount = 128),
-            PhotoSpot(id = "2", title = "Cherry Blossom Park", imageUrl = "", distance = 2.5, photoCount = 256),
-            PhotoSpot(id = "3", title = "Neon Street",         imageUrl = "", distance = 1.5, photoCount = 89),
-        )
-        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp), contentPadding = PaddingValues(end = 8.dp)) {
-            items(displaySpots) { spot -> HotSpotCard(spot = spot, onClick = { onSpotClick(spot) }) }
-        }
-    }
-}
-
-@Composable
-private fun HotSpotCard(spot: PhotoSpot, onClick: () -> Unit) {
-    val bgColors = when {
-        spot.title.contains("Cafe", ignoreCase = true)    -> listOf(Color(0xFF6428A0), Color(0xFF3C1464))
-        spot.title.contains("Blossom", ignoreCase = true) -> listOf(Color(0xFFC8A0A8), Color(0xFF906878))
-        else                                               -> listOf(Color(0xFF143C78), Color(0xFF0A1E50))
-    }
-    Box(modifier = Modifier.width(110.dp).height(110.dp).clip(RoundedCornerShape(12.dp)).background(Brush.verticalGradient(colors = bgColors)).clickable(onClick = onClick)) {
-        if (spot.imageUrl.isNotEmpty()) {
-            AsyncImage(model = spot.imageUrl, contentDescription = spot.title, modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
-        }
-        Box(modifier = Modifier.fillMaxWidth().height(50.dp).align(Alignment.BottomCenter).background(Brush.verticalGradient(colors = listOf(Color.Transparent, Color(0xDD000000)))))
-        Text(text = spot.title, modifier = Modifier.align(Alignment.BottomStart).padding(start = 6.dp, bottom = 20.dp), fontSize = 11.sp, fontWeight = FontWeight.Bold, color = Color.White, maxLines = 1)
-        if (spot.distance != null) {
-            Row(modifier = Modifier.align(Alignment.BottomStart).padding(start = 6.dp, bottom = 6.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(3.dp)) {
-                Box(modifier = Modifier.size(5.dp).background(Color(0xFFEC4899), CircleShape))
-                Text(text = "${"%.1f".format(spot.distance)} km", fontSize = 9.sp, color = Color(0xFFDDDDDD))
+private fun BottomNavBar(
+    modifier: Modifier = Modifier,
+    onHomeClick: () -> Unit,
+    onCameraClick: () -> Unit,
+    onRecommendClick: () -> Unit,
+    onGalleryClick: () -> Unit,
+    onProfileClick: () -> Unit
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(76.dp)
+            .clip(RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp))
+            .background(Color(0xE8FFF0F8))
+            .border(BorderStroke(1.dp, Color(0x50EC4899)), RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp))
+    ) {
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            NavTabItem(label = "首页", icon = "🏠", isSelected = true,  onClick = onHomeClick)
+            NavTabItem(label = "拍照", icon = "📷", isSelected = false, onClick = onCameraClick)
+            // 中间：库洛米大头图标（突出，带霓虹圆框）
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.offset(y = (-8).dp).clickable { onRecommendClick() }
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(52.dp)
+                        .shadow(10.dp, CircleShape, spotColor = NEON_PINK, ambientColor = NEON_PURPLE)
+                        .clip(CircleShape)
+                        .background(Brush.radialGradient(listOf(NEON_PINK, NEON_PURPLE)))
+                        .border(2.dp, Color.White, CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = "🐱", fontSize = 26.sp)
+                }
+                Text(text = "推荐", fontSize = 10.sp, color = NEON_PINK, fontWeight = FontWeight.Bold)
             }
+            NavTabItem(label = "相册", icon = "📖", isSelected = false, onClick = onGalleryClick)
+            NavTabItem(label = "我的", icon = "👤", isSelected = false, onClick = onProfileClick)
         }
     }
 }
 
 @Composable
-private fun BottomNavBar(modifier: Modifier = Modifier, onHomeClick: () -> Unit, onDiscoverClick: () -> Unit, onCaptureClick: () -> Unit, onSocialClick: () -> Unit, onProfileClick: () -> Unit) {
-    Box(modifier = modifier.fillMaxWidth().height(72.dp).background(Color(0xF0FFF0F8)).border(BorderStroke(1.dp, Color(0x30DC78A8)), RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))) {
-        Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.SpaceEvenly, verticalAlignment = Alignment.CenterVertically) {
-            NavItem(label = "Home",     icon = "\uD83D\uDC31", isSelected = true,  onClick = onHomeClick)
-            NavItem(label = "Discover", icon = "\uD83D\uDD0D", isSelected = false, onClick = onDiscoverClick)
-            Box(modifier = Modifier.size(56.dp).offset(y = (-12).dp).clip(CircleShape).background(Color(0xFF7840C8)).border(3.dp, Color.White, CircleShape).clickable(onClick = onCaptureClick), contentAlignment = Alignment.Center) {
-                Text(text = "\uD83D\uDC31", fontSize = 24.sp)
-            }
-            NavItem(label = "Social",  icon = "\uD83D\uDCAC", isSelected = false, onClick = onSocialClick)
-            NavItem(label = "Profile", icon = "\uD83D\uDC31", isSelected = false, onClick = onProfileClick)
-        }
-    }
-}
-
-@Composable
-private fun NavItem(label: String, icon: String, isSelected: Boolean, onClick: () -> Unit) {
-    val color = if (isSelected) Color(0xFFEC4899) else Color(0xFF8C6478)
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.clickable(onClick = onClick).padding(horizontal = 8.dp)) {
+private fun NavTabItem(label: String, icon: String, isSelected: Boolean, onClick: () -> Unit) {
+    val color = if (isSelected) NEON_PINK else Color(0xFF888888)
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.clickable(onClick = onClick).padding(horizontal = 6.dp, vertical = 8.dp)
+    ) {
         Text(text = icon, fontSize = 20.sp)
-        Text(text = label, fontSize = 10.sp, color = color, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
+        Text(text = label, fontSize = 11.sp, color = color, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal)
+    }
+}
+
+// ─────────────────────────────────────────────────────────────
+// 公共组件（向后兼容）
+// ─────────────────────────────────────────────────────────────
+@Composable
+fun YanbaoTopBar(
+    avatarUri: String? = null,
+    onAvatarClick: () -> Unit,
+    onSettingsClick: () -> Unit = {}
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth().height(56.dp).background(Color(0xFF0A0A0A)).padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier.size(40.dp).border(1.5.dp, NEON_PINK, CircleShape).clip(CircleShape).background(Color(0xFF1A1A1A)).clickable { onAvatarClick() },
+            contentAlignment = Alignment.Center
+        ) {
+            if (avatarUri != null) {
+                AsyncImage(model = avatarUri, contentDescription = "用户头像", modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+            } else {
+                Text(text = "Y", fontFamily = FontFamily.Monospace, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = NEON_PINK)
+            }
+        }
+        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+            Text(text = "yanbao AI", fontFamily = FontFamily.Monospace, fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White)
+        }
+        Spacer(modifier = Modifier.size(40.dp))
     }
 }
 
@@ -281,13 +474,18 @@ private fun NavItem(label: String, icon: String, isSelected: Boolean, onClick: (
 fun CameraPreviewComponent() {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val previewManager = remember { Camera2PreviewManager(context) }
+    val previewManager = remember { com.yanbao.camera.core.camera.Camera2PreviewManager(context) }
     DisposableEffect(Unit) { onDispose { previewManager.release() } }
     AndroidView(
         factory = { ctx ->
             SurfaceView(ctx).apply {
                 holder.addCallback(object : SurfaceHolder.Callback {
-                    override fun surfaceCreated(holder: SurfaceHolder) { scope.launch { previewManager.openCamera(holder.surface) } }
+                    override fun surfaceCreated(holder: SurfaceHolder) {
+                        scope.launch {
+                            try { previewManager.openCamera(holder.surface) }
+                            catch (e: Exception) { Log.e("CameraPreview", e.message ?: "") }
+                        }
+                    }
                     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {}
                     override fun surfaceDestroyed(holder: SurfaceHolder) { previewManager.closeCamera() }
                 })
@@ -302,46 +500,37 @@ fun PreviewOverlayLabels() {
     Box(modifier = Modifier.fillMaxSize()) {
         Row(modifier = Modifier.align(Alignment.TopStart).padding(12.dp), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
             listOf("ISO 100", "S 1/250", "35mm").forEach { param ->
-                Box(modifier = Modifier.background(Color(0xCC000000), RoundedCornerShape(4.dp)).border(0.5.dp, Color(0xFFEC4899), RoundedCornerShape(4.dp)).padding(horizontal = 8.dp, vertical = 4.dp)) {
-                    Text(text = param, fontFamily = FontFamily.Monospace, fontSize = 11.sp, color = Color(0xFFEC4899))
+                Box(
+                    modifier = Modifier.background(Color(0xCC000000), RoundedCornerShape(4.dp)).border(0.5.dp, NEON_PINK, RoundedCornerShape(4.dp)).padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Text(text = param, fontFamily = FontFamily.Monospace, fontSize = 11.sp, color = NEON_PINK)
                 }
             }
         }
-    }
-}
-
-@Composable
-fun YanbaoTopBar(avatarUri: String? = null, onAvatarClick: () -> Unit, onSettingsClick: () -> Unit = {}) {
-    Row(modifier = Modifier.fillMaxWidth().height(56.dp).background(Color(0xFF0A0A0A)).padding(horizontal = 16.dp), verticalAlignment = Alignment.CenterVertically) {
-        Box(modifier = Modifier.size(40.dp).border(1.5.dp, Color(0xFFEC4899), CircleShape).clip(CircleShape).background(Color(0xFF1A1A1A)).clickable { onAvatarClick() }, contentAlignment = Alignment.Center) {
-            if (avatarUri != null) {
-                AsyncImage(model = avatarUri, contentDescription = "头像", modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
-            } else {
-                Text(text = "Y", fontFamily = FontFamily.Monospace, fontSize = 16.sp, fontWeight = FontWeight.Bold, color = Color(0xFFEC4899))
-            }
-        }
-        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-            Text(text = "yanbao AI", fontFamily = FontFamily.Monospace, fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.White)
-        }
-        Spacer(modifier = Modifier.size(40.dp))
     }
 }
 
 @Composable
 fun RecommendHorizontalList(spots: List<PhotoSpot>, onSpotClick: (PhotoSpot) -> Unit) {
     Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)) {
-        Text(text = "Hot Spots Nearby", fontFamily = FontFamily.Monospace, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color(0xFFEC4899), modifier = Modifier.padding(bottom = 8.dp))
-        if (spots.isEmpty()) {
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                items(4) {
-                    Box(modifier = Modifier.width(140.dp).height(100.dp).clip(RoundedCornerShape(12.dp)).background(Color(0xFF1A1A1A)), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator(color = Color(0xFFEC4899), modifier = Modifier.size(20.dp), strokeWidth = 1.5.dp)
+        Text(text = "Hot Spots Nearby", fontFamily = FontFamily.Monospace, fontSize = 14.sp, fontWeight = FontWeight.Bold, color = NEON_PINK, modifier = Modifier.padding(bottom = 8.dp))
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            items(spots) { spot ->
+                Column(
+                    modifier = Modifier.width(140.dp).shadow(6.dp, RoundedCornerShape(16.dp)).clip(RoundedCornerShape(16.dp)).background(Color.White).clickable { onSpotClick(spot) }
+                ) {
+                    Box(modifier = Modifier.fillMaxWidth().height(100.dp).background(Color(0xFFDDDDDD)), contentAlignment = Alignment.Center) {
+                        if (spot.imageUrl.isNotEmpty()) {
+                            AsyncImage(model = spot.imageUrl, contentDescription = spot.title, modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop)
+                        } else {
+                            Text(text = "📍", fontSize = 24.sp)
+                        }
+                    }
+                    Column(modifier = Modifier.padding(8.dp)) {
+                        Text(text = "★★★★★", fontSize = 12.sp, color = Color(0xFFFFD232))
+                        Text(text = spot.title, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color(0xFF333333), maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
                 }
-            }
-        } else {
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                items(spots) { spot -> HotSpotCard(spot = spot, onClick = { onSpotClick(spot) }) }
             }
         }
     }
