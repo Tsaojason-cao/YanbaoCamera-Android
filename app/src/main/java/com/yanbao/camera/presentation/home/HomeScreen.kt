@@ -6,143 +6,127 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.ColorMatrix
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.layout.ContentScale
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.yanbao.camera.R
+import com.yanbao.camera.ui.theme.YanbaoTokens
 
-// ─────────────────────────────────────────────────────────────
-// 精确色值（严格对标 home_ui_design.png）
-// ─────────────────────────────────────────────────────────────
-private val BG_TOP       = Color(0xFF9B7FD4)   // 背景顶部：中紫
-private val BG_MID       = Color(0xFFB88FC0)   // 背景中部：粉紫
-private val BG_BOT       = Color(0xFFF0A0C0)   // 背景底部：粉红
-private val BTN_CAM_1    = Color(0xFFE8A0CC)   // 拍照渐变起点（浅粉紫）
-private val BTN_CAM_2    = Color(0xFFD060A0)   // 拍照渐变终点（深粉）
-private val BTN_EDIT_1   = Color(0xFF2A2A2A)   // 编辑深炭黑
-private val BTN_EDIT_2   = Color(0xFF1A1A1A)
-private val BTN_AI_1     = Color(0xFFD4A020)   // AI推荐金色
-private val BTN_AI_2     = Color(0xFFB88010)
-private val BTN_ALB_1    = Color(0xFF90C0E8)   // 相册天蓝
-private val BTN_ALB_2    = Color(0xFF5090C0)
-private val NAV_BG       = Color(0xFFFAE8F0)   // 底部导航浅粉
-private val CARD_BG      = Color(0xFFF8F0F5)   // 活动卡片背景（浅粉白）
-private val PINK_ACCENT  = Color(0xFFEC4899)   // 品牌粉（选中态）
-private val TEXT_DARK    = Color(0xFF1A1A1A)   // 深色文字
-private val TEXT_GRAY    = Color(0xFF888888)   // 灰色文字
-private val STAR_ON      = Color(0xFFFFCC00)   // 亮星
-private val STAR_OFF     = Color(0xFFDDDDDD)   // 暗星
-private val PIN_PINK     = Color(0xFFFF6699)   // 定位图标粉
-
-// ─────────────────────────────────────────────────────────────
-// 首页主入口
-// ─────────────────────────────────────────────────────────────
 @Composable
 fun HomeScreen(
-    onCameraClick: () -> Unit,
-    onEditorClick: () -> Unit,
-    onGalleryClick: () -> Unit,
-    onRecommendClick: () -> Unit,
-    onProfileClick: () -> Unit,
-    avatarUri: String? = null,
-    modifier: Modifier = Modifier,
+    navController: NavController,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Box(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .background(
-                Brush.verticalGradient(colors = listOf(BG_TOP, BG_MID, BG_BOT))
+                Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF9B7FD4),
+                        Color(0xFFB88FC0),
+                        Color(0xFFF0A0C0)
+                    )
+                )
             )
     ) {
-        // 散景光点装饰层
-        BokehDecoration()
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(bottom = 100.dp)
+                .padding(horizontal = 16.dp)
         ) {
-            // ── 状态栏 ──
-            TopStatusBar()
-
-            // ── 问候区（早安！+ 头像 + 天气）──
-            GreetingRow()
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // ── 四功能按钮 ──
-            FunctionButtonGrid(
-                onCameraClick = onCameraClick,
-                onEditorClick = onEditorClick,
-                onRecommendClick = onRecommendClick,
-                onGalleryClick = onGalleryClick
+            // 顶部品牌和问候区
+            TopBar(
+                uiState = uiState,
+                modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // ── 最近活动 ──
-            SectionHeader(title = "最近活动 ⭐")
-            Spacer(modifier = Modifier.height(12.dp))
-            LazyRow(
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(uiState.recentActivities) { activity ->
-                    RecentActivityCard(activity = activity)
-                }
-            }
+            // 拍照/编辑卡片
+            ActionCards(
+                onCameraClick = { navController.navigate("camera") },
+                onEditClick = { navController.navigate("editor") }
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // ── 热门地点 ──
-            SectionHeader(title = "热门地点 🔥")
-            Spacer(modifier = Modifier.height(12.dp))
-            LazyRow(
-                contentPadding = PaddingValues(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            // AI推荐 + 相册双标题行
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                items(uiState.popularPlaces) { place ->
-                    PopularPlaceCard(place = place)
+                Text(
+                    text = "AI推荐",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "相册",
+                        fontSize = 16.sp,
+                        color = Color(0xFF666666)
+                    )
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_arrow_right),
+                        contentDescription = null,
+                        tint = Color.Gray,
+                        modifier = Modifier.size(20.dp)
+                    )
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // 最近活动横向列表
+            RecentActivitiesRow(activities = uiState.recentActivities)
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // 热门地点标题
+            Text(
+                text = "热门地点",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // 热门地点横向列表
+            PopularPlacesRow(places = uiState.popularPlaces)
+
+            Spacer(modifier = Modifier.weight(1f))
         }
 
-        // ── 底部6标签导航 ──
+        // 底部导航栏（六个按钮）
         HomeBottomNavigation(
             selectedItem = "home",
             onItemSelected = { route ->
                 when (route) {
-                    "camera"  -> onCameraClick()
-                    "editor"  -> onEditorClick()
-                    "gallery" -> onGalleryClick()
-                    "lbs"     -> onRecommendClick()
-                    "profile" -> onProfileClick()
+                    "home" -> navController.popBackStack("home", inclusive = false)
+                    else -> navController.navigate(route)
                 }
             },
             modifier = Modifier.align(Alignment.BottomCenter)
@@ -150,449 +134,342 @@ fun HomeScreen(
     }
 }
 
-// ─────────────────────────────────────────────────────────────
-// 散景光点装饰（模拟设计稿中的柔和光晕）
-// ─────────────────────────────────────────────────────────────
 @Composable
-private fun BokehDecoration() {
-    Box(modifier = Modifier.fillMaxSize()) {
-        // 左上角光晕
-        Box(
-            modifier = Modifier
-                .offset((-20).dp, 100.dp)
-                .size(120.dp)
-                .background(
-                    Brush.radialGradient(
-                        colors = listOf(Color(0x40FFFFFF), Color(0x00FFFFFF))
-                    ),
-                    CircleShape
-                )
-        )
-        // 右侧光晕
-        Box(
-            modifier = Modifier
-                .offset(300.dp, 300.dp)
-                .size(100.dp)
-                .background(
-                    Brush.radialGradient(
-                        colors = listOf(Color(0x30FFFFFF), Color(0x00FFFFFF))
-                    ),
-                    CircleShape
-                )
-        )
-        // 左下光晕
-        Box(
-            modifier = Modifier
-                .offset((-10).dp, 700.dp)
-                .size(80.dp)
-                .background(
-                    Brush.radialGradient(
-                        colors = listOf(Color(0x25FFFFFF), Color(0x00FFFFFF))
-                    ),
-                    CircleShape
-                )
-        )
-    }
-}
-
-// ─────────────────────────────────────────────────────────────
-// 状态栏（9:41 + 信号图标）
-// ─────────────────────────────────────────────────────────────
-@Composable
-private fun TopStatusBar() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = "9:41",
-            fontSize = 18.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = Color.White
-        )
-        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-            Text("▪▪▪", fontSize = 14.sp, color = Color.White)
-            Text("▲", fontSize = 14.sp, color = Color.White)
-        }
-    }
-}
-
-// ─────────────────────────────────────────────────────────────
-// 问候区（早安！💝 + 动漫头像 + ☀️ 28°C）
-// ─────────────────────────────────────────────────────────────
-@Composable
-private fun GreetingRow() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // 左侧：问候语
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = "早安！💝",
-                fontSize = 34.sp,
-                fontWeight = FontWeight.ExtraBold,
-                color = Color.White
-            )
-            Text(
-                text = "今天也要拍出好照片哦",
-                fontSize = 14.sp,
-                color = Color.White.copy(alpha = 0.85f)
-            )
-        }
-
-        // 中间：动漫头像（紫色描边圆形）
-        Box(
-            modifier = Modifier
-                .size(80.dp)
-                .shadow(8.dp, CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            // 紫色描边
-            Box(
-                modifier = Modifier
-                    .size(80.dp)
-                    .background(Color(0xFF9B59B6), CircleShape)
-            )
-            // 头像图片
-            Image(
-                painter = painterResource(id = R.drawable.avatar_anime),
-                contentDescription = "用户头像",
-                modifier = Modifier
-                    .size(74.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop
-            )
-        }
-
-        Spacer(modifier = Modifier.width(12.dp))
-
-        // 右侧：天气
-        Column(horizontalAlignment = Alignment.End) {
-            Text(
-                text = "☀️ 28°C",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
-            )
-            Text(
-                text = "适合外拍",
-                fontSize = 13.sp,
-                color = Color.White.copy(alpha = 0.85f)
-            )
-        }
-    }
-}
-
-// ─────────────────────────────────────────────────────────────
-// 四功能按钮（2×2 网格，含图标）
-// ─────────────────────────────────────────────────────────────
-@Composable
-private fun FunctionButtonGrid(
-    onCameraClick: () -> Unit,
-    onEditorClick: () -> Unit,
-    onRecommendClick: () -> Unit,
-    onGalleryClick: () -> Unit
+private fun TopBar(
+    uiState: HomeUiState,
+    modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = Modifier.padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            FunctionButton(
-                modifier = Modifier.weight(1f),
-                label = "拍照",
-                iconRes = R.drawable.ic_camera,
-                gradient = listOf(BTN_CAM_1, BTN_CAM_2),
-                onClick = onCameraClick
+    Box(modifier = modifier) {
+        // 库洛米耳朵装饰
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_kuromi_ear_left),
+                contentDescription = null,
+                modifier = Modifier.size(32.dp)
             )
-            FunctionButton(
-                modifier = Modifier.weight(1f),
-                label = "编辑",
-                iconRes = R.drawable.ic_edit,
-                gradient = listOf(BTN_EDIT_1, BTN_EDIT_2),
-                onClick = onEditorClick
+            Image(
+                painter = painterResource(id = R.drawable.ic_kuromi_ear_right),
+                contentDescription = null,
+                modifier = Modifier.size(32.dp)
             )
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            FunctionButton(
-                modifier = Modifier.weight(1f),
-                label = "AI推荐",
-                iconRes = R.drawable.ic_camera_kuromi,
-                gradient = listOf(BTN_AI_1, BTN_AI_2),
-                onClick = onRecommendClick
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp)
+        ) {
+            // 品牌标识
+            Text(
+                text = "yanbao AI",
+                color = Color.Black,
+                fontSize = 18.sp,
+                modifier = Modifier.align(Alignment.End)
             )
-            FunctionButton(
-                modifier = Modifier.weight(1f),
-                label = "相册",
-                iconRes = R.drawable.ic_album_kuromi,
-                gradient = listOf(BTN_ALB_1, BTN_ALB_2),
-                onClick = onGalleryClick
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(
+                        text = "早安！",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Black
+                    )
+                    Text(
+                        text = uiState.weatherDesc,
+                        fontSize = 16.sp,
+                        color = Color(0xFF888888)
+                    )
+                }
+                Text(
+                    text = "${uiState.temperature}℃",
+                    fontSize = 18.sp,
+                    color = Color(0xFF666666)
+                )
+            }
+            Text(
+                text = uiState.motto,
+                fontSize = 14.sp,
+                color = Color(0xFFAAAAAA)
             )
         }
     }
 }
 
 @Composable
-private fun FunctionButton(
-    modifier: Modifier = Modifier,
-    label: String,
+private fun ActionCards(
+    onCameraClick: () -> Unit,
+    onEditClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        ActionCard(
+            title = "拍照",
+            iconRes = R.drawable.ic_camera,
+            gradient = listOf(Color(0xFFEC4899), Color(0xFF9D4EDD)),
+            onClick = onCameraClick,
+            modifier = Modifier.weight(1f)
+        )
+        ActionCard(
+            title = "编辑",
+            iconRes = R.drawable.ic_edit,
+            gradient = listOf(Color(0xFF2A2A2A), Color(0xFF1A1A1A)),
+            onClick = onEditClick,
+            modifier = Modifier.weight(1f)
+        )
+    }
+}
+
+@Composable
+private fun ActionCard(
+    title: String,
     iconRes: Int,
     gradient: List<Color>,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier
-            .height(120.dp)
-            .shadow(6.dp, RoundedCornerShape(20.dp))
-            .clip(RoundedCornerShape(20.dp))
+            .height(100.dp)
+            .clip(RoundedCornerShape(24.dp))
             .background(Brush.verticalGradient(gradient))
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center
+            .clickable { onClick() }
+            .padding(horizontal = 16.dp)
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Icon(
-                painter = painterResource(id = iconRes),
-                contentDescription = label,
-                tint = Color.White,
-                modifier = Modifier.size(44.dp)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
             Text(
-                text = label,
-                fontSize = 18.sp,
+                text = title,
+                fontSize = 32.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
+            )
+            Icon(
+                painter = painterResource(id = iconRes),
+                contentDescription = title,
+                tint = Color.White,
+                modifier = Modifier.size(48.dp)
             )
         }
     }
 }
 
-// ─────────────────────────────────────────────────────────────
-// 章节标题（含右箭头）
-// ─────────────────────────────────────────────────────────────
 @Composable
-private fun SectionHeader(title: String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+private fun RecentActivitiesRow(activities: List<RecentActivity>) {
+    LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Text(
-            text = title,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.White
-        )
-        Icon(
-            painter = painterResource(id = R.drawable.ic_arrow_right),
-            contentDescription = "更多",
-            tint = Color.White.copy(alpha = 0.8f),
-            modifier = Modifier.size(20.dp)
-        )
+        items(activities) { activity ->
+            RecentActivityCard(activity)
+        }
     }
 }
 
-// ─────────────────────────────────────────────────────────────
-// 最近活动卡片（库洛米图标 + 描述 + 时间）
-// ─────────────────────────────────────────────────────────────
 @Composable
 private fun RecentActivityCard(activity: RecentActivity) {
     Card(
         modifier = Modifier
-            .width(240.dp)
-            .height(80.dp),
+            .width(200.dp)
+            .height(120.dp)
+            .clickable { /* 跳转到活动详情 */ },
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = CARD_BG),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFF5F5F5))
     ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 12.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(12.dp)
         ) {
-            // 库洛米图标
             Image(
                 painter = painterResource(id = R.drawable.ic_tab_home_kuromi),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(48.dp)
-                    .clip(RoundedCornerShape(10.dp)),
-                contentScale = ContentScale.Fit
+                    .size(40.dp)
+                    .clip(CircleShape)
             )
-            Spacer(modifier = Modifier.width(10.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                // 时间（右对齐）
+            Spacer(modifier = Modifier.width(8.dp))
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.End
                 ) {
                     Text(
-                        text = "🕐 ${activity.time}",
+                        text = "🕐 \${activity.time}",
                         fontSize = 11.sp,
-                        color = TEXT_GRAY
+                        color = Color(0xFF999999)
                     )
                 }
-                Spacer(modifier = Modifier.height(2.dp))
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = activity.description,
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = TEXT_DARK,
+                    fontSize = 14.sp,
+                    color = Color(0xFF333333),
                     maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                 )
             }
         }
     }
 }
 
-// ─────────────────────────────────────────────────────────────
-// 热门地点卡片（真实景色图 + 库洛米贴纸 + 星级 + 定位图标）
-// ─────────────────────────────────────────────────────────────
+@Composable
+private fun PopularPlacesRow(places: List<PopularPlace>) {
+    LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        items(places) { place ->
+            PopularPlaceCard(place)
+        }
+    }
+}
+
 @Composable
 private fun PopularPlaceCard(place: PopularPlace) {
-    val (photoRes, kuromiRes) = when (place.name) {
-        "台北101"  -> Pair(R.drawable.place_taipei101, R.drawable.ic_tab_home_kuromi)
-        "台南波场" -> Pair(R.drawable.place_tainan,    R.drawable.ic_tab_camera_kuromi)
-        "北海坑境" -> Pair(R.drawable.place_hokkaido,  R.drawable.ic_tab_recommend_kuromi)
-        else       -> Pair(R.drawable.place_taipei101, R.drawable.ic_tab_home_kuromi)
-    }
-
     Card(
         modifier = Modifier
-            .width(180.dp)
-            .wrapContentHeight(),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+            .width(140.dp)
+            .clickable { /* 跳转到地点详情 */ },
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(130.dp)
+                    .height(110.dp)
+                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
             ) {
-                // 真实景色图
+                val photoRes = when (place.name) {
+                    "台北101"  -> R.drawable.place_taipei101
+                    "台南波场" -> R.drawable.place_tainan
+                    "北海坑境" -> R.drawable.place_hokkaido
+                    else       -> R.drawable.place_taipei101
+                }
                 Image(
                     painter = painterResource(id = photoRes),
                     contentDescription = place.name,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )
-                // 库洛米贴纸（右下角）
+                val kuromiRes = when (place.name) {
+                    "台北101"  -> R.drawable.ic_tab_home_kuromi
+                    "台南波场" -> R.drawable.ic_tab_camera_kuromi
+                    else       -> R.drawable.ic_tab_recommend_kuromi
+                }
                 Image(
                     painter = painterResource(id = kuromiRes),
                     contentDescription = null,
                     modifier = Modifier
+                        .size(48.dp)
                         .align(Alignment.BottomEnd)
                         .padding(4.dp)
-                        .size(52.dp),
-                    contentScale = ContentScale.Fit
                 )
             }
-            // 地点信息
             Column(
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp)
+                modifier = Modifier.padding(8.dp)
             ) {
                 Text(
                     text = place.name,
-                    fontSize = 16.sp,
+                    fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
-                    color = TEXT_DARK
+                    color = Color.Black
                 )
-                Spacer(modifier = Modifier.height(4.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // 星级
                     repeat(5) { index ->
-                        Text(
-                            text = "★",
-                            fontSize = 16.sp,
-                            color = if (index < place.rating) STAR_ON else STAR_OFF
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_star_filled),
+                            contentDescription = null,
+                            tint = if (index < place.rating) Color(0xFFFFD700) else Color(0xFFE0E0E0),
+                            modifier = Modifier.size(12.dp)
                         )
                     }
-                    Spacer(modifier = Modifier.width(6.dp))
-                    // 定位图标
-                    Text(
-                        text = "📍",
-                        fontSize = 16.sp,
-                        color = PIN_PINK
-                    )
                 }
             }
         }
     }
 }
 
-// ─────────────────────────────────────────────────────────────
-// 底部6标签导航栏（库洛米主题图标，浅粉背景）
-// ─────────────────────────────────────────────────────────────
 @Composable
 fun HomeBottomNavigation(
     selectedItem: String,
     onItemSelected: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val tabs = listOf(
-        Triple("首页",  R.drawable.ic_tab_home_kuromi,      "home"),
-        Triple("拍照",  R.drawable.ic_tab_camera_kuromi,    "camera"),
-        Triple("编辑",  R.drawable.ic_tab_edit_kuromi,      "editor"),
-        Triple("相册",  R.drawable.ic_tab_album_kuromi,     "gallery"),
-        Triple("推荐",  R.drawable.ic_tab_recommend_kuromi, "lbs"),
-        Triple("我的",  R.drawable.ic_tab_profile_kuromi,   "profile")
-    )
-
-    Surface(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 8.dp),
-        shape = RoundedCornerShape(32.dp),
-        color = NAV_BG,
-        shadowElevation = 12.dp
+    NavigationBar(
+        containerColor = Color(0xFFFAE8F0),
+        tonalElevation = 0.dp,
+        modifier = modifier.height(60.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            tabs.forEach { (label, iconRes, route) ->
-                val isSelected = selectedItem == route
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .clickable { onItemSelected(route) },
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Image(
-                        painter = painterResource(id = iconRes),
-                        contentDescription = label,
-                        modifier = Modifier.size(if (isSelected) 44.dp else 38.dp),
-                        contentScale = ContentScale.Fit,
-                        colorFilter = if (!isSelected)
-                            ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(0f) })
-                        else null
+        val items = listOf(
+            BottomNavItem("首页", R.drawable.ic_tab_home_kuromi, "home"),
+            BottomNavItem("拍照", R.drawable.ic_tab_camera_kuromi, "camera"),
+            BottomNavItem("编辑", R.drawable.ic_tab_edit_kuromi, "editor"),
+            BottomNavItem("相册", R.drawable.ic_tab_album_kuromi, "gallery"),
+            BottomNavItem("推荐", R.drawable.ic_tab_recommend_kuromi, "lbs"),
+            BottomNavItem("我的", R.drawable.ic_tab_profile_kuromi, "profile")
+        )
+        items.forEach { item ->
+            NavigationBarItem(
+                selected = selectedItem == item.route,
+                onClick = { onItemSelected(item.route) },
+                icon = {
+                    Icon(
+                        painter = painterResource(id = item.iconRes),
+                        contentDescription = item.label,
+                        modifier = Modifier.size(24.dp)
                     )
-                    Spacer(modifier = Modifier.height(2.dp))
+                },
+                label = {
                     Text(
-                        text = label,
-                        fontSize = 11.sp,
-                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                        color = if (isSelected) PINK_ACCENT else TEXT_GRAY
+                        text = item.label,
+                        fontSize = 10.sp
                     )
-                }
-            }
+                },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = Color(0xFFEC4899),
+                    selectedTextColor = Color(0xFFEC4899),
+                    unselectedIconColor = Color(0xFF888888),
+                    unselectedTextColor = Color(0xFF888888),
+                    indicatorColor = Color.Transparent
+                )
+            )
         }
     }
 }
+
+private data class BottomNavItem(val label: String, val iconRes: Int, val route: String)
+
+data class RecentActivity(
+    val description: String,
+    val time: String
+)
+
+data class PopularPlace(
+    val name: String,
+    val rating: Int
+)
+
+data class HomeUiState(
+    val temperature: Int = 28,
+    val weatherDesc: String = "适合外拍",
+    val motto: String = "今天也要拍出好照片哦",
+    val recentActivities: List<RecentActivity> = emptyList(),
+    val popularPlaces: List<PopularPlace> = emptyList()
+)
