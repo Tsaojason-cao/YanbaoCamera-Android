@@ -42,9 +42,8 @@ fun HomeScreen(
             .background(
                 Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF9B7FD4),
-                        Color(0xFFB88FC0),
-                        Color(0xFFF0A0C0)
+                        Color(0xFFFDF5F7),
+                        Color(0xFFF9F0F5)
                     )
                 )
             )
@@ -309,7 +308,7 @@ private fun RecentActivityCard(activity: RecentActivity) {
                     horizontalArrangement = Arrangement.End
                 ) {
                     Text(
-                        text = "🕐 \${activity.time}",
+                        text = "🕐 " + activity.time,
                         fontSize = 11.sp,
                         color = Color(0xFF999999)
                     )
