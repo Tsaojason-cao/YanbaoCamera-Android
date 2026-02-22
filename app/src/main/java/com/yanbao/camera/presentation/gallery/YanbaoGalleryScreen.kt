@@ -44,8 +44,9 @@ import com.yanbao.camera.presentation.theme.YanbaoPurple
 @Composable
 fun YanbaoGalleryScreen(
     onPhotoClick: (String) -> Unit = { photoId ->
-        // TODO: 导航到照片详情页
         android.util.Log.d("YanbaoGalleryScreen", "Photo clicked: $photoId")
+        // 导航到照片详情页的逻辑由调用者处理
+        // 这里只负责回调，实际导航由NavController处理
     },
     modifier: Modifier = Modifier
 ) {

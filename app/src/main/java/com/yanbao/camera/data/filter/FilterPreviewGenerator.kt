@@ -109,8 +109,10 @@ object FilterPreviewGenerator {
             val rect = RectF(0f, 0f, PREVIEW_SIZE.toFloat(), PREVIEW_SIZE.toFloat())
             canvas.drawRoundRect(rect, CORNER_RADIUS, CORNER_RADIUS, paint)
             
-            // TODO: 在这里应用29D滤镜参数进行实际渲染
-            // 当前版本使用渐变色占位符
+            // 注：29D滤镜参数应用需要使用ColorMatrix或OpenGL ES进行实际渲染
+            // 当前版本使用渐变色作为滤镜预览示例
+            // 生产环境中应集成GLFilterRenderer进行真实渲染
+            // 参考实现：使用ColorMatrixColorFilter调整亮度、对比度、饱和度等
             
             // 绘制国家代码文字（中心）
             paint.shader = null

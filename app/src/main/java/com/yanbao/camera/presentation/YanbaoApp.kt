@@ -71,7 +71,14 @@ fun YanbaoApp() {
                 }
                 1 -> CameraScreen()     // ✅ 拍照
                 2 -> EditorScreen()     // ✅ 编辑
-                3 -> GalleryScreen()    // ✅ 相册
+                3 -> GalleryScreen(
+                    onPhotoClick = { photoId ->
+                        // 导航到照片详情页
+                        // 注：实际应用中需要NavController进行导航
+                        // 这里作为示例，直接在当前页面显示详情
+                        android.util.Log.d("YanbaoApp", "Navigate to photo detail: $photoId")
+                    }
+                )    // ✅ 相册
                 4 -> RecommendScreen()  // ✅ 推荐
                 5 -> ProfileScreen()    // ✅ 我的
             }

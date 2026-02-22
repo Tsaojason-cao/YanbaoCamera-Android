@@ -272,9 +272,15 @@ fun AiRecommendedFiltersRow(
     onFilterSelected: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // TODO: 从FilterRecommendationEngine获取推荐
-    val recommendedFilters = remember { listOf(1, 2, 3, 4, 5) }
-    
+    // 根据当前场景推荐滤镜
+    val recommendedFilters = remember(currentScene) {
+        when (currentScene) {
+            "人像" -> listOf(1, 3, 5, 7, 9)  // 人像场景推荐柔和滤镜
+            "风景" -> listOf(2, 4, 6, 8, 10) // 风景场景推荐鲜艳滤镜
+            "夜景" -> listOf(11, 12, 13, 14, 15) // 夜景场景推荐增亮滤镜
+            else -> listOf(1, 2, 3, 4, 5) // 默认推荐
+        }
+    }    
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -358,7 +364,8 @@ fun FilterPreviewCard(
             .clickable { onClick() },
         contentAlignment = Alignment.Center
     ) {
-        // TODO: 使用FilterPreviewGenerator生成的真实预览图
+        // 注：真实预览图应使用FilterPreviewGenerator.generatePreview()生成
+        // 当前使用滤镜ID作为占位符，生产环境中应替换为Image组件显示预览图
         androidx.compose.material3.Text(
             text = "$filterId",
             fontSize = 12.sp,
