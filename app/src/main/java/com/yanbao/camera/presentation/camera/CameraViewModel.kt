@@ -465,6 +465,68 @@ class CameraViewModel @Inject constructor(
         }
     }
 
+    // ─── Phase 1 硬件控制方法（用户指定）────────────────────────────────
+
+    /**
+     * 设置 ISO 感光度并同步到硬件
+     * @param value 滑块值 0-1，映射到 ISO 100-6400
+     */
+    fun setIso(value: Float) {
+        val isoValue = (value * 6300 + 100).toInt().coerceIn(100, 6400)
+        updateParameter("iso", isoValue)
+        Log.d(TAG, "AUDIT_CAMERA: setIso($isoValue) from slider=$value")
+    }
+
+    /**
+     * 设置曝光时间并同步到硬件
+     * @param value 滑块值 0-1，映射到 1ms ~ 30s（纳秒）
+     */
+    fun setExposure(value: Float) {
+        val expNs = (value * (30_000_000_000L - 1_000_000L) + 1_000_000L).toLong()
+        updateParameter("exposureTime", expNs)
+        Log.d(TAG, "AUDIT_CAMERA: setExposure($expNs ns) from slider=$value")
+    }
+
+    /**
+     * 设置曝光补偿 EV
+     * @param value 滑块值 0-1，映射到 -3 ~ +3 EV
+     */
+    fun setEvCompensation(value: Float) {
+        val evValue = (value * 6 - 3)
+        updateParameter("exposure", evValue)
+        Log.d(TAG, "AUDIT_CAMERA: setEv($evValue) from slider=$value")
+    }
+
+    /**
+     * 设置白平衡模式
+     * @param mode Camera2 AWB 模式常量
+     */
+    fun setWhiteBalanceMode(mode: Int) {
+        updateParameter("whiteBalance", mode)
+        Log.d(TAG, "AUDIT_CAMERA: setWhiteBalance(mode=$mode)")
+    }
+
+    /**
+     * 保存记忆到 AppDatabase.MemoryEntity（小型数据库）
+     */
+    fun saveMemory(photoPath: String, mode: String, paramsJson: String, filterId: String? = null) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val memory = com.yanbao.camera.data.database.MemoryEntity.fromJson(
+                    photoPath = photoPath,
+                    mode = mode,
+                    paramsJson = paramsJson,
+                    filterId = filterId
+                )
+                com.yanbao.camera.data.database.AppDatabase.getInstance(appContext)
+                    .memoryDao().insert(memory)
+                Log.d(TAG, "AUDIT_DB: saveMemory - path=$photoPath, mode=$mode")
+            } catch (e: Exception) {
+                Log.e(TAG, "saveMemory failed", e)
+            }
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         recordingJob?.cancel()

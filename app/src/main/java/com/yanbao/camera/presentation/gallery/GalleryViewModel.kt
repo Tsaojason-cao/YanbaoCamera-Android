@@ -320,4 +320,43 @@ class GalleryViewModel @Inject constructor(
             loadPhotos() // 刷新列表
         }
     }
+
+    /**
+     * 公开方法：从 Room 数据库加载记忆列表（Phase 1 用户指定）
+     *
+     * 返回当前内存中的记忆路径集合
+     */
+    fun loadMemories() {
+        viewModelScope.launch {
+            try {
+                yanbaoMemoryDao.getAllMemories().collect { memories ->
+                    val paths = memories.map { it.imagePath }.toSet()
+                    memoryImagePaths = paths
+                    Log.d(TAG, "AUDIT_DB: loadMemories() - ${paths.size} memories loaded")
+                    applyFilter(_selectedTab.value)
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "loadMemories failed", e)
+            }
+        }
+    }
+
+    /**
+     * 公开方法：从 AppDatabase（memories 表）加载记忆（Phase 1 用户指定）
+     */
+    fun loadMemoriesFromAppDb(ctx: android.content.Context) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val db = com.yanbao.camera.data.database.AppDatabase.getInstance(ctx)
+                db.memoryDao().getAllMemories().collect { entities ->
+                    val paths = entities.map { it.photoPath }.toSet()
+                    Log.d(TAG, "AUDIT_DB: loadMemoriesFromAppDb() - ${paths.size} entities")
+                    memoryImagePaths = memoryImagePaths + paths
+                    applyFilter(_selectedTab.value)
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "loadMemoriesFromAppDb failed", e)
+            }
+        }
+    }
 }
