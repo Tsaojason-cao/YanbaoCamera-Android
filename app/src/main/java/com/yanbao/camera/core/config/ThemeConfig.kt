@@ -25,7 +25,7 @@ data class ThemeConfig(
         val viewport_ratio: Float,
         val control_panel_ratio: Float,
         val global_corner_radius: Int,
-        val haptic_feedback: Boolean
+        val haptic_feedback: Boolean = false // 震动反馈已禁用
     )
 
     @Serializable
@@ -95,7 +95,7 @@ data class ThemeConfig(
                 viewport_ratio = 0.72f,
                 control_panel_ratio = 0.28f,
                 global_corner_radius = 24,
-                haptic_feedback = true
+                haptic_feedback = false // 震动反馈已禁用
             ),
             theme_palette = ThemePalette(
                 gradient_start = "#A78BFA",

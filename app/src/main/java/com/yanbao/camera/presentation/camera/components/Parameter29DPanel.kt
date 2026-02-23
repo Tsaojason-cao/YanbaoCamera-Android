@@ -86,7 +86,7 @@ fun Parameter29DPanel(
         ) {
             Column {
                 Text(
-                    text = "🎛️ 29D 专业调优",
+                    text = "CTRL️ 29D 专业调优",
                     color = Color.White,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold

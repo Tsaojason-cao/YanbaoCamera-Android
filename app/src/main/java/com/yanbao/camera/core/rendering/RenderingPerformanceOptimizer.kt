@@ -37,7 +37,7 @@ object RenderingPerformanceOptimizer {
     
     init {
         Log.d("RenderingPerformanceOptimizer", """
-            ✅ 29D渲染引擎性能优化器初始化完成
+            [OK] 29D渲染引擎性能优化器初始化完成
             - 目标帧率: ${TARGET_FPS}fps
             - 目标帧时间: ${TARGET_FRAME_TIME_MS}ms
         """.trimIndent())
@@ -108,11 +108,11 @@ object RenderingPerformanceOptimizer {
             val currentFps = frameCount.toFloat() / ((currentTime - lastFpsReportTime) / 1000f)
             
             Log.d("RenderingPerformanceOptimizer", """
-                📊 性能统计
+                STAT 性能统计
                 - 当前帧率: ${String.format("%.1f", currentFps)}fps
                 - 平均渲染时间: ${String.format("%.2f", avgRenderTime)}ms
                 - 目标帧时间: ${TARGET_FRAME_TIME_MS}ms
-                - 性能达标: ${if (avgRenderTime <= TARGET_FRAME_TIME_MS) "✅" else "❌"}
+                - 性能达标: ${if (avgRenderTime <= TARGET_FRAME_TIME_MS) "[OK]" else "[ERR]"}
             """.trimIndent())
             
             // 重置统计
@@ -144,7 +144,7 @@ object RenderingPerformanceOptimizer {
         }
         
         Log.d("RenderingPerformanceOptimizer", """
-            ✅ 渲染管线预热完成
+            [OK] 渲染管线预热完成
             - 预热时间: ${warmupTime}ms
             - 平均单次渲染: ${warmupTime / 10f}ms
         """.trimIndent())
@@ -167,7 +167,7 @@ object RenderingPerformanceOptimizer {
         }
         
         Log.d("RenderingPerformanceOptimizer", """
-            ✅ 批量渲染完成
+            [OK] 批量渲染完成
             - 总时间: ${batchTime}ms
             - 平均单次: ${batchTime / tasks.size.toFloat()}ms
         """.trimIndent())

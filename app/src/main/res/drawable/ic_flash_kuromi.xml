@@ -1,0 +1,13 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- 闪电 -->
+        <path
+        android:pathData="M13,2 L7,13 L11,13 L11,22 L17,11 L13,11 Z"
+        android:fillColor="#FFFFFF"/>
+    <!-- 库洛米小耳朵 -->
+    <path android:pathData="M7,3 L8.5,1 L9.5,3 Z" android:fillColor="#EC4899"/>
+    <path android:pathData="M17,3 L15.5,1 L14.5,3 Z" android:fillColor="#EC4899"/>
+</vector>

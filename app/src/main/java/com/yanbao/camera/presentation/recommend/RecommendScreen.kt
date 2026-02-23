@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.yanbao.camera.R
+import com.yanbao.camera.ui.theme.YanbaoBrandTitle
 
 /**
  * 推荐模块 - AI 推荐列表
@@ -76,7 +77,7 @@ fun RecommendScreen(
                     .padding(start = 8.dp)
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_back),
+                    painter = painterResource(id = R.drawable.ic_back_kuromi),
                     contentDescription = "返回",
                     tint = Color.White,
                     modifier = Modifier.size(24.dp)
@@ -89,9 +90,11 @@ fun RecommendScreen(
                 .padding(top = 8.dp, bottom = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            YanbaoBrandTitle()
+            Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = "AI 推荐",
-                fontSize = 28.sp,
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
             )
@@ -167,7 +170,7 @@ fun RecommendScreen(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalItemSpacing = 12.dp
         ) {
-            items(spots) { spot ->
+            items(spots, key = { it.id }) { spot ->
                 PhotoSpotCard(spot = spot)
             }
         }
@@ -250,7 +253,7 @@ fun PhotoSpotCard(spot: PhotoSpot) {
                         // 评分
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
-                                text = "⭐",
+                                text = "[*]",
                                 fontSize = 14.sp
                             )
                             Text(
@@ -290,7 +293,7 @@ fun PhotoSpotCard(spot: PhotoSpot) {
                     // 地点
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = "📍",
+                            text = "@",
                             fontSize = 12.sp
                         )
                         Text(

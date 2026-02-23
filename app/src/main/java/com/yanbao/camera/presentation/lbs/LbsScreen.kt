@@ -101,7 +101,7 @@ fun LbsScreen(
                     .background(OBSIDIAN_BLACK.copy(alpha = 0.7f), CircleShape)
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_back),
+                    painter = painterResource(id = R.drawable.ic_back_kuromi),
                     contentDescription = "返回",
                     tint = Color.White,
                     modifier = Modifier.size(20.dp)
@@ -493,7 +493,7 @@ fun LocationCard(
                         val fullStars = location.rating.toInt()
                         repeat(5) { i ->
                             Text(
-                                text = if (i < fullStars) "★" else "☆",
+                                text = if (i < fullStars) "*" else "o",
                                 color = if (i < fullStars) KUROMI_PINK else Color.Gray,
                                 fontSize = 12.sp
                             )
@@ -507,7 +507,7 @@ fun LocationCard(
                 }
                 IconButton(onClick = onDismiss) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_close),
+                        painter = painterResource(id = R.drawable.ic_close_kuromi),
                         contentDescription = "关闭",
                         tint = Color.Gray,
                         modifier = Modifier.size(20.dp)
@@ -649,7 +649,7 @@ fun LbsBottomPanel(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    items(locations) { location ->
+                    items(locations, key = { it.id }) { location ->
                         LocationListItem(
                             location = location,
                             onClick = { onLocationClick(location) },
@@ -716,7 +716,7 @@ fun LocationListItem(
                 val fullStars = location.rating.toInt()
                 repeat(5) { i ->
                     Text(
-                        text = if (i < fullStars) "★" else "☆",
+                        text = if (i < fullStars) "*" else "o",
                         color = if (i < fullStars) KUROMI_PINK else Color.Gray,
                         fontSize = 10.sp
                     )

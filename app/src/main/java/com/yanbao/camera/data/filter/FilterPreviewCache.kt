@@ -46,7 +46,7 @@ object FilterPreviewCache {
     
     init {
         Log.d("FilterPreviewCache", """
-            ✅ 滤镜预览缓存初始化完成
+            [OK] 滤镜预览缓存初始化完成
             - 最大内存: ${maxMemory}KB
             - 缓存大小: ${cacheSize}KB
             - 预计可缓存: ${cacheSize / 500}张预览图（假设每张500KB）
@@ -78,7 +78,7 @@ object FilterPreviewCache {
     fun put(filterId: Int, bitmap: Bitmap) {
         cache.put(filterId, bitmap)
         Log.d("FilterPreviewCache", """
-            💾 缓存存储: filterId=$filterId
+            SAVE 缓存存储: filterId=$filterId
             - 当前缓存大小: ${cache.size()}KB / ${cacheSize}KB
             - 缓存命中率: ${getCacheHitRate()}%
         """.trimIndent())
@@ -113,7 +113,7 @@ object FilterPreviewCache {
         }
         
         Log.d("FilterPreviewCache", """
-            ✅ 预加载完成
+            [OK] 预加载完成
             - 成功: $successCount
             - 失败: $failCount
             - 当前缓存大小: ${cache.size()}KB / ${cacheSize}KB

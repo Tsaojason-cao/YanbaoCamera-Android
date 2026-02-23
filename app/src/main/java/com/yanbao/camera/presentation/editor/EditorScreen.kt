@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yanbao.camera.R
 import com.yanbao.camera.presentation.theme.*
+import com.yanbao.camera.ui.theme.YanbaoBrandTitle
 
 /**
  * 编辑器页面 - Phase 1 基础框架
@@ -65,19 +66,13 @@ private fun EditorTopBar(onNavigateBack: () -> Unit = {}) {
         // 返回上一层按钮
         IconButton(onClick = onNavigateBack) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_back),
+                painter = painterResource(id = R.drawable.ic_back_kuromi),
                 contentDescription = "返回",
                 tint = Color.White,
                 modifier = Modifier.size(24.dp)
             )
         }
-        Text(
-            text = "编辑器",
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily.Monospace,
-            color = Color.White
-        )
+        YanbaoBrandTitle()
         TextButton(onClick = { Log.d("EditorScreen", "完成编辑点击") }) {
             Text(
                 text = "完成",
@@ -103,7 +98,7 @@ private fun EditorPreviewPlaceholder() {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_gallery),
+                painter = painterResource(id = R.drawable.ic_gallery_kuromi),
                 contentDescription = null,
                 tint = Color.White.copy(alpha = 0.3f),
                 modifier = Modifier.size(48.dp)
@@ -151,7 +146,7 @@ private fun EditorToolGrid() {
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            items(editorTools.size) { index ->
+            items(editorTools.size, key = { it }) { index ->
                 EditorToolCard(tool = editorTools[index])
             }
         }
@@ -183,22 +178,22 @@ private fun EditorToolCard(tool: EditorTool) {
 private data class EditorTool(val name: String, val emoji: String)
 
 private val editorTools = listOf(
-    EditorTool("裁剪",   "✂️"),
-    EditorTool("旋转",   "🔄"),
-    EditorTool("亮度",   "☀️"),
-    EditorTool("对比度", "◑"),
-    EditorTool("饱和度", "🎨"),
-    EditorTool("曲线",   "〰️"),
-    EditorTool("HSL",    "🌈"),
-    EditorTool("锐化",   "🔪"),
-    EditorTool("降噪",   "🔇"),
-    EditorTool("暗角",   "⬛"),
-    EditorTool("色温",   "🌡️"),
-    EditorTool("色调",   "🎭"),
-    EditorTool("滤镜",   "✨"),
-    EditorTool("美颜",   "💄"),
-    EditorTool("文字",   "T"),
-    EditorTool("贴纸",   "🏷️"),
-    EditorTool("批量",   "📦"),
-    EditorTool("29D同步","⚡")
+    EditorTool("裁剪",   "CRP"),
+    EditorTool("旋转",   "ROT"),
+    EditorTool("亮度",   "LUM"),
+    EditorTool("对比度", "CON"),
+    EditorTool("饱和度", "SAT"),
+    EditorTool("曲线",   "CRV"),
+    EditorTool("HSL",    "HSL"),
+    EditorTool("锐化",   "SHP"),
+    EditorTool("降噪",   "NR"),
+    EditorTool("暗角",   "VIG"),
+    EditorTool("色温",   "TEMP"),
+    EditorTool("色调",   "TINT"),
+    EditorTool("滤镜",   "FLT"),
+    EditorTool("美颜",   "BTY"),
+    EditorTool("文字",   "TXT"),
+    EditorTool("贴纸",   "STK"),
+    EditorTool("批量",   "BAT"),
+    EditorTool("29D同步","29D")
 )

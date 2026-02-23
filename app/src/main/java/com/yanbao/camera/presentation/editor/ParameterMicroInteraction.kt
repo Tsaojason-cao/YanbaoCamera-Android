@@ -128,7 +128,7 @@ fun InteractiveParameterBubble(
                     isResetting = true
                     
                     Log.d("InteractiveParameterBubble", """
-                        🔄 重置参数
+                        SYNC 重置参数
                         - 参数: $parameterName
                         - 原值: $parameterValue
                         - 种子值: $seedValue
@@ -367,7 +367,7 @@ fun EnhancedMasterFilter29DParametersPanel(
             )
             
             Text(
-                text = "✕",
+                text = "X",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White.copy(alpha = 0.6f),
@@ -399,7 +399,7 @@ fun EnhancedMasterFilter29DParametersPanel(
                                     onParameterChanged(index, newValue)
                                     
                                     Log.d("EnhancedMasterFilter29DParametersPanel", """
-                                        🎨 参数变化
+                                        ART 参数变化
                                         - 滤镜: ${filter.displayName}
                                         - 参数: D${index + 1}
                                         - 新值: ${String.format("%.2f", newValue)}

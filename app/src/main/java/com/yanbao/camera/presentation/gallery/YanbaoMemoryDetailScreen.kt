@@ -153,6 +153,18 @@ fun YanbaoMemoryDetailScreen(
             }
         }
         
+        // yanbao AI 品牌标识（顶部中央）
+        Text(
+            text = "yanbao AI",
+            color = Color(0xFFEC4899),
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 20.dp)
+                .alpha(uiAlpha)
+        )
+
         // 顶部返回按鈕
         IconButton(
             onClick = onBackClick,
@@ -175,7 +187,7 @@ fun YanbaoMemoryDetailScreen(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "✓",
+                text = "[v]",
                 color = YanbaoPink,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
@@ -201,7 +213,7 @@ fun LocationDateHeader(
         // 地點
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = "📍",
+                text = "@",
                 fontSize = 14.sp
             )
             Spacer(modifier = Modifier.width(4.dp))
@@ -277,21 +289,21 @@ fun ActionButtonsRow(
     ) {
         // Git 備份按鈕
         ActionButton(
-            icon = "☁️",
+            icon = "~",
             label = "Git Backup",
             onClick = { /* Git 備份邏輯 */ }
         )
         
         // LBS 分享按鈕
         ActionButton(
-            icon = "📍",
+            icon = "@",
             label = "LBS Share",
             onClick = { /* LBS 分享邏輯 */ }
         )
         
         // 编辑按鈕
         ActionButton(
-            icon = "✏️",
+            icon = "E",
             label = "Edit",
             onClick = { /* 编辑邏輯 */ }
         )

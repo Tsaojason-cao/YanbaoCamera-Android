@@ -290,7 +290,7 @@ private fun SectionHeader(
             color      = TEXT_BLACK
         )
         Icon(
-            painter            = painterResource(R.drawable.ic_arrow_right),
+            painter            = painterResource(R.drawable.ic_arrow_right_kuromi),
             contentDescription = null,
             tint               = TEXT_GRAY,
             modifier           = Modifier
@@ -394,7 +394,7 @@ private fun PopularPlaceCard(place: PopularPlace, onClick: () -> Unit) {
                 Row {
                     repeat(5) { index ->
                         Text(
-                            text  = "★",
+                            text  = "*",
                             fontSize = 11.sp,
                             color = if (index < place.rating) Color(0xFFFFD700)
                                     else Color(0xFFE0E0E0)

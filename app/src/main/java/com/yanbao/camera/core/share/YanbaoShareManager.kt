@@ -210,7 +210,7 @@ class YanbaoShareManager(private val context: Context) {
 
         // 地点标签
         canvas.drawText(
-            "📍 $location",
+            "LOC $location",
             60f,
             startY,
             paint
@@ -258,7 +258,7 @@ class YanbaoShareManager(private val context: Context) {
         val shareIntent = Intent(Intent.ACTION_SEND).apply {
             type = "image/jpeg"
             putExtra(Intent.EXTRA_STREAM, shareUri)
-            putExtra(Intent.EXTRA_TEXT, "用 yanbao AI 拍摄 📸")
+            putExtra(Intent.EXTRA_TEXT, "用 yanbao AI 拍摄 CAM")
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
 

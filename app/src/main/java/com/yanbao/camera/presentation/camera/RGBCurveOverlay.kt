@@ -90,7 +90,7 @@ fun RGBCurveOverlay(
                     // 关闭按钮（右上角 "X"）
                     IconButton(onClick = onDismiss) {
                         Text(
-                            text = "✕",
+                            text = "X",
                             fontSize = 24.sp,
                             color = Color.White
                         )

@@ -1,0 +1,38 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- 胶卷 -->
+        <path
+        android:pathData="M4,7 L4,17 L20,17 L20,7 Z"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="@android:color/transparent"/>
+        <path
+        android:pathData="M4,10 L2,10 L2,14 L4,14"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="@android:color/transparent"/>
+        <path
+        android:pathData="M20,10 L22,10 L22,14 L20,14"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="@android:color/transparent"/>
+        <path
+        android:pathData="M7,7 L7,17 M10,7 L10,17 M14,7 L14,17 M17,7 L17,17"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="@android:color/transparent"/>
+    <!-- 小骷髅 -->
+    <path android:pathData="M12,3.5 m-1.5,0 a1.5,1.5 0 1,0 3,0 a1.5,1.5 0 1,0 -3,0" android:fillColor="#EC4899"/>
+    <path android:pathData="M11.4,5.3 L11.4,6 M12.6,5.3 L12.6,6" android:strokeColor="#EC4899" android:strokeWidth="0.8" android:fillColor="@android:color/transparent"/>
+</vector>

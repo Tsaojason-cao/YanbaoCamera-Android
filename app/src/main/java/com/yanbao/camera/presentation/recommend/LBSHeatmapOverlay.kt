@@ -80,7 +80,7 @@ fun LBSHeatmapOverlay(
                     
                     IconButton(onClick = onDismiss) {
                         Text(
-                            text = "✕",
+                            text = "X",
                             fontSize = 24.sp,
                             color = Color.White
                         )

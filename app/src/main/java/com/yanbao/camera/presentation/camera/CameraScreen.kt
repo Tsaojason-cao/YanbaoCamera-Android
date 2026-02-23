@@ -150,7 +150,7 @@ fun CameraScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_back),
+                        painter = painterResource(id = R.drawable.ic_back_kuromi),
                         contentDescription = "返回",
                         tint = Color.White,
                         modifier = Modifier.size(20.dp)
@@ -177,7 +177,7 @@ fun CameraScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_profile),
+                        painter = painterResource(id = R.drawable.ic_profile_kuromi),
                         contentDescription = "我的",
                         tint = Color.White,
                         modifier = Modifier.size(20.dp)
@@ -345,7 +345,7 @@ private fun QuickToolbar(
                 CameraViewModel.FlashMode.ON -> "开"
                 CameraViewModel.FlashMode.OFF -> "关"
             },
-            iconRes = R.drawable.ic_flash,
+            iconRes = R.drawable.ic_flash_kuromi,
             isActive = flashMode != CameraViewModel.FlashMode.OFF,
             onClick = onFlashClick
         )
@@ -353,7 +353,7 @@ private fun QuickToolbar(
         // 比例
         QuickToolItem(
             label = aspectRatio.label,
-            iconRes = R.drawable.ic_aspect_ratio,
+            iconRes = R.drawable.ic_aspect_ratio_kuromi,
             isActive = false,
             onClick = onAspectClick
         )
@@ -361,7 +361,7 @@ private fun QuickToolbar(
         // 定时
         QuickToolItem(
             label = timerMode.label,
-            iconRes = R.drawable.ic_timer,
+            iconRes = R.drawable.ic_timer_kuromi,
             isActive = timerMode != CameraViewModel.TimerMode.OFF,
             onClick = onTimerClick
         )
@@ -369,7 +369,7 @@ private fun QuickToolbar(
         // 翻转
         QuickToolItem(
             label = "翻转",
-            iconRes = R.drawable.ic_flip_camera,
+            iconRes = R.drawable.ic_flip_camera_kuromi,
             isActive = false,
             onClick = onFlipClick
         )
@@ -420,7 +420,7 @@ private fun YanbaoModeSelector(
         horizontalArrangement = Arrangement.spacedBy(4.dp),
         contentPadding = PaddingValues(horizontal = 16.dp)
     ) {
-        items(modes) { mode ->
+        items(modes, key = { it.name }) { mode ->
             val isSelected = mode == currentMode
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,

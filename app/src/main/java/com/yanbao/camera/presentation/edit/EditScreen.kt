@@ -72,11 +72,11 @@ fun EditScreen(
     LaunchedEffect(saveState) {
         when (saveState) {
             is SaveState.Success -> {
-                android.widget.Toast.makeText(context, "✅ 已保存到相册", android.widget.Toast.LENGTH_SHORT).show()
+                android.widget.Toast.makeText(context, "[OK] 已保存到相册", android.widget.Toast.LENGTH_SHORT).show()
                 viewModel.resetSaveState()
             }
             is SaveState.Error -> {
-                android.widget.Toast.makeText(context, "❌ 保存失败：${(saveState as SaveState.Error).message}", android.widget.Toast.LENGTH_LONG).show()
+                android.widget.Toast.makeText(context, "[ERR] 保存失败：${(saveState as SaveState.Error).message}", android.widget.Toast.LENGTH_LONG).show()
                 viewModel.resetSaveState()
             }
             else -> {}
@@ -117,7 +117,7 @@ fun EditScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_gallery),
+                        painter = painterResource(id = R.drawable.ic_gallery_kuromi),
                         contentDescription = null,
                         tint = Color.White.copy(alpha = 0.3f),
                         modifier = Modifier.size(56.dp)
@@ -281,7 +281,7 @@ private fun TopToolbar(
     ) {
         IconButton(onClick = onBackClick) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_back),
+                painter = painterResource(id = R.drawable.ic_back_kuromi),
                 contentDescription = "返回",
                 tint = Color.White
             )
@@ -295,14 +295,14 @@ private fun TopToolbar(
         Row {
             IconButton(onClick = onPickPhoto) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_gallery),
+                    painter = painterResource(id = R.drawable.ic_gallery_kuromi),
                     contentDescription = "选择照片",
                     tint = Color.White
                 )
             }
             IconButton(onClick = onMemoryClick) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_memory),
+                    painter = painterResource(id = R.drawable.ic_memory_kuromi),
                     contentDescription = "雁宝记忆",
                     tint = KUROMI_PINK
                 )
@@ -321,7 +321,7 @@ private fun CategoryTabs(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
-        items(categories) { category ->
+        items(categories, key = { it.hashCode() }) { category ->
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
@@ -358,7 +358,7 @@ private fun ToolGrid(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
-        items(tools) { tool ->
+        items(tools, key = { it.hashCode() }) { tool ->
             Column(
                 modifier = Modifier
                     .width(64.dp)
@@ -506,14 +506,14 @@ private fun BottomActionBar(
         Row {
             IconButton(onClick = onUndo, enabled = canUndo) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_undo),
+                    painter = painterResource(id = R.drawable.ic_undo_kuromi),
                     contentDescription = "撤销",
                     tint = if (canUndo) Color.White else Color.White.copy(alpha = 0.3f)
                 )
             }
             IconButton(onClick = onRedo, enabled = canRedo) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_redo),
+                    painter = painterResource(id = R.drawable.ic_redo_kuromi),
                     contentDescription = "重做",
                     tint = if (canRedo) Color.White else Color.White.copy(alpha = 0.3f)
                 )
@@ -601,7 +601,7 @@ private fun MemoryPanel(
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Icon(
-                                painter = painterResource(id = R.drawable.ic_memory),
+                                painter = painterResource(id = R.drawable.ic_memory_kuromi),
                                 contentDescription = null,
                                 tint = Color.White.copy(alpha = 0.3f),
                                 modifier = Modifier.size(48.dp)
@@ -621,7 +621,7 @@ private fun MemoryPanel(
                         modifier = Modifier.weight(1f),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        items(memories) { memory ->
+                        items(memories, key = { it.hashCode() }) { memory ->
                             MemoryCard(
                                 memory = memory,
                                 onClick = { onMemorySelect(memory.id) }

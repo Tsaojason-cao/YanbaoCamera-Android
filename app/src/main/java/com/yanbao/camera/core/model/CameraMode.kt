@@ -24,63 +24,63 @@ enum class CameraMode(
 ) {
     PHOTO(
         displayName = "拍照",
-        icon = "📷",
+        icon = "CAM",
         color = Color(0xFFEC4899),
         description = "标准拍照模式，支持自动对焦和曝光"
     ),
     
     VIDEO(
         displayName = "录像",
-        icon = "🎥",
+        icon = "VID",
         color = Color(0xFFEF4444),
         description = "视频录制模式，支持4K/1080p录制"
     ),
     
     PORTRAIT(
         displayName = "人像",
-        icon = "🎨",
+        icon = "POR",
         color = Color(0xFFF59E0B),
         description = "人像模式，自动虚化背景，突出主体"
     ),
     
     NIGHT(
         displayName = "夜景",
-        icon = "🌙",
+        icon = "NGT",
         color = Color(0xFF8B5CF6),
         description = "夜景模式，多帧合成降噪，提升暗光表现"
     ),
     
     PROFESSIONAL(
         displayName = "专业",
-        icon = "🔧",
+        icon = "PRO",
         color = Color(0xFF10B981),
         description = "专业模式，手动控制ISO、快门、白平衡等参数"
     ),
     
     PANORAMA(
         displayName = "全景",
-        icon = "🌄",
+        icon = "PAN",
         color = Color(0xFF3B82F6),
         description = "全景模式，拍摄超广角全景照片"
     ),
     
     TIMELAPSE(
         displayName = "延时",
-        icon = "⏱️",
+        icon = "TML",
         color = Color(0xFF06B6D4),
         description = "延时摄影，记录时间流逝的美妙瞬间"
     ),
     
     MASTER_FILTERS(
         displayName = "滤镜",
-        icon = "✨",
+        icon = "FLT",
         color = Color(0xFFEC4899),
         description = "大师滤镜，一键应用专业级调色方案"
     ),
     
     IPHONE_STYLE(
         displayName = "iPhone",
-        icon = "📱",
+        icon = "iOS",
         color = Color(0xFF6366F1),
         description = "iPhone风格，模拟iPhone相机的拍摄效果"
     );

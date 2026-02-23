@@ -250,7 +250,7 @@ suspend fun generateShareCardWithGitHash(
     canvas.drawText("扫码导入滤镜参数", 540f, 1860f, paint)
     
     Log.d("GitCommitHashProvider", """
-        ✅ 分享卡片生成完成（含Git Hash）
+        [OK] 分享卡片生成完成（含Git Hash）
         - 滤镜: ${filter.displayName}
         - Git Hash: ${gitInfo.commitHash}
         - 尺寸: ${cardBitmap.width}x${cardBitmap.height}px
@@ -298,7 +298,7 @@ private fun generate29DQRCodeWithGitHash(
     val jsonString = jsonObject.toString()
     
     Log.d("GitCommitHashProvider", """
-        📝 二维码数据（含Git Hash）
+        NOTE 二维码数据（含Git Hash）
         - JSON长度: ${jsonString.length}字符
         - Git Hash: ${gitInfo.commitHash}
         - 数据: ${jsonString.take(100)}...

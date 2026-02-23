@@ -36,7 +36,7 @@ fun ModeSelector(
         contentPadding = PaddingValues(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        items(CameraMode.values().toList()) { mode ->
+        items(CameraMode.values().toList(), key = { it.name }) { mode ->
             ModeItem(
                 mode = mode,
                 isSelected = mode == selectedMode,

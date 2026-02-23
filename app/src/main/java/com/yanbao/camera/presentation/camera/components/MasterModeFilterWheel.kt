@@ -69,7 +69,7 @@ fun MasterModeFilterWheel(
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = "🎨 大师模式滤镜",
+                text = "ART 大师模式滤镜",
                 color = Color.White,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
@@ -89,7 +89,7 @@ fun MasterModeFilterWheel(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = PaddingValues(horizontal = 8.dp)
         ) {
-            items(filters) { filter ->
+            items(filters, key = { it.name }) { filter ->
                 MasterFilterItem(
                     filter = filter,
                     isSelected = filter.id == selectedFilterId,
@@ -198,11 +198,11 @@ fun MasterFilterItem(
  */
 private fun getLocationEmoji(location: String): String {
     return when {
-        location.contains("台北") -> "🏙️"
-        location.contains("东京") -> "🗼"
-        location.contains("九份") -> "🏮"
-        location.contains("日月潭") -> "🌊"
-        location.contains("太鲁阁") -> "⛰️"
-        else -> "📍"
+        location.contains("台北") -> "CITY️"
+        location.contains("东京") -> "TWR"
+        location.contains("九份") -> "LNT"
+        location.contains("日月潭") -> "LAKE"
+        location.contains("太鲁阁") -> "MTN️"
+        else -> "LOC"
     }
 }

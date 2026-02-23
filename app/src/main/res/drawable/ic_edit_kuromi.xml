@@ -3,24 +3,21 @@
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-    <!-- 库洛米耳朵（左） -->
-    <path
-        android:fillColor="#888888"
-        android:pathData="M5,2 Q4,0 6,1 Q7,3 5,4 Z" />
-    <!-- 库洛米耳朵（右） -->
-    <path
-        android:fillColor="#888888"
-        android:pathData="M10,2 Q11,0 12,1 Q11,3 10,4 Z" />
-    <!-- 蝴蝶结 -->
-    <path
-        android:fillColor="#EC4899"
-        android:pathData="M7,3 L8.5,4 L7,5 L8.5,4 Z" />
-    <!-- 铅笔主体 -->
-    <path
-        android:fillColor="#888888"
-        android:pathData="M3,17.25V21h3.75L17.81,9.94l-3.75-3.75L3,17.25z" />
-    <!-- 铅笔顶部 -->
-    <path
-        android:fillColor="#EC4899"
-        android:pathData="M20.71,7.04c0.39-0.39,0.39-1.02,0-1.41l-2.34-2.34c-0.39-0.39-1.02-0.39-1.41,0l-1.83,1.83 3.75,3.75 1.83-1.83z" />
+        <path
+        android:pathData="M3,17 L3,21 L7,21 L18,10 L14,6 Z"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="@android:color/transparent"/>
+        <path
+        android:pathData="M14,6 L18,10"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="@android:color/transparent"/>
+    <!-- 库洛米小耳朵 -->
+    <path android:pathData="M7,3 L8.5,1 L9.5,3 Z" android:fillColor="#EC4899"/>
+    <path android:pathData="M17,3 L15.5,1 L14.5,3 Z" android:fillColor="#EC4899"/>
 </vector>

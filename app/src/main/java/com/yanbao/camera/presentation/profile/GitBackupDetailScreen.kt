@@ -117,12 +117,20 @@ fun GitBackupDetailScreen(
                 
                 Spacer(modifier = Modifier.width(16.dp))
                 
-                Text(
-                    text = "Git 备份详情",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
+                Column {
+                    Text(
+                        text = "yanbao AI",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFFEC4899)
+                    )
+                    Text(
+                        text = "Git 备份详情",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                }
             }
             
             Spacer(modifier = Modifier.height(32.dp))
@@ -151,21 +159,21 @@ fun GitBackupDetailScreen(
                 ) {
                     // 照片数量
                     StatItem(
-                        icon = "📸",
+                        icon = "P",
                         label = "备份照片",
                         value = "$photoCount 张"
                     )
                     
                     // 存储占用
                     StatItem(
-                        icon = "💾",
+                        icon = "S",
                         label = "存储占用",
                         value = formatFileSize(totalSize)
                     )
                     
                     // 最后备份时间
                     StatItem(
-                        icon = "🕒",
+                        icon = "T",
                         label = "最后备份",
                         value = lastBackupTime
                     )

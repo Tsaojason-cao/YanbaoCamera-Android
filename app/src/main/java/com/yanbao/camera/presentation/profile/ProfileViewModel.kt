@@ -216,10 +216,10 @@ class ProfileViewModel @Inject constructor(
                 try {
                     deleteDir(context.cacheDir)
                     context.externalCacheDir?.let { deleteDir(it) }
-                    _clearCacheStatus.value = "✅ 缓存已清理"
+                    _clearCacheStatus.value = "[OK] 缓存已清理"
                     _cacheSize.value = "0 B"
                 } catch (e: Exception) {
-                    _clearCacheStatus.value = "❌ 清理失败: ${e.message}"
+                    _clearCacheStatus.value = "[ERR] 清理失败: ${e.message}"
                 }
             }
         }
@@ -303,8 +303,8 @@ class ProfileViewModel @Inject constructor(
             _backupStatus.value = "备份中..."
             val result = gitBackupManager.performFullBackup()
             _backupStatus.value = result.fold(
-                onSuccess = { "✅ $it" },
-                onFailure = { "❌ 备份失败: ${it.message}" }
+                onSuccess = { "[OK] $it" },
+                onFailure = { "[ERR] 备份失败: ${it.message}" }
             )
         }
     }
@@ -313,8 +313,8 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             val result = gitBackupManager.checkGitStatus()
             _backupStatus.value = result.fold(
-                onSuccess = { "✅ Git 状态: $it" },
-                onFailure = { "❌ ${it.message}" }
+                onSuccess = { "[OK] Git 状态: $it" },
+                onFailure = { "[ERR] ${it.message}" }
             )
         }
     }
@@ -323,8 +323,8 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             val result = gitBackupManager.getGitLog()
             _backupStatus.value = result.fold(
-                onSuccess = { "✅ 最近提交:\n$it" },
-                onFailure = { "❌ ${it.message}" }
+                onSuccess = { "[OK] 最近提交:\n$it" },
+                onFailure = { "[ERR] ${it.message}" }
             )
         }
     }

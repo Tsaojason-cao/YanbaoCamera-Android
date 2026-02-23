@@ -72,7 +72,7 @@ object MemoryMockFactory {
             locationName = "北京市东城区",
             weather = "晴",
             temperature = 22.5,
-            weatherIcon = "☀️",
+            weatherIcon = "SUN️",
             params29D = """
                 {
                     "brightness": 0.0,

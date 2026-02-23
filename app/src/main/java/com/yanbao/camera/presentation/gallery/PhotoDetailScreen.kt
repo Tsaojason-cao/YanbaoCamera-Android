@@ -209,7 +209,7 @@ fun PhotoDetailScreen(
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_gallery),
+                            painter = painterResource(id = R.drawable.ic_gallery_kuromi),
                             contentDescription = null,
                             tint = Color.White.copy(alpha = 0.3f),
                             modifier = Modifier.size(64.dp)
@@ -223,11 +223,20 @@ fun PhotoDetailScreen(
                     }
                 }
             }
-        }
-
-        // ─── Layer 2：顶部控制区 ──────────────────────────────────────────
-        Row(
+          // ─── Layer 2：顶部控制区 ──────────────────────────────────────────────────────
+        // yanbao AI 品牌标识（顶部中央）
+        Text(
+            text = "yanbao AI",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color.White,
             modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.TopCenter)
+                .padding(top = 52.dp),
+            textAlign = TextAlign.Center
+        )
+        Row(          modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.TopCenter)
                 .padding(horizontal = 16.dp, vertical = 44.dp),
@@ -244,7 +253,7 @@ fun PhotoDetailScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_back),
+                    painter = painterResource(id = R.drawable.ic_back_kuromi),
                     contentDescription = "返回",
                     tint = Color.White,
                     modifier = Modifier.size(20.dp)
@@ -267,7 +276,7 @@ fun PhotoDetailScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_memory),
+                            painter = painterResource(id = R.drawable.ic_memory_kuromi),
                             contentDescription = null,
                             tint = Color.White,
                             modifier = Modifier.size(12.dp)
@@ -290,7 +299,7 @@ fun PhotoDetailScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_settings),
+                    painter = painterResource(id = R.drawable.ic_more_kuromi),
                     contentDescription = "更多",
                     tint = Color.White,
                     modifier = Modifier.size(20.dp)
@@ -352,7 +361,7 @@ fun PhotoDetailScreen(
                 ) {
                     // 编辑
                     ActionButton(
-                        icon = R.drawable.ic_edit,
+                        icon = R.drawable.ic_edit_kuromi,
                         label = "编辑",
                         onClick = {
                             photo?.contentUri?.let { uri ->
@@ -363,7 +372,7 @@ fun PhotoDetailScreen(
 
                     // 分享
                     ActionButton(
-                        icon = R.drawable.ic_share,
+                        icon = R.drawable.ic_share_kuromi,
                         label = "分享",
                         onClick = {
                             photo?.contentUri?.let { uriStr ->
@@ -379,7 +388,7 @@ fun PhotoDetailScreen(
 
                     // 删除
                     ActionButton(
-                        icon = R.drawable.ic_delete,
+                        icon = R.drawable.ic_delete_kuromi,
                         label = "删除",
                         tint = Color(0xFFFF6B6B),
                         onClick = { showDeleteDialog = true }
@@ -387,7 +396,7 @@ fun PhotoDetailScreen(
 
                     // 收藏
                     ActionButton(
-                        icon = R.drawable.ic_favorite,
+                        icon = R.drawable.ic_favorite_kuromi,
                         label = if (isFavorite) "已收藏" else "收藏",
                         tint = if (isFavorite) KUROMI_PINK else Color.White,
                         onClick = { isFavorite = !isFavorite }
@@ -395,7 +404,7 @@ fun PhotoDetailScreen(
 
                     // 信息
                     ActionButton(
-                        icon = R.drawable.ic_info,
+                        icon = R.drawable.ic_update_kuromi,
                         label = "信息",
                         onClick = {
                             photo?.contentUri?.let { uriStr ->

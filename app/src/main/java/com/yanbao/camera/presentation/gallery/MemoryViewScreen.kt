@@ -86,7 +86,7 @@ fun MemoryViewScreen(
                 .size(40.dp)
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_back),
+                painter = painterResource(id = R.drawable.ic_back_kuromi),
                 contentDescription = "返回",
                 tint = Color.White
             )
@@ -166,7 +166,7 @@ fun MemoryViewScreen(
                     )
                 ) {
                     Text(
-                        text = "✨ 套用此参数拍摄",
+                        text = "套用此参数拍摄",
                         color = Color.White,
                         fontWeight = FontWeight.Bold
                     )
@@ -185,7 +185,7 @@ fun MemoryViewScreen(
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(memories) { item ->
+                    items(memories, key = { it.hashCode() }) { item ->
                         RelatedMemoryCard(item, navController)
                     }
                 }
@@ -227,7 +227,12 @@ private fun RelatedMemoryCard(item: MemoryItem, navController: NavController) {
                 ),
             contentAlignment = Alignment.Center
         ) {
-            Text("📸", fontSize = 28.sp)
+            Icon(
+                painter = painterResource(id = R.drawable.ic_gallery_kuromi),
+                contentDescription = null,
+                tint = Color.White.copy(alpha = 0.5f),
+                modifier = Modifier.size(28.dp)
+            )
         }
         Spacer(modifier = Modifier.height(4.dp))
         Text(

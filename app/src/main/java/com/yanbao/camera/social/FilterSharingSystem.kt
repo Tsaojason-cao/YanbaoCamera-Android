@@ -68,7 +68,7 @@ object FilterSharingSystem {
     
     init {
         Log.d("FilterSharingSystem", """
-            ✅ 滤镜社交分享系统初始化完成
+            [OK] 滤镜社交分享系统初始化完成
             - 分享卡片尺寸: ${CARD_WIDTH}x${CARD_HEIGHT}px
             - 二维码尺寸: ${QR_CODE_SIZE}x${QR_CODE_SIZE}px
         """.trimIndent())
@@ -152,7 +152,7 @@ object FilterSharingSystem {
         canvas.drawText("扫码导入滤镜参数", CARD_WIDTH / 2f, CARD_HEIGHT - 120f, paint)
         
         Log.d("FilterSharingSystem", """
-            ✅ 分享卡片生成完成
+            [OK] 分享卡片生成完成
             - 滤镜: ${filter.displayName}
             - 尺寸: ${cardBitmap.width}x${cardBitmap.height}px
             - 内存占用: ${cardBitmap.byteCount / 1024}KB
@@ -195,7 +195,7 @@ object FilterSharingSystem {
         val jsonString = jsonObject.toString()
         
         Log.d("FilterSharingSystem", """
-            📝 二维码数据
+            NOTE 二维码数据
             - JSON长度: ${jsonString.length}字符
             - 数据: ${jsonString.take(100)}...
         """.trimIndent())
@@ -292,7 +292,7 @@ object FilterSharingSystem {
             )
             
             Log.d("FilterSharingSystem", """
-                ✅ 滤镜导入成功
+                [OK] 滤镜导入成功
                 - 滤镜: ${importedFilter.displayName}
                 - 参数: ${parameters.take(5).joinToString(", ")}...
             """.trimIndent())
@@ -516,7 +516,7 @@ fun ScanQRCodeButton(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "📷",
+            text = "CAM",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = Color.White

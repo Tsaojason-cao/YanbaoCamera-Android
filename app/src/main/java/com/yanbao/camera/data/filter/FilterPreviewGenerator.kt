@@ -61,7 +61,7 @@ object FilterPreviewGenerator {
     
     init {
         Log.d("FilterPreviewGenerator", """
-            ✅ 滤镜预览图生成器初始化完成
+            [OK] 滤镜预览图生成器初始化完成
             - 预览图尺寸: ${PREVIEW_SIZE}x${PREVIEW_SIZE}px
             - 圆角半径: ${CORNER_RADIUS}px
             - 线程池: Dispatchers.Default
@@ -130,7 +130,7 @@ object FilterPreviewGenerator {
             canvas.drawText(filter.filterName, textX, nameY, paint)
             
             Log.d("FilterPreviewGenerator", """
-                ✅ 预览图生成完成: ${filter.displayName}
+                [OK] 预览图生成完成: ${filter.displayName}
                 - 生成时间: ${generateTime}ms
                 - 尺寸: ${bitmap.width}x${bitmap.height}px
                 - 内存占用: ${bitmap.byteCount / 1024}KB
@@ -187,7 +187,7 @@ object FilterPreviewGenerator {
         val totalTime = System.currentTimeMillis() - startTime
         
         Log.d("FilterPreviewGenerator", """
-            ✅ 批量生成完成
+            [OK] 批量生成完成
             - 总耗时: ${totalTime}ms
             - 成功: $successCount
             - 失败: $failCount
@@ -338,7 +338,7 @@ object PreviewMemoryMonitor {
         val memoryUsagePercent = (usedMemory.toFloat() / maxMemory * 100).toInt()
         
         Log.d("PreviewMemoryMonitor", """
-            📊 内存状态
+            STAT 内存状态
             - 已用内存: ${usedMemory}MB / ${maxMemory}MB
             - 使用率: ${memoryUsagePercent}%
         """.trimIndent())

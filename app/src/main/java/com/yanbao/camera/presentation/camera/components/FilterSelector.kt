@@ -68,7 +68,7 @@ fun FilterSelector(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
-            items(FILTER_EFFECTS) { filter ->
+            items(FILTER_EFFECTS, key = { it.name }) { filter ->
                 FilterItem(
                     filter = filter,
                     isSelected = filter.name == selectedFilter.name,

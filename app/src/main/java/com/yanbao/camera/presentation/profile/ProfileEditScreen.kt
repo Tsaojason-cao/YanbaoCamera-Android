@@ -77,12 +77,14 @@ fun ProfileEditScreen(
                 
                 Spacer(modifier = Modifier.width(16.dp))
                 
-                Text(
-                    text = "编辑个人资料",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
+                Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                    Text(
+                        text = "yanbao AI",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                }
             }
             
             Spacer(modifier = Modifier.height(32.dp))
@@ -212,11 +214,11 @@ fun EditItems(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         val items = listOf(
-            "📝 修改昵称",
-            "🎂 修改生日",
-            "🌍 修改地区",
-            "📧 修改邮箱",
-            "🔒 修改密码"
+            "修改昵称",
+            "修改生日",
+            "修改地区",
+            "修改邮筱",
+            "修改密码"
         )
         
         items.forEach { item ->

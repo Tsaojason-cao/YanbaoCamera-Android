@@ -8,13 +8,13 @@ enum class YanbaoCameraMode(
     val displayName: String,
     val emoji: String
 ) {
-    MEMORY("雁宝记忆", "🧠"),
-    MASTER("大师", "🎨"),
-    PARAM29D("29D", "🎛"),
-    PARALLAX("2.9D", "🌀"),
-    BEAUTY("美颜", "✨"),
-    VIDEO("视频大师", "🎬"),
-    BASIC("基本", "📷"),
-    NATIVE("原相机", "📸"),
-    AR("AR空间", "🌐")
+    MEMORY("雁宝记忆", "M"),
+    MASTER("大师", "A"),
+    PARAM29D("29D", "D"),
+    PARALLAX("2.9D", "X"),
+    BEAUTY("美颜", "B"),
+    VIDEO("视频大师", "V"),
+    BASIC("基本", "B"),
+    NATIVE("原相机", "N"),
+    AR("AR空间", "R")
 }

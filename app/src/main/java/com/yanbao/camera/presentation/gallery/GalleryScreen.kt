@@ -30,6 +30,11 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.yanbao.camera.R
+import com.yanbao.camera.ui.theme.KuromiPink
+import com.yanbao.camera.ui.theme.ObsidianBlack
+import com.yanbao.camera.ui.theme.YanbaoBrandTitle
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.graphics.Brush
 
 /**
  * 相册模块 - 分层过滤逻辑
@@ -94,7 +99,7 @@ fun GalleryScreen(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                items(filteredPhotos) { photo ->
+                items(filteredPhotos, key = { it.id }) { photo ->
                     PhotoItem(
                         photo = photo,
                         onClick = { viewModel.onPhotoClick(photo) }
@@ -115,34 +120,32 @@ fun GalleryTopBar(
     onHomeClick: () -> Unit,
     onSearchClick: () -> Unit
 ) {
-    TopAppBar(
-        title = {
-            Text(
-                text = "相册",
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.White,
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(Color(0xF20A0A0A), Color(0xCC0A0A0A))
+                )
             )
-        },
-        navigationIcon = {
-            IconButton(onClick = onBackClick) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "返回",
-                    tint = Color.White
-                )
-            }
-        },
-        actions = {
-            IconButton(onClick = onHomeClick) {
-                Icon(
-                    imageVector = Icons.Default.Home,
-                    contentDescription = "主页",
-                    tint = Color.White
-                )
-            }
+            .statusBarsPadding()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        // 返回按钮
+        IconButton(
+            onClick = onBackClick,
+            modifier = Modifier.align(Alignment.CenterStart)
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "返回",
+                tint = Color.White
+            )
+        }
+        // 中央品牌标识
+        YanbaoBrandTitle(modifier = Modifier.align(Alignment.Center))
+        // 右侧搜索
+        Row(modifier = Modifier.align(Alignment.CenterEnd)) {
             IconButton(onClick = onSearchClick) {
                 Icon(
                     imageVector = Icons.Default.Search,
@@ -150,11 +153,8 @@ fun GalleryTopBar(
                     tint = Color.White
                 )
             }
-        },
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color(0xFF1A1A1A)
-        )
-    )
+        }
+    }
 }
 
 /**
@@ -170,7 +170,7 @@ fun PhotoItem(
             .aspectRatio(1f)
             .clip(RoundedCornerShape(12.dp))
             .clickable(onClick = onClick),
-        border = BorderStroke(1.dp, Color(0xFFFFB6C1).copy(alpha = 0.5f)), // ✅ 粉色流光描边
+        border = BorderStroke(1.dp, Color(0xFFFFB6C1).copy(alpha = 0.5f)), // [OK] 粉色流光描边
         colors = CardDefaults.cardColors(containerColor = Color(0xFF2A2A2A))
     ) {
         Box {

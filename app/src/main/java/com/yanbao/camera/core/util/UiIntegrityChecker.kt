@@ -111,7 +111,7 @@ class UiIntegrityChecker(private val context: Context) {
             appendLine("2. UID 硬件指紋")
             appendLine("   當前 UID: $uid")
             appendLine("   生成方式: 基於 ANDROID_ID 的 SHA-256 哈希")
-            appendLine("   是否 hardcode: ${if (uid == HARDCODED_UID) "❌ 是" else "✅ 否"}")
+            appendLine("   是否 hardcode: ${if (uid == HARDCODED_UID) "[ERR] 是" else "[OK] 否"}")
             appendLine()
             appendLine("3. 頭像連接")
             appendLine("   數據源: ProfileViewModel.profile.avatarUri")

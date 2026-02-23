@@ -92,7 +92,7 @@ fun MasterFilterGrid(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(filters) { filter ->
+            items(filters, key = { it.hashCode() }) { filter ->
                 val isSelected = filter.id == selectedFilter.id
                 
                 Box(
@@ -220,7 +220,7 @@ fun MasterFilter29DParametersPanel(
             )
             
             Text(
-                text = "✕",
+                text = "X",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.White.copy(alpha = 0.6f),

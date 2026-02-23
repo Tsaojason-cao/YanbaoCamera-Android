@@ -62,11 +62,19 @@ fun GalleryDetailScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        text = "照片详情",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(
+                            text = "yanbao AI",
+                            color = Color(0xFFEC4899),
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "照片详情",
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
@@ -172,7 +180,7 @@ fun GalleryDetailOverlay(
         ) {
             // 标题
             Text(
-                text = "📸 拍摄参数",
+                text = "拍摄参数",
                 color = Color.White,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
@@ -203,7 +211,7 @@ fun GalleryDetailOverlay(
                 Divider(color = Color.White.copy(alpha = 0.3f), thickness = 1.dp)
                 
                 Text(
-                    text = "💄 美颜参数",
+                    text = "美颜参数",
                     color = Color(0xFFFFB6C1),
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold
@@ -224,7 +232,7 @@ fun GalleryDetailOverlay(
                 Divider(color = Color.White.copy(alpha = 0.3f), thickness = 1.dp)
                 
                 Text(
-                    text = "📍 ${photoParams.location}",
+                    text = "@ ${photoParams.location}",
                     color = Color(0xFF10B981),
                     fontSize = 12.sp
                 )
@@ -233,7 +241,7 @@ fun GalleryDetailOverlay(
             // 拍摄时间
             if (photoParams.dateTime.isNotEmpty() && photoParams.dateTime != "未知时间") {
                 Text(
-                    text = "🕒 ${photoParams.dateTime}",
+                    text = "T ${photoParams.dateTime}",
                     color = Color.White.copy(alpha = 0.7f),
                     fontSize = 12.sp
                 )
@@ -294,7 +302,7 @@ fun KuromiWatermark(
             .padding(horizontal = 12.dp, vertical = 6.dp)
     ) {
         Text(
-            text = "🎀 $mode",
+            text = "$mode",
             color = Color.White,
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold

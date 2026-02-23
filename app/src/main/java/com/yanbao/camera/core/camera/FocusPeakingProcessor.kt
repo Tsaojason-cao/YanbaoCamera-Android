@@ -52,7 +52,7 @@ class FocusPeakingProcessor(
     
     init {
         Log.d("FocusPeakingProcessor", """
-            ✅ Focus Peaking处理器初始化完成
+            [OK] Focus Peaking处理器初始化完成
             - 阈值: $threshold
             - 高亮颜色: ${String.format("#%06X", 0xFFFFFF and highlightColor)}
         """.trimIndent())
@@ -82,7 +82,7 @@ class FocusPeakingProcessor(
             if (frameCount % 30 == 0) {
                 val avgTime = totalProcessingTime / frameCount
                 Log.d("FocusPeakingProcessor", """
-                    📊 性能统计（30帧）
+                    STAT 性能统计（30帧）
                     - 平均处理时间: ${avgTime}ms
                     - 帧率: ${1000f / avgTime}fps
                 """.trimIndent())
@@ -176,7 +176,7 @@ class FocusPeakingProcessor(
         
         val peakingRatio = peakingPixelCount.toFloat() / (width * height) * 100
         Log.d("FocusPeakingProcessor", """
-            🔍 Focus Peaking处理完成
+            FIND Focus Peaking处理完成
             - 高亮像素: $peakingPixelCount
             - 高亮比例: ${String.format("%.2f", peakingRatio)}%
         """.trimIndent())

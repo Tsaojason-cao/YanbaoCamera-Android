@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import com.yanbao.camera.R
+import com.yanbao.camera.ui.theme.YanbaoBrandTitle
 
 private val KUROMI_PINK = Color(0xFFEC4899)
 private val OBSIDIAN_BLACK = Color(0xFF0A0A0A)
@@ -122,12 +123,19 @@ fun ProfileScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_back),
+                        painter = painterResource(R.drawable.ic_back_kuromi),
                         contentDescription = "返回",
                         tint = Color.White,
                         modifier = Modifier.size(18.dp)
                     )
                 }
+
+                // 品牌标识（顶部居中）
+                YanbaoBrandTitle(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = 48.dp)
+                )
 
                 // 编辑资料按钮（右上角）
                 Box(
@@ -142,7 +150,7 @@ fun ProfileScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_edit),
+                        painter = painterResource(R.drawable.ic_edit_kuromi),
                         contentDescription = "编辑资料",
                         tint = Color.White,
                         modifier = Modifier.size(18.dp)
@@ -185,7 +193,7 @@ fun ProfileScreen(
                             )
                         } else {
                             Icon(
-                                painter = painterResource(R.drawable.ic_camera),
+                                painter = painterResource(R.drawable.ic_camera_kuromi),
                                 contentDescription = "头像",
                                 tint = Color.White.copy(alpha = 0.5f),
                                 modifier = Modifier.size(36.dp)
@@ -222,7 +230,7 @@ fun ProfileScreen(
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Icon(
-                        painter = painterResource(R.drawable.ic_edit),
+                        painter = painterResource(R.drawable.ic_edit_kuromi),
                         contentDescription = "编辑ID",
                         tint = Color.White.copy(alpha = 0.4f),
                         modifier = Modifier.size(12.dp)
@@ -326,7 +334,7 @@ fun ProfileScreen(
                 Column {
                     // 1. 更换背景
                     SettingItem(
-                        iconRes = R.drawable.ic_gallery,
+                        iconRes = R.drawable.ic_gallery_kuromi,
                         title = "更换背景",
                         subtitle = "自定义个人主页背景",
                         onClick = { backgroundLauncher.launch("image/*") }
@@ -335,7 +343,7 @@ fun ProfileScreen(
 
                     // 2. 更换头像
                     SettingItem(
-                        iconRes = R.drawable.ic_camera,
+                        iconRes = R.drawable.ic_camera_kuromi,
                         title = "更换头像",
                         subtitle = "从相册选择头像",
                         onClick = { avatarLauncher.launch("image/*") }
@@ -344,7 +352,7 @@ fun ProfileScreen(
 
                     // 3. 修改 ID
                     SettingItem(
-                        iconRes = R.drawable.ic_edit,
+                        iconRes = R.drawable.ic_edit_kuromi,
                         title = "修改 ID",
                         subtitle = profile.userId,
                         onClick = { showIdDialog = true }
@@ -353,7 +361,7 @@ fun ProfileScreen(
 
                     // 4. 通知设置（开关）
                     SettingItemWithSwitch(
-                        iconRes = R.drawable.ic_info,
+                        iconRes = R.drawable.ic_account_kuromi,
                         title = "推送通知",
                         subtitle = "接收雁宝记忆提醒",
                         checked = notificationsEnabled,
@@ -363,7 +371,7 @@ fun ProfileScreen(
 
                     // 5. 自动备份（开关）
                     SettingItemWithSwitch(
-                        iconRes = R.drawable.ic_memory,
+                        iconRes = R.drawable.ic_memory_kuromi,
                         title = "自动 Git 备份",
                         subtitle = if (autoBackupEnabled) "已开启" else "已关闭",
                         checked = autoBackupEnabled,
@@ -373,7 +381,7 @@ fun ProfileScreen(
 
                     // 6. 高质量导出（开关）
                     SettingItemWithSwitch(
-                        iconRes = R.drawable.ic_share,
+                        iconRes = R.drawable.ic_hd_kuromi,
                         title = "高质量导出",
                         subtitle = "分享时保留原始画质",
                         checked = highQualityExport,
@@ -383,12 +391,12 @@ fun ProfileScreen(
 
                     // 7. Git 同步备份
                     SettingItem(
-                        iconRes = R.drawable.ic_memory,
+                        iconRes = R.drawable.ic_git_backup_kuromi,
                         title = "Git 同步备份",
                         subtitle = backupStatus ?: "立即备份雁宝记忆到 GitHub",
                         subtitleColor = when {
-                            backupStatus?.startsWith("✅") == true -> Color(0xFF10B981)
-                            backupStatus?.startsWith("❌") == true -> Color(0xFFFF6B6B)
+                            backupStatus?.startsWith("[OK]") == true -> Color(0xFF10B981)
+                            backupStatus?.startsWith("[ERR]") == true -> Color(0xFFFF6B6B)
                             else -> Color.White.copy(alpha = 0.5f)
                         },
                         onClick = { viewModel.performGitBackup() }
@@ -397,12 +405,12 @@ fun ProfileScreen(
 
                     // 8. 清理缓存
                     SettingItem(
-                        iconRes = R.drawable.ic_delete,
+                        iconRes = R.drawable.ic_clear_cache_kuromi,
                         title = "清理缓存",
                         subtitle = clearCacheStatus ?: "当前缓存：$cacheSize",
                         subtitleColor = when {
-                            clearCacheStatus?.startsWith("✅") == true -> Color(0xFF10B981)
-                            clearCacheStatus?.startsWith("❌") == true -> Color(0xFFFF6B6B)
+                            clearCacheStatus?.startsWith("[OK]") == true -> Color(0xFF10B981)
+                            clearCacheStatus?.startsWith("[ERR]") == true -> Color(0xFFFF6B6B)
                             else -> Color.White.copy(alpha = 0.5f)
                         },
                         onClick = { showClearCacheDialog = true }
@@ -411,7 +419,7 @@ fun ProfileScreen(
 
                     // 9. 隐私设置
                     SettingItem(
-                        iconRes = R.drawable.ic_settings,
+                        iconRes = R.drawable.ic_privacy_kuromi,
                         title = "隐私设置",
                         subtitle = "管理数据权限",
                         onClick = { /* 跳转隐私设置页 */ }
@@ -420,7 +428,7 @@ fun ProfileScreen(
 
                     // 10. 帮助中心
                     SettingItem(
-                        iconRes = R.drawable.ic_info,
+                        iconRes = R.drawable.ic_update_kuromi,
                         title = "帮助中心",
                         subtitle = "使用教程与常见问题",
                         onClick = { /* 跳转帮助页 */ }
@@ -429,7 +437,7 @@ fun ProfileScreen(
 
                     // 11. 关于雁宝
                     SettingItem(
-                        iconRes = R.drawable.ic_settings,
+                        iconRes = R.drawable.ic_update_kuromi,
                         title = "关于雁宝 AI",
                         subtitle = "版本 1.0.0 · Phase 1",
                         onClick = { /* 跳转关于页 */ },
@@ -576,7 +584,7 @@ private fun SettingItem(
         }
         if (showArrow) {
             Icon(
-                painter = painterResource(R.drawable.ic_back),
+                painter = painterResource(R.drawable.ic_back_kuromi),
                 contentDescription = null,
                 tint = Color.White.copy(alpha = 0.3f),
                 modifier = Modifier

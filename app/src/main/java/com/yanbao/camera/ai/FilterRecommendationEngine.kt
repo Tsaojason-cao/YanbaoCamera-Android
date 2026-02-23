@@ -61,7 +61,7 @@ object FilterRecommendationEngine {
     
     init {
         Log.d("FilterRecommendationEngine", """
-            ✅ AI智能推荐引擎初始化完成
+            [OK] AI智能推荐引擎初始化完成
             - 场景类型: ${sceneFilterMapping.size}种
             - 用户偏好: 空（待学习）
         """.trimIndent())
@@ -93,7 +93,7 @@ object FilterRecommendationEngine {
         }
         
         Log.d("FilterRecommendationEngine", """
-            ✅ 场景识别完成
+            [OK] 场景识别完成
             - 场景类型: $sceneType
             - 特征: $features
         """.trimIndent())
@@ -133,7 +133,7 @@ object FilterRecommendationEngine {
             }
         
         Log.d("FilterRecommendationEngine", """
-            ✅ 推荐完成
+            [OK] 推荐完成
             - 场景: $sceneType
             - 推荐数量: ${recommendedFilters.size}
             - 滤镜: ${recommendedFilters.map { it.displayName }}
@@ -152,7 +152,7 @@ object FilterRecommendationEngine {
         userPreferences[filterId] = currentCount + 1
         
         Log.d("FilterRecommendationEngine", """
-            📝 记录用户选择
+            NOTE 记录用户选择
             - 滤镜ID: $filterId
             - 使用次数: ${userPreferences[filterId]}
         """.trimIndent())
@@ -288,7 +288,7 @@ fun AiRecommendationLabel(
             ) {
                 // AI图标
                 Text(
-                    text = "🤖",
+                    text = "AI",
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White

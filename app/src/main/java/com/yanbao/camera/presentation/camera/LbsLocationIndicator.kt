@@ -112,7 +112,7 @@ fun LbsLocationIndicator(
                 onLocationLocked(latitude, longitude, cityName)
                 
                 Log.d("LbsLocationIndicator", """
-                    ✅ 定位成功
+                    [OK] 定位成功
                     - 城市: $cityName
                     - 坐标: ($latitude, $longitude)
                 """.trimIndent())

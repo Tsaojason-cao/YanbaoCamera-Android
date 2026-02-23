@@ -153,7 +153,7 @@ fun ModeSelector(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         contentPadding = PaddingValues(horizontal = 16.dp)
     ) {
-        items(YanbaoMode.values().size) { index ->
+        items(YanbaoMode.values().size, key = { it }) { index ->
             val mode = YanbaoMode.values()[index]
             val isSelected = mode == currentMode
 
@@ -248,7 +248,7 @@ fun MemoryPreview(
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                items(memories.size) { index ->
+                items(memories.size, key = { it }) { index ->
                     val memory = memories[index]
                     MemoryCard(memory = memory)
                 }
@@ -370,7 +370,7 @@ fun GalleryPreview(
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                items(thumbnails.size) { index ->
+                items(thumbnails.size, key = { it }) { index ->
                     Box(
                         modifier = Modifier
                             .size(72.dp)
@@ -454,7 +454,7 @@ fun MainShutterSection(
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_flip_camera),
+                painter = painterResource(id = R.drawable.ic_flip_camera_kuromi),
                 contentDescription = "翻转摄像头",
                 tint = Color.White,
                 modifier = Modifier.size(26.dp)
@@ -605,7 +605,7 @@ fun MasterPresets(modifier: Modifier = Modifier) {
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(seriesList.size) { i ->
+            items(seriesList.size, key = { it }) { i ->
                 val (id, name) = seriesList[i]
                 Box(
                     modifier = Modifier

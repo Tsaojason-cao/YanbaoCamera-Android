@@ -38,7 +38,7 @@ fun BeautyModePanel(
     ) {
         // 标题
         Text(
-            text = "💄 美颜调整",
+            text = "BEAUTY 美颜调整",
             color = Color.White,
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
@@ -53,7 +53,7 @@ fun BeautyModePanel(
             // 磨皮
             BeautySliderWithValue(
                 label = "磨皮",
-                emoji = "✨",
+                emoji = "[*]",
                 initialValue = beautyParams.smoothness,
                 onValueChange = { value ->
                     onBeautyParamsChange(beautyParams.copy(smoothness = value))
@@ -63,7 +63,7 @@ fun BeautyModePanel(
             // 美白
             BeautySliderWithValue(
                 label = "美白",
-                emoji = "🌟",
+                emoji = "[*]",
                 initialValue = beautyParams.whitening,
                 onValueChange = { value ->
                     onBeautyParamsChange(beautyParams.copy(whitening = value))
@@ -73,7 +73,7 @@ fun BeautyModePanel(
             // 祛斑
             BeautySliderWithValue(
                 label = "祛斑",
-                emoji = "💫",
+                emoji = "[*]",
                 initialValue = beautyParams.blemishRemoval,
                 onValueChange = { value ->
                     onBeautyParamsChange(beautyParams.copy(blemishRemoval = value))

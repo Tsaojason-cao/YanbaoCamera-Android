@@ -87,7 +87,7 @@ fun AiRecommendedFiltersBar(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "🤖",
+                    text = "AI",
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFFEC4899)
@@ -104,7 +104,7 @@ fun AiRecommendedFiltersBar(
             // 置顶数量提示
             if (pinnedFilterIds.isNotEmpty()) {
                 Text(
-                    text = "⭐ ${pinnedFilterIds.size}个置顶",
+                    text = "[*] ${pinnedFilterIds.size}个置顶",
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Normal,
                     color = Color.White.copy(alpha = 0.6f)
@@ -117,7 +117,7 @@ fun AiRecommendedFiltersBar(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(recommendedFilters) { filter ->
+            items(recommendedFilters, key = { it.name }) { filter ->
                 val isPinned = pinnedFilterIds.contains(filter.id)
                 val isSelected = filter.id == selectedFilterId
                 
@@ -130,7 +130,7 @@ fun AiRecommendedFiltersBar(
                         FilterRecommendationEngine.recordUserChoice(filter.id)
                         
                         Log.d("AiRecommendedFiltersBar", """
-                            🎨 选择推荐滤镜
+                            选择推荐滤镜
                             - 滤镜: ${filter.displayName}
                             - 场景: $currentScene
                             - 置顶: $isPinned
@@ -201,7 +201,7 @@ fun RecommendedFilterTag(
             // 置顶星星图标（带旋转动画）
             if (isPinned) {
                 Text(
-                    text = "⭐",
+                    text = "[*]",
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
@@ -265,7 +265,7 @@ fun AiRecommendationStatsPanel(
         ) {
             // 标题
             Text(
-                text = "⭐ 您的偏好",
+                text = "[*] 您的偏好",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFFEC4899)
@@ -343,12 +343,12 @@ fun SceneDetectionIndicator(
             // 场景图标
             Text(
                 text = when (sceneType) {
-                    SceneType.PORTRAIT -> "👤"
-                    SceneType.LANDSCAPE -> "🏞️"
-                    SceneType.ARCHITECTURE -> "🏛️"
-                    SceneType.FOOD -> "🍽️"
-                    SceneType.NIGHT -> "🌙"
-                    SceneType.SUNSET -> "🌅"
+                    SceneType.PORTRAIT -> "P"
+                    SceneType.LANDSCAPE -> "L"
+                    SceneType.ARCHITECTURE -> "A"
+                    SceneType.FOOD -> "F"
+                    SceneType.NIGHT -> "N"
+                    SceneType.SUNSET -> "S"
                 },
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,

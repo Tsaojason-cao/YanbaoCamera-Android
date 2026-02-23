@@ -151,7 +151,7 @@ fun ProfileCardFront(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "👤",
+                        text = "U",
                         fontSize = 32.sp
                     )
                 }
@@ -192,7 +192,7 @@ fun ProfileCardFront(
                 Spacer(modifier = Modifier.width(8.dp))
                 
                 Text(
-                    text = "✨",
+                    text = "*",
                     fontSize = 16.sp
                 )
             }
@@ -232,7 +232,7 @@ fun ProfileCardBack(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "⚙️",
+                text = "S",
                 fontSize = 48.sp
             )
             
@@ -364,10 +364,10 @@ fun SettingsItems(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         val items = listOf(
-            "📸 我的作品",
-            "⭐ 收藏夹",
-            "🔔 通知设置",
-            "🎨 主题设置",
+            "我的作品",
+            "[*] 收藏夹",
+            "通知设置",
+            "主题设置",
             "ℹ️ 关于 Yanbao"
         )
         

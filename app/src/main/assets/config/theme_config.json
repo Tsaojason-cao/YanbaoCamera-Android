@@ -5,7 +5,7 @@
     "viewport_ratio": 0.72,
     "control_panel_ratio": 0.28,
     "global_corner_radius": 24,
-    "haptic_feedback": true
+    "haptic_feedback": false
   },
   "theme_palette": {
     "gradient_start": "#A78BFA",

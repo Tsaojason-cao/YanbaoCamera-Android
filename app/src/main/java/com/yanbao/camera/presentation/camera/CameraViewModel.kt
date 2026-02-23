@@ -236,7 +236,6 @@ class CameraViewModel @Inject constructor(
 
             try {
                 Log.d(TAG, "AUDIT_CAPTURE: Starting photo capture, mode=${_yanbaoMode.value}")
-                triggerVibration(context)
                 camera2Manager?.takePhoto()
                 android.widget.Toast.makeText(context, "照片已保存", android.widget.Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
@@ -424,23 +423,9 @@ class CameraViewModel @Inject constructor(
         }
     }
 
-    // ─── 工具函数 ─────────────────────────────────────────────────────────
+    // ─── 工具函数 ─────────────────────────────────────────────────────
 
-    private fun triggerVibration(context: Context) {
-        try {
-            val vibrator = context.getSystemService(Context.VIBRATOR_SERVICE) as? android.os.Vibrator
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                vibrator?.vibrate(android.os.VibrationEffect.createOneShot(50, android.os.VibrationEffect.DEFAULT_AMPLITUDE))
-            } else {
-                @Suppress("DEPRECATION")
-                vibrator?.vibrate(50)
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Vibration failed", e)
-        }
-    }
-
-    private suspend fun reverseGeocode(lat: Double, lng: Double): String? {
+    private suspend fun reverseGeocodecode(lat: Double, lng: Double): String? {
         return withContext(Dispatchers.IO) {
             try {
                 val geocoder = android.location.Geocoder(appContext, java.util.Locale.getDefault())
