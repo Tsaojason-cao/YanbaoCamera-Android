@@ -161,4 +161,10 @@ dependencies {
 
     // AndroidView 封装 OSMDroid MapView
     implementation("androidx.compose.ui:ui-viewbinding")
+
+    // Phase 2: ML Kit 人脸检测（美颜模块）
+    implementation("com.google.mlkit:face-detection:16.1.6")
+
+    // Phase 2: ARCore（AR 空间模块）
+    implementation("com.google.ar:core:1.42.0")
 }

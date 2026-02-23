@@ -34,6 +34,10 @@
     <uses-feature
         android:name="android.hardware.camera.flash"
         android:required="false" />
+    <!-- Phase 2: 陷赞仪（2.9D 视差） -->
+    <uses-feature
+        android:name="android.hardware.sensor.gyroscope"
+        android:required="false" />
 
     <application
         android:name=".YanbaoApp"
