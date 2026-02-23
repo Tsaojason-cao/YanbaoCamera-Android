@@ -2,6 +2,8 @@ package com.yanbao.camera.presentation
 
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.*
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -12,7 +14,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -29,6 +30,8 @@ import com.yanbao.camera.presentation.gallery.MemoryViewScreen
 import com.yanbao.camera.presentation.gallery.YanbaoMemoryDetailScreen
 import com.yanbao.camera.presentation.home.HomeScreen
 import com.yanbao.camera.presentation.lbs.LbsScreen
+import com.yanbao.camera.presentation.navigation.NavTransitions
+import com.yanbao.camera.presentation.navigation.SwipeBackContainer
 import com.yanbao.camera.presentation.profile.ProfileScreen
 import com.yanbao.camera.presentation.profile.ProfileEditScreen
 import com.yanbao.camera.presentation.profile.ProfileViewModel
@@ -37,13 +40,14 @@ import com.yanbao.camera.presentation.theme.OBSIDIAN_BLACK
 import com.yanbao.camera.presentation.theme.PRIMARY_PINK
 
 /**
- * 雁寶AI相机主应用框架（NavController 版）
+ * 雁寶AI相机主应用框架（NavController + 手势返回 + 页面切换动画）
  *
  * 导航架构：
- * - 底部 Tab 导航（6个主页面）使用 NavController 管理
- * - 子页面（照片详情/记忆详情/编辑资料等）通过 NavController.navigate() 进入
- * - 所有子页面均有"返回上一层"按钮（← 左上角）
- * - Android 系统返回键自动 popBackStack()
+ * - 底部 Tab 导航（6个主页面）：淡入淡出切换，launchSingleTop + saveState
+ * - 子页面（照片详情/记忆详情/编辑资料等）：右侧滑入/滑出动画
+ * - 手势返回：SwipeBackContainer 包裹所有子页面，左边缘滑动触发 popBackStack()
+ * - Android 系统返回键：BackHandler 全局处理
+ * - Android 14 预测性返回：AndroidManifest 启用 enableOnBackInvokedCallback
  */
 @Composable
 fun YanbaoApp() {
@@ -52,13 +56,18 @@ fun YanbaoApp() {
     // 共享 ProfileViewModel 实例，确保头像数据同步
     val profileViewModel: ProfileViewModel = hiltViewModel()
 
-    // 监听当前路由，用于底部 Tab 高亮
+    // 监听当前路由，用于底部 Tab 高亮和手势返回开关
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    // 判断当前是否在主 Tab 页面（显示底部导航栏）
+    // 主 Tab 路由集合
     val topLevelRoutes = setOf("home", "camera", "editor", "gallery", "lbs", "profile")
     val showBottomBar = currentRoute in topLevelRoutes
+
+    // 是否可以返回（子页面才启用手势返回）
+    val canGoBack = remember(currentRoute) {
+        currentRoute != null && currentRoute !in topLevelRoutes
+    }
 
     Scaffold(
         bottomBar = {
@@ -66,9 +75,8 @@ fun YanbaoApp() {
                 YanbaoBottomNavigation(
                     currentRoute = currentRoute,
                     onTabSelected = { route ->
-                        Log.d("YanbaoApp", "导航切换: $route")
+                        Log.d("YanbaoApp", "Tab 切换: $route")
                         navController.navigate(route) {
-                            // 避免重复入栈，保持单一实例
                             popUpTo(navController.graph.findStartDestination().id) {
                                 saveState = true
                             }
@@ -81,103 +89,278 @@ fun YanbaoApp() {
         },
         containerColor = OBSIDIAN_BLACK
     ) { paddingValues ->
-        NavHost(
-            navController = navController,
-            startDestination = "home",
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .background(OBSIDIAN_BLACK)
+
+        // 手势返回容器：包裹整个 NavHost
+        // 仅在子页面（canGoBack=true）时启用左边缘滑动手势
+        SwipeBackContainer(
+            enabled = canGoBack,
+            onBack = {
+                if (navController.previousBackStackEntry != null) {
+                    navController.popBackStack()
+                }
+            }
         ) {
-            // ─── 主 Tab 页面 ──────────────────────────────────────────────
+            NavHost(
+                navController = navController,
+                startDestination = "home",
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .background(OBSIDIAN_BLACK),
+                // 全局默认动画（Tab 切换）
+                enterTransition = {
+                    fadeIn(animationSpec = tween(200, easing = LinearOutSlowInEasing))
+                },
+                exitTransition = {
+                    fadeOut(animationSpec = tween(200, easing = FastOutLinearInEasing))
+                },
+                popEnterTransition = {
+                    fadeIn(animationSpec = tween(200, easing = LinearOutSlowInEasing))
+                },
+                popExitTransition = {
+                    fadeOut(animationSpec = tween(200, easing = FastOutLinearInEasing))
+                }
+            ) {
+                // ─── 主 Tab 页面（淡入淡出） ──────────────────────────────
 
-            composable("home") {
-                val profile by profileViewModel.profile.collectAsState()
-                HomeScreen(
-                    onCameraClick = { navController.navigate("camera") },
-                    onEditorClick = { navController.navigate("editor") },
-                    onGalleryClick = { navController.navigate("gallery") },
-                    onRecommendClick = { navController.navigate("lbs") },
-                    onProfileClick = { navController.navigate("profile") },
-                    avatarUri = profile.avatarUri?.toString()
-                )
-            }
-
-            composable("camera") {
-                CameraScreen(
-                    onBackClick = { navController.popBackStack() }
-                )
-            }
-
-            composable("editor") {
-                EditorScreen(
-                    onNavigateBack = { navController.popBackStack() }
-                )
-            }
-
-            composable("gallery") {
-                GalleryScreen(
-                    onPhotoClick = { photoId ->
-                        navController.navigate("photo_detail/$photoId")
+                composable(
+                    route = "home",
+                    enterTransition = {
+                        fadeIn(animationSpec = tween(220, easing = LinearOutSlowInEasing))
                     },
-                    onBackClick = { navController.popBackStack() }
-                )
-            }
+                    exitTransition = {
+                        fadeOut(animationSpec = tween(180, easing = FastOutLinearInEasing))
+                    }
+                ) {
+                    val profile by profileViewModel.profile.collectAsState()
+                    HomeScreen(
+                        onCameraClick = { navController.navigate("camera") },
+                        onEditorClick = { navController.navigate("editor") },
+                        onGalleryClick = { navController.navigate("gallery") },
+                        onRecommendClick = { navController.navigate("lbs") },
+                        onProfileClick = { navController.navigate("profile") },
+                        avatarUri = profile.avatarUri?.toString()
+                    )
+                }
 
-            composable("lbs") {
-                LbsScreen(
-                    onBackClick = { navController.popBackStack() },
-                    navController = navController
-                )
-            }
+                composable(
+                    route = "camera",
+                    enterTransition = {
+                        fadeIn(animationSpec = tween(220, easing = LinearOutSlowInEasing))
+                    },
+                    exitTransition = {
+                        fadeOut(animationSpec = tween(180, easing = FastOutLinearInEasing))
+                    }
+                ) {
+                    CameraScreen(
+                        onBackClick = { navController.popBackStack() }
+                    )
+                }
 
-            composable("profile") {
-                ProfileScreen(
-                    onBackClick = { navController.popBackStack() },
-                    onEditProfile = { navController.navigate("profile_edit") }
-                )
-            }
+                composable(
+                    route = "editor",
+                    enterTransition = {
+                        fadeIn(animationSpec = tween(220, easing = LinearOutSlowInEasing))
+                    },
+                    exitTransition = {
+                        fadeOut(animationSpec = tween(180, easing = FastOutLinearInEasing))
+                    }
+                ) {
+                    EditorScreen(
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
 
-            // ─── 子页面（支持返回上一层）────────────────────────────────
+                composable(
+                    route = "gallery",
+                    enterTransition = {
+                        fadeIn(animationSpec = tween(220, easing = LinearOutSlowInEasing))
+                    },
+                    exitTransition = {
+                        fadeOut(animationSpec = tween(180, easing = FastOutLinearInEasing))
+                    }
+                ) {
+                    GalleryScreen(
+                        onPhotoClick = { photoId ->
+                            navController.navigate("photo_detail/$photoId")
+                        },
+                        onBackClick = { navController.popBackStack() }
+                    )
+                }
 
-            composable(
-                route = "photo_detail/{photoId}",
-                arguments = listOf(navArgument("photoId") { type = NavType.StringType })
-            ) { backStackEntry ->
-                val photoId = backStackEntry.arguments?.getString("photoId") ?: ""
-                PhotoDetailScreen(
-                    photoId = photoId,
-                    navController = navController
-                )
-            }
+                composable(
+                    route = "lbs",
+                    enterTransition = {
+                        fadeIn(animationSpec = tween(220, easing = LinearOutSlowInEasing))
+                    },
+                    exitTransition = {
+                        fadeOut(animationSpec = tween(180, easing = FastOutLinearInEasing))
+                    }
+                ) {
+                    LbsScreen(
+                        onBackClick = { navController.popBackStack() },
+                        navController = navController
+                    )
+                }
 
-            composable(
-                route = "memory_detail/{memoryId}",
-                arguments = listOf(navArgument("memoryId") { type = NavType.StringType })
-            ) { backStackEntry ->
-                val memoryId = backStackEntry.arguments?.getString("memoryId") ?: ""
-                MemoryViewScreen(
-                    memoryId = memoryId,
-                    navController = navController
-                )
-            }
+                composable(
+                    route = "profile",
+                    enterTransition = {
+                        fadeIn(animationSpec = tween(220, easing = LinearOutSlowInEasing))
+                    },
+                    exitTransition = {
+                        fadeOut(animationSpec = tween(180, easing = FastOutLinearInEasing))
+                    }
+                ) {
+                    ProfileScreen(
+                        onBackClick = { navController.popBackStack() },
+                        onEditProfile = { navController.navigate("profile_edit") }
+                    )
+                }
 
-            composable(
-                route = "yanbao_memory_detail/{memoryId}",
-                arguments = listOf(navArgument("memoryId") { type = NavType.StringType })
-            ) { backStackEntry ->
-                val memoryId = backStackEntry.arguments?.getString("memoryId") ?: ""
-                YanbaoMemoryDetailScreen(
-                    photoUrl = memoryId,
-                    onBackClick = { navController.popBackStack() }
-                )
-            }
+                // ─── 子页面（右侧滑入/滑出 + 手势返回） ─────────────────
 
-            composable("profile_edit") {
-                ProfileEditScreen(
-                    onBack = { navController.popBackStack() },
-                    onSave = { navController.popBackStack() }
-                )
+                composable(
+                    route = "photo_detail/{photoId}",
+                    arguments = listOf(navArgument("photoId") { type = NavType.StringType }),
+                    // 进入：从右侧滑入
+                    enterTransition = {
+                        slideInHorizontally(
+                            initialOffsetX = { it },
+                            animationSpec = tween(300, easing = FastOutSlowInEasing)
+                        ) + fadeIn(animationSpec = tween(200), initialAlpha = 0.8f)
+                    },
+                    // 退出（被新页面覆盖）：向左轻微位移
+                    exitTransition = {
+                        slideOutHorizontally(
+                            targetOffsetX = { -it / 4 },
+                            animationSpec = tween(300, easing = FastOutSlowInEasing)
+                        ) + fadeOut(animationSpec = tween(200), targetAlpha = 0.7f)
+                    },
+                    // 弹出返回：前一页从左侧恢复
+                    popEnterTransition = {
+                        slideInHorizontally(
+                            initialOffsetX = { -it / 4 },
+                            animationSpec = tween(300, easing = FastOutSlowInEasing)
+                        ) + fadeIn(animationSpec = tween(200), initialAlpha = 0.7f)
+                    },
+                    // 弹出退出：当前页向右滑出
+                    popExitTransition = {
+                        slideOutHorizontally(
+                            targetOffsetX = { it },
+                            animationSpec = tween(280, easing = FastOutLinearInEasing)
+                        ) + fadeOut(animationSpec = tween(200), targetAlpha = 0.8f)
+                    }
+                ) { backStackEntry ->
+                    val photoId = backStackEntry.arguments?.getString("photoId") ?: ""
+                    PhotoDetailScreen(
+                        photoId = photoId,
+                        navController = navController
+                    )
+                }
+
+                composable(
+                    route = "memory_detail/{memoryId}",
+                    arguments = listOf(navArgument("memoryId") { type = NavType.StringType }),
+                    enterTransition = {
+                        slideInHorizontally(
+                            initialOffsetX = { it },
+                            animationSpec = tween(300, easing = FastOutSlowInEasing)
+                        ) + fadeIn(animationSpec = tween(200), initialAlpha = 0.8f)
+                    },
+                    exitTransition = {
+                        slideOutHorizontally(
+                            targetOffsetX = { -it / 4 },
+                            animationSpec = tween(300, easing = FastOutSlowInEasing)
+                        ) + fadeOut(animationSpec = tween(200), targetAlpha = 0.7f)
+                    },
+                    popEnterTransition = {
+                        slideInHorizontally(
+                            initialOffsetX = { -it / 4 },
+                            animationSpec = tween(300, easing = FastOutSlowInEasing)
+                        ) + fadeIn(animationSpec = tween(200), initialAlpha = 0.7f)
+                    },
+                    popExitTransition = {
+                        slideOutHorizontally(
+                            targetOffsetX = { it },
+                            animationSpec = tween(280, easing = FastOutLinearInEasing)
+                        ) + fadeOut(animationSpec = tween(200), targetAlpha = 0.8f)
+                    }
+                ) { backStackEntry ->
+                    val memoryId = backStackEntry.arguments?.getString("memoryId") ?: ""
+                    MemoryViewScreen(
+                        memoryId = memoryId,
+                        navController = navController
+                    )
+                }
+
+                composable(
+                    route = "yanbao_memory_detail/{memoryId}",
+                    arguments = listOf(navArgument("memoryId") { type = NavType.StringType }),
+                    enterTransition = {
+                        slideInHorizontally(
+                            initialOffsetX = { it },
+                            animationSpec = tween(300, easing = FastOutSlowInEasing)
+                        ) + fadeIn(animationSpec = tween(200), initialAlpha = 0.8f)
+                    },
+                    exitTransition = {
+                        slideOutHorizontally(
+                            targetOffsetX = { -it / 4 },
+                            animationSpec = tween(300, easing = FastOutSlowInEasing)
+                        ) + fadeOut(animationSpec = tween(200), targetAlpha = 0.7f)
+                    },
+                    popEnterTransition = {
+                        slideInHorizontally(
+                            initialOffsetX = { -it / 4 },
+                            animationSpec = tween(300, easing = FastOutSlowInEasing)
+                        ) + fadeIn(animationSpec = tween(200), initialAlpha = 0.7f)
+                    },
+                    popExitTransition = {
+                        slideOutHorizontally(
+                            targetOffsetX = { it },
+                            animationSpec = tween(280, easing = FastOutLinearInEasing)
+                        ) + fadeOut(animationSpec = tween(200), targetAlpha = 0.8f)
+                    }
+                ) { backStackEntry ->
+                    val memoryId = backStackEntry.arguments?.getString("memoryId") ?: ""
+                    YanbaoMemoryDetailScreen(
+                        photoUrl = memoryId,
+                        onBackClick = { navController.popBackStack() }
+                    )
+                }
+
+                composable(
+                    route = "profile_edit",
+                    enterTransition = {
+                        slideInHorizontally(
+                            initialOffsetX = { it },
+                            animationSpec = tween(300, easing = FastOutSlowInEasing)
+                        ) + fadeIn(animationSpec = tween(200), initialAlpha = 0.8f)
+                    },
+                    exitTransition = {
+                        slideOutHorizontally(
+                            targetOffsetX = { -it / 4 },
+                            animationSpec = tween(300, easing = FastOutSlowInEasing)
+                        ) + fadeOut(animationSpec = tween(200), targetAlpha = 0.7f)
+                    },
+                    popEnterTransition = {
+                        slideInHorizontally(
+                            initialOffsetX = { -it / 4 },
+                            animationSpec = tween(300, easing = FastOutSlowInEasing)
+                        ) + fadeIn(animationSpec = tween(200), initialAlpha = 0.7f)
+                    },
+                    popExitTransition = {
+                        slideOutHorizontally(
+                            targetOffsetX = { it },
+                            animationSpec = tween(280, easing = FastOutLinearInEasing)
+                        ) + fadeOut(animationSpec = tween(200), targetAlpha = 0.8f)
+                    }
+                ) {
+                    ProfileEditScreen(
+                        onBack = { navController.popBackStack() },
+                        onSave = { navController.popBackStack() }
+                    )
+                }
             }
         }
     }
@@ -186,9 +369,8 @@ fun YanbaoApp() {
 /**
  * 底部导航栏
  *
- * 设计规范（严格执行）：
- * - 背景：曜石黑 (#0A0A0A) + 15% 白色透明渐变
- * - 图标：全部使用 R.drawable.ic_* 自定义矢量资源
+ * 设计规范：
+ * - 背景：曜石黑 (#0A0A0A) + 毛玻璃渐变
  * - 选中态：PRIMARY_PINK (#EC4899)
  * - 未选中态：白色 50% 透明
  * - 高度：80dp

@@ -119,6 +119,10 @@ dependencies {
 
     // Accompanist - permissions
     implementation("com.google.accompanist:accompanist-permissions:0.34.0")
+    // Compose Animation 扩展（手势返回动画）
+    implementation("androidx.compose.animation:animation-graphics")
+    // Activity KTX 1.8+ 支持 Predictive Back
+    implementation("androidx.activity:activity-ktx:1.8.2")
     
     // Splash Screen API
     implementation("androidx.core:core-splashscreen:1.0.1")
