@@ -271,8 +271,6 @@ class Param29DRenderer(
     fun setParallaxOffset(tiltX: Float, tiltY: Float) {
         // 存储偏移量，在下一帧 onDrawFrame 时通过 uniform 传递
         // 由于 GLES 调用必须在 GL 线程，此处仅记录值
-        @Volatile var pendingTiltX = tiltX
-        @Volatile var pendingTiltY = tiltY
         Log.d(TAG, "setParallaxOffset: tiltX=$tiltX, tiltY=$tiltY")
     }
 
