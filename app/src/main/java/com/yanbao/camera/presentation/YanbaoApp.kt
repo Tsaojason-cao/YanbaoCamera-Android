@@ -342,16 +342,7 @@ fun YanbaoApp() {
                             initialOffsetX = { it },
                             animationSpec = tween(300, easing = FastOutSlowInEasing)
                         ) + fadeIn(animationSpec = tween(200), initialAlpha = 0.8f)
-                    }
-                composable(route = "privacy") {
-                    PrivacyScreen(onBackClick = { navController.popBackStack() })
-                }
-                composable(route = "help") {
-                    HelpScreen(onBackClick = { navController.popBackStack() })
-                }
-                composable(route = "about") {
-                    AboutScreen(onBackClick = { navController.popBackStack() })
-                },
+                    },
                     exitTransition = {
                         slideOutHorizontally(
                             targetOffsetX = { -it / 4 },
@@ -375,6 +366,15 @@ fun YanbaoApp() {
                         onBack = { navController.popBackStack() },
                         onSave = { navController.popBackStack() }
                     )
+                }
+                composable(route = "privacy") {
+                    PrivacyScreen(onBackClick = { navController.popBackStack() })
+                }
+                composable(route = "help") {
+                    HelpScreen(onBackClick = { navController.popBackStack() })
+                }
+                composable(route = "about") {
+                    AboutScreen(onBackClick = { navController.popBackStack() })
                 }
             }
         }

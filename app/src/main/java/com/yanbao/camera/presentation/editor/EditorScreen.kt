@@ -342,16 +342,27 @@ private fun buildColorMatrix(edit: EditState): ColorMatrix {
     val matrix = ColorMatrix()
     if (edit.brightness != 0f) {
         val b = edit.brightness * 255f
-        matrix.postConcat(ColorMatrix(floatArrayOf(1f,0f,0f,0f,b, 0f,1f,0f,0f,b, 0f,0f,1f,0f,b, 0f,0f,0f,1f,0f)))
+        matrix *= ColorMatrix(floatArrayOf(1f,0f,0f,0f,b, 0f,1f,0f,0f,b, 0f,0f,1f,0f,b, 0f,0f,0f,1f,0f))
     }
     if (edit.contrast != 0f) {
         val c = edit.contrast + 1f; val t = (1f - c) / 2f * 255f
-        matrix.postConcat(ColorMatrix(floatArrayOf(c,0f,0f,0f,t, 0f,c,0f,0f,t, 0f,0f,c,0f,t, 0f,0f,0f,1f,0f)))
+        matrix *= ColorMatrix(floatArrayOf(c,0f,0f,0f,t, 0f,c,0f,0f,t, 0f,0f,c,0f,t, 0f,0f,0f,1f,0f))
     }
-    if (edit.saturation != 0f) { matrix.setToSaturation(1f + edit.saturation) }
+    if (edit.saturation != 0f) {
+        // 手动实现饱和度矩阵（Compose ColorMatrix 无 setToSaturation）
+        val s = 1f + edit.saturation
+        val invSat = 1f - s
+        val r = 0.213f * invSat; val g = 0.715f * invSat; val b = 0.072f * invSat
+        matrix *= ColorMatrix(floatArrayOf(
+            r+s, g,   b,   0f, 0f,
+            r,   g+s, b,   0f, 0f,
+            r,   g,   b+s, 0f, 0f,
+            0f,  0f,  0f,  1f, 0f
+        ))
+    }
     if (edit.temperature != 0f) {
         val r = 1f + edit.temperature * 0.3f; val b = 1f - edit.temperature * 0.3f
-        matrix.postConcat(ColorMatrix(floatArrayOf(r,0f,0f,0f,0f, 0f,1f,0f,0f,0f, 0f,0f,b,0f,0f, 0f,0f,0f,1f,0f)))
+        matrix *= ColorMatrix(floatArrayOf(r,0f,0f,0f,0f, 0f,1f,0f,0f,0f, 0f,0f,b,0f,0f, 0f,0f,0f,1f,0f))
     }
     return matrix
 }
