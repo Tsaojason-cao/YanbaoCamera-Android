@@ -1,6 +1,7 @@
 package com.yanbao.camera.filter
 
 import com.google.gson.annotations.SerializedName
+import com.yanbao.camera.render.Param29DFull
 
 /**
  * Phase 2: 国家滤镜数据类

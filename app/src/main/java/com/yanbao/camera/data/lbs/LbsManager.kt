@@ -15,9 +15,13 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.yanbao.camera.filter.CountryFilter
 import com.yanbao.camera.filter.MasterFilterManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 
@@ -50,6 +54,7 @@ class LbsManager(private val context: Context) {
         LocationServices.getFusedLocationProviderClient(context)
 
     private val filterManager = MasterFilterManager(context)
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     // ─── 状态 ─────────────────────────────────────────────────────────────
 
@@ -166,7 +171,7 @@ class LbsManager(private val context: Context) {
 
     private fun updateFilterRecommendation(location: Location) {
         // 在后台协程中执行逆地理编码
-        kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+        scope.launch {
             val filter = filterManager.getFilterByLocation(location.latitude, location.longitude)
             if (filter != null) {
                 _recommendedFilter.value = filter
