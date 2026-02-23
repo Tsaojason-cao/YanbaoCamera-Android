@@ -25,7 +25,17 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      # ─── 3. 缓存 Gradle 依赖 ─────────────────────────────────────────
+      # ─── 3. 配置 Android SDK ─────────────────────────────────────────
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Accept Android SDK Licenses
+        run: yes | sdkmanager --licenses || true
+
+      - name: Install Android SDK Components
+        run: sdkmanager "platforms;android-34" "build-tools;34.0.0" "platform-tools" || true
+
+      # ─── 4. 缓存 Gradle 依赖 ─────────────────────────────────────────
       - name: Cache Gradle packages
         uses: actions/cache@v4
         with:
@@ -36,17 +46,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      # ─── 4. 授予 gradlew 执行权限 ────────────────────────────────────
+      # ─── 5. 授予 gradlew 执行权限 ────────────────────────────────────
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      # ─── 5. 构建 Debug APK ───────────────────────────────────────────
+      # ─── 6. 构建 Debug APK ───────────────────────────────────────────
       - name: Build Debug APK
         run: ./gradlew assembleDebug --stacktrace --no-daemon
-        env:
-          ANDROID_HOME: ${{ env.ANDROID_SDK_ROOT }}
 
-      # ─── 6. 上传 APK artifact ────────────────────────────────────────
+      # ─── 7. 上传 APK artifact ────────────────────────────────────────
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
@@ -54,7 +62,7 @@ jobs:
           path: app/build/outputs/apk/debug/app-debug.apk
           retention-days: 30
 
-      # ─── 7. 输出构建信息 ─────────────────────────────────────────────
+      # ─── 8. 输出构建信息 ─────────────────────────────────────────────
       - name: Print build info
         run: |
           echo "=== Build Summary ==="
@@ -78,6 +86,9 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: gradle
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
 
       - name: Cache Gradle packages
         uses: actions/cache@v4
