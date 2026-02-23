@@ -186,7 +186,7 @@ fun HomeScreen(
             SectionHeader(
                 title    = "最近活动",
                 modifier = Modifier.padding(horizontal = 16.dp),
-                onMore   = {}
+                onMore   = onGalleryClick
             )
             Spacer(modifier = Modifier.height(12.dp))
             LazyRow(
@@ -203,7 +203,7 @@ fun HomeScreen(
             SectionHeader(
                 title    = "热门地点",
                 modifier = Modifier.padding(horizontal = 16.dp),
-                onMore   = {}
+                onMore   = onRecommendClick
             )
             Spacer(modifier = Modifier.height(12.dp))
             LazyRow(
@@ -217,16 +217,6 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
         }
-
-        // ── 底部导航栏 ────────────────────────────
-        HomeBottomNav(
-            onCameraClick    = onCameraClick,
-            onEditorClick    = onEditorClick,
-            onGalleryClick   = onGalleryClick,
-            onRecommendClick = onRecommendClick,
-            onProfileClick   = onProfileClick,
-            modifier         = Modifier.align(Alignment.BottomCenter)
-        )
     }
 }
 
@@ -411,6 +401,7 @@ private fun PopularPlaceCard(place: PopularPlace, onClick: () -> Unit) {
 // ─────────────────────────────────────────────
 @Composable
 private fun HomeBottomNav(
+    onHomeClick:      () -> Unit = {},
     onCameraClick:    () -> Unit,
     onEditorClick:    () -> Unit,
     onGalleryClick:   () -> Unit,
@@ -433,7 +424,7 @@ private fun HomeBottomNav(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment     = Alignment.CenterVertically
         ) {
-            NavItem(iconRes = R.drawable.ic_tab_home_kuromi,           label = "首页", selected = true,  onClick = {})
+            NavItem(iconRes = R.drawable.ic_tab_home_kuromi,           label = "首页", selected = true,  onClick = onHomeClick)
             NavItem(iconRes = R.drawable.ic_tab_camera_kuromi,         label = "拍照", selected = false, onClick = onCameraClick)
             NavItem(iconRes = R.drawable.ic_tab_edit_kuromi,           label = "编辑", selected = false, onClick = onEditorClick)
             NavItem(iconRes = R.drawable.ic_tab_album_kuromi,          label = "相册", selected = false, onClick = onGalleryClick)

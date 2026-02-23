@@ -50,7 +50,10 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
     onBack: () -> Unit = {},
     onBackClick: () -> Unit = {},
-    onEditProfile: () -> Unit = {}
+    onEditProfile: () -> Unit = {},
+    onPrivacy: () -> Unit = {},
+    onHelp: () -> Unit = {},
+    onAbout: () -> Unit = {}
 ) {
     val profile by viewModel.profile.collectAsState()
     val stats by viewModel.stats.collectAsState()
@@ -422,7 +425,7 @@ fun ProfileScreen(
                         iconRes = R.drawable.ic_privacy_kuromi,
                         title = "隐私设置",
                         subtitle = "管理数据权限",
-                        onClick = { /* 跳转隐私设置页 */ }
+                        onClick = { onPrivacy() }
                     )
                     SettingDivider()
 
@@ -431,7 +434,7 @@ fun ProfileScreen(
                         iconRes = R.drawable.ic_update_kuromi,
                         title = "帮助中心",
                         subtitle = "使用教程与常见问题",
-                        onClick = { /* 跳转帮助页 */ }
+                        onClick = { onHelp() }
                     )
                     SettingDivider()
 
@@ -440,7 +443,7 @@ fun ProfileScreen(
                         iconRes = R.drawable.ic_update_kuromi,
                         title = "关于雁宝 AI",
                         subtitle = "版本 1.0.0 · Phase 1",
-                        onClick = { /* 跳转关于页 */ },
+                        onClick = { onAbout() },
                         showArrow = false
                     )
                 }

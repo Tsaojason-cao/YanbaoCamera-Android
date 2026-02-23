@@ -60,6 +60,9 @@ fun YanbaoMemoryDetailScreen(
     onBackClick: () -> Unit = {
         android.util.Log.d("YanbaoMemoryDetailScreen", "Back button clicked")
     },
+    onGitBackup: () -> Unit = {},
+    onShare: () -> Unit = {},
+    onEdit: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     var scale by remember { mutableFloatStateOf(1f) }
@@ -149,7 +152,10 @@ fun YanbaoMemoryDetailScreen(
                 Spacer(modifier = Modifier.height(24.dp))
                 
                 // 底部：Git 備份與 LBS 分享按鈕
-                ActionButtonsRow()
+                ActionButtonsRow(
+                    onGitBackup = onGitBackup,
+                    onShare = onShare,
+                    onEdit = onEdit,)
             }
         }
         
@@ -281,7 +287,10 @@ fun ParameterItem(
  */
 @Composable
 fun ActionButtonsRow(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onGitBackup: () -> Unit = {},
+    onShare: () -> Unit = {},
+    onEdit: () -> Unit = {}
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -291,21 +300,21 @@ fun ActionButtonsRow(
         ActionButton(
             icon = "~",
             label = "Git Backup",
-            onClick = { /* Git 備份邏輯 */ }
+            onClick = { onGitBackup() }
         )
         
         // LBS 分享按鈕
         ActionButton(
             icon = "@",
             label = "LBS Share",
-            onClick = { /* LBS 分享邏輯 */ }
+            onClick = { onShare() }
         )
         
         // 编辑按鈕
         ActionButton(
             icon = "E",
             label = "Edit",
-            onClick = { /* 编辑邏輯 */ }
+            onClick = { onEdit() }
         )
     }
 }

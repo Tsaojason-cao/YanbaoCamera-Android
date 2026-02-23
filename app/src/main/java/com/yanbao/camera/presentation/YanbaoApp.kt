@@ -38,6 +38,9 @@ import com.yanbao.camera.presentation.profile.ProfileViewModel
 import com.yanbao.camera.presentation.recommend.RecommendScreen
 import com.yanbao.camera.presentation.theme.OBSIDIAN_BLACK
 import com.yanbao.camera.presentation.theme.PRIMARY_PINK
+import com.yanbao.camera.presentation.profile.PrivacyScreen
+import com.yanbao.camera.presentation.profile.HelpScreen
+import com.yanbao.camera.presentation.profile.AboutScreen
 
 /**
  * 雁寶AI相机主应用框架（NavController + 手势返回 + 页面切换动画）
@@ -214,7 +217,10 @@ fun YanbaoApp() {
                 ) {
                     ProfileScreen(
                         onBackClick = { navController.popBackStack() },
-                        onEditProfile = { navController.navigate("profile_edit") }
+                        onEditProfile = { navController.navigate("profile_edit") },
+                        onPrivacy = { navController.navigate("privacy") },
+                        onHelp = { navController.navigate("help") },
+                        onAbout = { navController.navigate("about") }
                     )
                 }
 
@@ -336,7 +342,16 @@ fun YanbaoApp() {
                             initialOffsetX = { it },
                             animationSpec = tween(300, easing = FastOutSlowInEasing)
                         ) + fadeIn(animationSpec = tween(200), initialAlpha = 0.8f)
-                    },
+                    }
+                composable(route = "privacy") {
+                    PrivacyScreen(onBackClick = { navController.popBackStack() })
+                }
+                composable(route = "help") {
+                    HelpScreen(onBackClick = { navController.popBackStack() })
+                }
+                composable(route = "about") {
+                    AboutScreen(onBackClick = { navController.popBackStack() })
+                },
                     exitTransition = {
                         slideOutHorizontally(
                             targetOffsetX = { -it / 4 },
