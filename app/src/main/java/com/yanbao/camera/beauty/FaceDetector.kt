@@ -76,7 +76,7 @@ class FaceDetector {
             "noseTip"    to getLandmark(FaceLandmark.NOSE_BASE)?.position,
             "mouthLeft"  to getLandmark(FaceLandmark.MOUTH_LEFT)?.position,
             "mouthRight" to getLandmark(FaceLandmark.MOUTH_RIGHT)?.position,
-            "mouthBottom"to getLandmark(FaceLandmark.MOUTH_BOTTOM)?.position,
+            "mouthBottom" to getLandmark(FaceLandmark.MOUTH_BOTTOM)?.position,
             "leftEar"    to getLandmark(FaceLandmark.LEFT_EAR)?.position,
             "rightEar"   to getLandmark(FaceLandmark.RIGHT_EAR)?.position,
             "leftCheek"  to getLandmark(FaceLandmark.LEFT_CHEEK)?.position,
