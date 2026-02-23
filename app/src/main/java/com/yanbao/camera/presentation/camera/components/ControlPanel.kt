@@ -61,7 +61,7 @@ fun ControlPanel(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .fillMaxHeight(0.3f) // 严格占比 30%
+            .wrapContentHeight()
             .clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
             .background(
                 Brush.verticalGradient(
@@ -73,22 +73,11 @@ fun ControlPanel(
             )
             .padding(top = 16.dp)
     ) {
-        // 1. 模式选择器
-        ModeSelector(
-            currentMode = currentMode,
-            onModeChange = onModeChange,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // 2. 动态参数区
+        // 动态参数区（模式选择器已在 CameraScreen 的 YanbaoModeSelector 中显示）
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
+                .height(120.dp)
         ) {
             AnimatedContent(
                 targetState = currentMode,

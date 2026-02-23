@@ -130,9 +130,13 @@ class CameraViewModel @Inject constructor(
     private val _showMemorySaveDialog = MutableStateFlow(false)
     val showMemorySaveDialog: StateFlow<Boolean> = _showMemorySaveDialog.asStateFlow()
 
-    // ─── 前后摄像头 ───────────────────────────────────────────────────────
+     // ─── 前后摄像头 ─────────────────────────────────────────────────────
     private val _isFrontCamera = MutableStateFlow(false)
     val isFrontCamera: StateFlow<Boolean> = _isFrontCamera.asStateFlow()
+    // ─── 拍照触发器（Camera2PreviewView 监听此状态来执行真实拍照） ───────────────
+    private val _captureRequested = MutableStateFlow(false)
+    val captureRequested: StateFlow<Boolean> = _captureRequested.asStateFlow()
+    fun resetCaptureRequest() { _captureRequested.value = false }
 
     // ─── 模式切换 ─────────────────────────────────────────────────────────
 
@@ -236,8 +240,9 @@ class CameraViewModel @Inject constructor(
 
             try {
                 Log.d(TAG, "AUDIT_CAPTURE: Starting photo capture, mode=${_yanbaoMode.value}")
-                camera2Manager?.takePhoto()
-                android.widget.Toast.makeText(context, "照片已保存", android.widget.Toast.LENGTH_SHORT).show()
+                // 触发 Camera2PreviewView 中的真实拍照（Camera2PreviewManager.takePicture()）
+                _captureRequested.value = true
+                Log.d(TAG, "AUDIT_CAPTURE: captureRequested = true")
             } catch (e: Exception) {
                 Log.e(TAG, "AUDIT_CAPTURE: Photo capture failed", e)
                 android.widget.Toast.makeText(context, "拍照失败", android.widget.Toast.LENGTH_SHORT).show()
