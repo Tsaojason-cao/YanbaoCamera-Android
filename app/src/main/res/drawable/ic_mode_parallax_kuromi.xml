@@ -1,0 +1,26 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- 视差层叠矩形（3层） -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M2,6 L16,6 L16,18 L2,18 Z" />
+    <path
+        android:fillColor="#000000"
+        android:pathData="M3,7 L15,7 L15,17 L3,17 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M5,9 L19,9 L19,19 L5,19 Z" />
+    <path
+        android:fillColor="#000000"
+        android:pathData="M6,10 L18,10 L18,18 L6,18 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M8,12 L22,12 L22,22 L8,22 Z" />
+    <!-- 库洛米蝴蝶结 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M10,4 L12,2 L14,4 L12,6 Z" />
+</vector>

@@ -3,19 +3,11 @@
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-        <path
-        android:pathData="M12,3 C12,3 6,10 6,14 C6,17.3 8.7,20 12,20 C15.3,20 18,17.3 18,14 C18,10 12,3 12,3 Z"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="2"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:fillColor="@android:color/transparent"/>
-        <path
-        android:pathData="M9,15 C9,16.7 10.3,18 12,18"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="2"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:fillColor="@android:color/transparent"/>
-    <path android:pathData="M10.5,1.5 L12,0.5 L13.5,1.5 L12,2.5 Z" android:fillColor="#EC4899"/>
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M12,3 C12,3 6,10 6,14 C6,17.31 8.69,20 12,20 C15.31,20 18,17.31 18,14 C18,10 12,3 12,3 Z" />
+    <!-- 高光（黑色内圆） -->
+    <path android:fillColor="#000000"
+        android:pathData="M9,15 C9,16.66 10.34,18 12,18 C13.66,18 15,16.66 15,15" />
+    <!-- 蝴蝶结 -->
+    <path android:fillColor="#FFFFFF" android:pathData="M10,2 L12,0 L14,2 L12,4 Z" />
 </vector>

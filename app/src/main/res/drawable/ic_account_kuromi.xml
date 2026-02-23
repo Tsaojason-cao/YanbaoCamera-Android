@@ -3,28 +3,12 @@
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-        <path
-        android:pathData="M12,11 m-3.5,0 a3.5,3.5 0 1,0 7,0 a3.5,3.5 0 1,0 -7,0"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="2"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:fillColor="@android:color/transparent"/>
-        <path
-        android:pathData="M4,21 C4,17 7.6,14 12,14 C16.4,14 20,17 20,21"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="2"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:fillColor="@android:color/transparent"/>
-        <path
-        android:pathData="M17,8 L19,8 L19,10 L17,10"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="2"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:fillColor="@android:color/transparent"/>
-    <!-- 库洛米蝴蝶结 -->
-    <path android:pathData="M9.5,2.5 L12,1 L14.5,2.5 L12,4 Z" android:fillColor="#EC4899"/>
-    <path android:pathData="M11,2.5 L13,2.5" android:strokeColor="#EC4899" android:strokeWidth="1" android:fillColor="@android:color/transparent"/>
+    <circle android:fillColor="#FFFFFF" android:cx="12" android:cy="8" android:r="4"/>
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M4,22 C4,17.58 7.58,14 12,14 C16.42,14 20,17.58 20,22 Z" />
+    <!-- 状态标记（右上角） -->
+    <circle android:fillColor="#FFFFFF" android:cx="18" android:cy="6" android:r="3"/>
+    <path android:fillColor="#000000" android:pathData="M17,6 L18,7 L20,5" />
+    <!-- 蝴蝶结 -->
+    <path android:fillColor="#FFFFFF" android:pathData="M10,4 L12,2 L14,4 L12,6 Z" />
 </vector>

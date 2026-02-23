@@ -4,22 +4,19 @@
     android:viewportWidth="24"
     android:viewportHeight="24">
     <!-- 房子主体 -->
-        <path
-        android:pathData="M3,10 L12,3 L21,10 L21,20 L15,20 L15,14 L9,14 L9,20 L3,20 Z"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="2"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:fillColor="@android:color/transparent"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12,3 L2,10 L2,22 L22,22 L22,10 L12,3 Z" />
     <!-- 门 -->
-        <path
-        android:pathData="M10,20 L10,16 L14,16 L14,20"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="2"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:fillColor="@android:color/transparent"/>
-    <!-- 库洛米小耳朵 -->
-    <path android:pathData="M7,3 L8.5,1 L9.5,3 Z" android:fillColor="#EC4899"/>
-    <path android:pathData="M17,3 L15.5,1 L14.5,3 Z" android:fillColor="#EC4899"/>
+    <path
+        android:fillColor="#000000"
+        android:pathData="M10,22 L10,16 L14,16 L14,22 Z" />
+    <!-- 库洛米小耳朵（左） -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M8,4 L10,6 L6,6 Z" />
+    <!-- 库洛米小耳朵（右） -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M16,4 L14,6 L18,6 Z" />
 </vector>

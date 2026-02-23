@@ -3,17 +3,12 @@
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-        <path
-        android:pathData="M3,18 L5,10 L9,14 L12,8 L15,14 L19,10 L21,18 Z"
-        android:fillColor="#FFFFFF"/>
-        <path
-        android:pathData="M3,20 L21,20"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="2"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:fillColor="@android:color/transparent"/>
-    <!-- 小骷髅 -->
-    <path android:pathData="M12,4.5 m-1.5,0 a1.5,1.5 0 1,0 3,0 a1.5,1.5 0 1,0 -3,0" android:fillColor="#EC4899"/>
-    <path android:pathData="M11.4,6.3 L11.4,7 M12.6,6.3 L12.6,7" android:strokeColor="#EC4899" android:strokeWidth="0.8" android:fillColor="@android:color/transparent"/>
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M3,18 L5,10 L9,14 L12,8 L15,14 L19,10 L21,18 Z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M3,20 L21,20 L21,22 L3,22 Z" />
+    <!-- 骷髅 -->
+    <circle android:fillColor="#FFFFFF" android:cx="12" android:cy="6" android:r="2"/>
+    <circle android:fillColor="#000000" android:cx="11.3" android:cy="6" android:r="0.6"/>
+    <circle android:fillColor="#000000" android:cx="12.7" android:cy="6" android:r="0.6"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M11,8 L13,8 L13,9 L11,9 Z" />
 </vector>

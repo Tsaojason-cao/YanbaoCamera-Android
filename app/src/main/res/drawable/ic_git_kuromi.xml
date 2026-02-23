@@ -1,0 +1,17 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Git 分支图 -->
+    <circle android:fillColor="#FFFFFF" android:cx="6" android:cy="18" android:r="2"/>
+    <circle android:fillColor="#FFFFFF" android:cx="6" android:cy="8" android:r="2"/>
+    <circle android:fillColor="#FFFFFF" android:cx="18" android:cy="8" android:r="2"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M6,10 L6,16" />
+    <path android:fillColor="#FFFFFF" android:pathData="M6,8 C6,8 6,4 10,4 L18,4 L18,8" />
+    <!-- 骷髅 -->
+    <circle android:fillColor="#FFFFFF" android:cx="18" android:cy="5" android:r="2"/>
+    <circle android:fillColor="#000000" android:cx="17.3" android:cy="5" android:r="0.6"/>
+    <circle android:fillColor="#000000" android:cx="18.7" android:cy="5" android:r="0.6"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M17,7 L19,7 L19,8 L17,8 Z" />
+</vector>

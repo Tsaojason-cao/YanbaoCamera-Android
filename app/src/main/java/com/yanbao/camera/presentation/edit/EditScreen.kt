@@ -117,7 +117,7 @@ fun EditScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_gallery_kuromi),
+                        painter = painterResource(id = R.drawable.ic_album_kuromi),
                         contentDescription = null,
                         tint = Color.White.copy(alpha = 0.3f),
                         modifier = Modifier.size(56.dp)
@@ -295,7 +295,7 @@ private fun TopToolbar(
         Row {
             IconButton(onClick = onPickPhoto) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_gallery_kuromi),
+                    painter = painterResource(id = R.drawable.ic_album_kuromi),
                     contentDescription = "选择照片",
                     tint = Color.White
                 )

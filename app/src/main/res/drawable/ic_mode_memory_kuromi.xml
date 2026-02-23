@@ -1,0 +1,21 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- 头骨轮廓 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12,4 C8,4 5,7 5,11 C5,15 8,19 12,19 C16,19 19,15 19,11 C19,7 16,4 12,4 Z" />
+    <!-- 眼睛（黑色） -->
+    <circle android:fillColor="#000000" android:cx="9" android:cy="11" android:r="1.5"/>
+    <circle android:fillColor="#000000" android:cx="15" android:cy="11" android:r="1.5"/>
+    <!-- 下颌骨 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M9,19 L9,22 L11,22 L11,20 L13,20 L13,22 L15,22 L15,19 Z" />
+    <!-- 蝴蝶结（顶部） -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12,2 L14,4 L12,6 L10,4 Z" />
+</vector>

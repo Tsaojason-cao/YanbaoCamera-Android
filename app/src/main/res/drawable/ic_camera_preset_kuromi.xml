@@ -3,28 +3,13 @@
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-        <path
-        android:pathData="M9,4 L7,6 L4,6 C3,6 2,7 2,8 L2,18 C2,19 3,20 4,20 L20,20 C21,20 22,19 22,18 L22,8 C22,7 21,6 20,6 L17,6 L15,4 Z"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="2"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:fillColor="@android:color/transparent"/>
-        <path
-        android:pathData="M12,15 m-3,0 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="2"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:fillColor="@android:color/transparent"/>
-        <path
-        android:pathData="M18,8 L20,8"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="2"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:fillColor="@android:color/transparent"/>
-    <!-- 库洛米小耳朵 -->
-    <path android:pathData="M7,3 L8.5,1 L9.5,3 Z" android:fillColor="#EC4899"/>
-    <path android:pathData="M17,3 L15.5,1 L14.5,3 Z" android:fillColor="#EC4899"/>
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M9,4 L7,6 L4,6 C3,6 2,7 2,8 L2,18 C2,19 3,20 4,20 L20,20 C21,20 22,19 22,18 L22,8 C22,7 21,6 20,6 L17,6 L15,4 Z" />
+    <circle android:fillColor="#000000" android:cx="12" android:cy="13" android:r="4"/>
+    <circle android:fillColor="#FFFFFF" android:cx="12" android:cy="13" android:r="2"/>
+    <!-- 预设标记（右上） -->
+    <path android:fillColor="#FFFFFF" android:pathData="M18,7 L20,7 L20,9" />
+    <!-- 小耳朵 -->
+    <path android:fillColor="#FFFFFF" android:pathData="M9,3 L10.5,1 L12,3 Z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M15,3 L13.5,1 L12,3 Z" />
 </vector>

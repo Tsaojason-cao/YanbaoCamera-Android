@@ -353,7 +353,7 @@ fun GalleryPreview(
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_gallery_kuromi),
+                        painter = painterResource(id = R.drawable.ic_album_kuromi),
                         contentDescription = null,
                         tint = KUROMI_PINK.copy(alpha = 0.5f),
                         modifier = Modifier.size(28.dp)
@@ -382,7 +382,7 @@ fun GalleryPreview(
                             contentDescription = "照片 ${index + 1}",
                             contentScale = ContentScale.Crop,
                             modifier = Modifier.fillMaxSize(),
-                            error = painterResource(id = R.drawable.ic_gallery_kuromi)
+                            error = painterResource(id = R.drawable.ic_album_kuromi)
                         )
                     }
                 }
@@ -425,11 +425,11 @@ fun MainShutterSection(
                     contentDescription = "最近照片",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize(),
-                    error = painterResource(id = R.drawable.ic_gallery_kuromi)
+                    error = painterResource(id = R.drawable.ic_album_kuromi)
                 )
             } else {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_gallery_kuromi),
+                    painter = painterResource(id = R.drawable.ic_album_kuromi),
                     contentDescription = "相册",
                     tint = Color.White.copy(alpha = 0.6f),
                     modifier = Modifier.size(24.dp)
@@ -454,7 +454,7 @@ fun MainShutterSection(
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_flip_camera_kuromi),
+                painter = painterResource(id = R.drawable.ic_flip_kuromi),
                 contentDescription = "翻转摄像头",
                 tint = Color.White,
                 modifier = Modifier.size(26.dp)

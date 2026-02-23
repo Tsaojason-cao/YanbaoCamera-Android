@@ -92,7 +92,7 @@ fun CameraControlsOverlay(
                 modifier = Modifier.size(48.dp)
             ) {
                 Icon(
-                    painter = androidx.compose.ui.res.painterResource(id = com.yanbao.camera.R.drawable.ic_gallery_kuromi),
+                    painter = androidx.compose.ui.res.painterResource(id = com.yanbao.camera.R.drawable.ic_album_kuromi),
                     contentDescription = "Gallery",
                     tint = Color.White,
                     modifier = Modifier.size(32.dp)

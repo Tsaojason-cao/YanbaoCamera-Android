@@ -334,7 +334,7 @@ fun ProfileScreen(
                 Column {
                     // 1. 更换背景
                     SettingItem(
-                        iconRes = R.drawable.ic_gallery_kuromi,
+                        iconRes = R.drawable.ic_album_kuromi,
                         title = "更换背景",
                         subtitle = "自定义个人主页背景",
                         onClick = { backgroundLauncher.launch("image/*") }
@@ -391,7 +391,7 @@ fun ProfileScreen(
 
                     // 7. Git 同步备份
                     SettingItem(
-                        iconRes = R.drawable.ic_git_backup_kuromi,
+                        iconRes = R.drawable.ic_git_kuromi,
                         title = "Git 同步备份",
                         subtitle = backupStatus ?: "立即备份雁宝记忆到 GitHub",
                         subtitleColor = when {

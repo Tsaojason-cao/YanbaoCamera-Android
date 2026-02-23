@@ -209,7 +209,7 @@ fun PhotoDetailScreen(
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_gallery_kuromi),
+                            painter = painterResource(id = R.drawable.ic_album_kuromi),
                             contentDescription = null,
                             tint = Color.White.copy(alpha = 0.3f),
                             modifier = Modifier.size(64.dp)

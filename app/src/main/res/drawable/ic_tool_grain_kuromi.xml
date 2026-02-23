@@ -3,32 +3,16 @@
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-        <path
-        android:pathData="M6,8 m-1.2,0 a1.2,1.2 0 1,0 2.4,0 a1.2,1.2 0 1,0 -2.4,0"
-        android:fillColor="#FFFFFF"/>
-        <path
-        android:pathData="M12,6 m-1.2,0 a1.2,1.2 0 1,0 2.4,0 a1.2,1.2 0 1,0 -2.4,0"
-        android:fillColor="#FFFFFF"/>
-        <path
-        android:pathData="M18,8 m-1.2,0 a1.2,1.2 0 1,0 2.4,0 a1.2,1.2 0 1,0 -2.4,0"
-        android:fillColor="#FFFFFF"/>
-        <path
-        android:pathData="M4,13 m-1.2,0 a1.2,1.2 0 1,0 2.4,0 a1.2,1.2 0 1,0 -2.4,0"
-        android:fillColor="#FFFFFF"/>
-        <path
-        android:pathData="M10,12 m-1.2,0 a1.2,1.2 0 1,0 2.4,0 a1.2,1.2 0 1,0 -2.4,0"
-        android:fillColor="#FFFFFF"/>
-        <path
-        android:pathData="M16,14 m-1.2,0 a1.2,1.2 0 1,0 2.4,0 a1.2,1.2 0 1,0 -2.4,0"
-        android:fillColor="#FFFFFF"/>
-        <path
-        android:pathData="M7,18 m-1.2,0 a1.2,1.2 0 1,0 2.4,0 a1.2,1.2 0 1,0 -2.4,0"
-        android:fillColor="#FFFFFF"/>
-        <path
-        android:pathData="M14,19 m-1.2,0 a1.2,1.2 0 1,0 2.4,0 a1.2,1.2 0 1,0 -2.4,0"
-        android:fillColor="#FFFFFF"/>
-        <path
-        android:pathData="M20,17 m-1.2,0 a1.2,1.2 0 1,0 2.4,0 a1.2,1.2 0 1,0 -2.4,0"
-        android:fillColor="#FFFFFF"/>
-    <path android:pathData="M10.5,2.5 L12,1.5 L13.5,2.5 L12,3.5 Z" android:fillColor="#EC4899"/>
+    <!-- 颗粒点阵 -->
+    <circle android:fillColor="#FFFFFF" android:cx="6" android:cy="8" android:r="1.5"/>
+    <circle android:fillColor="#FFFFFF" android:cx="12" android:cy="6" android:r="1.5"/>
+    <circle android:fillColor="#FFFFFF" android:cx="18" android:cy="8" android:r="1.5"/>
+    <circle android:fillColor="#FFFFFF" android:cx="4" android:cy="13" android:r="1.5"/>
+    <circle android:fillColor="#FFFFFF" android:cx="10" android:cy="12" android:r="1.5"/>
+    <circle android:fillColor="#FFFFFF" android:cx="16" android:cy="14" android:r="1.5"/>
+    <circle android:fillColor="#FFFFFF" android:cx="7" android:cy="18" android:r="1.5"/>
+    <circle android:fillColor="#FFFFFF" android:cx="14" android:cy="19" android:r="1.5"/>
+    <circle android:fillColor="#FFFFFF" android:cx="20" android:cy="17" android:r="1.5"/>
+    <!-- 蝴蝶结 -->
+    <path android:fillColor="#FFFFFF" android:pathData="M10,3 L12,1 L14,3 L12,5 Z" />
 </vector>

@@ -384,7 +384,7 @@ fun YanbaoBottomNavigation(
         BottomNavItem(label = "首页",  iconRes = R.drawable.ic_home_kuromi,      route = "home"),
         BottomNavItem(label = "相机",  iconRes = R.drawable.ic_camera_kuromi,    route = "camera"),
         BottomNavItem(label = "编辑",  iconRes = R.drawable.ic_edit_kuromi,      route = "editor"),
-        BottomNavItem(label = "相册",  iconRes = R.drawable.ic_gallery_kuromi,   route = "gallery"),
+        BottomNavItem(label = "相册",  iconRes = R.drawable.ic_album_kuromi,   route = "gallery"),
         BottomNavItem(label = "推荐",  iconRes = R.drawable.ic_recommend_kuromi, route = "lbs"),
         BottomNavItem(label = "我的",  iconRes = R.drawable.ic_profile_kuromi,   route = "profile")
     )

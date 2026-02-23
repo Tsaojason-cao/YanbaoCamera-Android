@@ -1,0 +1,21 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- 手机外框 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M6,2 C4.9,2 4,2.9 4,4 L4,20 C4,21.1 4.9,22 6,22 L18,22 C19.1,22 20,21.1 20,20 L20,4 C20,2.9 19.1,2 18,2 Z" />
+    <!-- 屏幕（黑色） -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M6,5 L18,5 L18,19 L6,19 Z" />
+    <!-- 相机镜头（白色） -->
+    <circle android:fillColor="#FFFFFF" android:cx="12" android:cy="12" android:r="3"/>
+    <circle android:fillColor="#000000" android:cx="12" android:cy="12" android:r="1.5"/>
+    <!-- 库洛米蝴蝶结（顶部） -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M10,2 L12,0 L14,2 L12,4 Z" />
+</vector>

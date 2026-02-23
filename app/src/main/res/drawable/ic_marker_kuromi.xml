@@ -1,14 +1,12 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="48dp"
-    android:height="48dp"
+    android:width="24dp"
+    android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-  <path android:fillColor="#EC4899"
-      android:pathData="M12,2C8.13,2,5,5.13,5,9c0,5.25,7,13,7,13s7,-7.75,7,-13C19,5.13,15.87,2,12,2z"/>
-  <path android:fillColor="#FFFFFF"
-      android:pathData="M12,11.5m-2.5,0a2.5,2.5 0,1 1,5 0a2.5,2.5 0,1 1,-5 0"/>
-  <path android:fillColor="#EC4899"
-      android:pathData="M8,3.5 L9.5,5.5 L6.5,5.5 Z"/>
-  <path android:fillColor="#EC4899"
-      android:pathData="M16,3.5 L14.5,5.5 L17.5,5.5 Z"/>
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M12,2 C8.13,2 5,5.13 5,9 C5,14.25 12,22 12,22 C12,22 19,14.25 19,9 C19,5.13 15.87,2 12,2 Z" />
+    <circle android:fillColor="#000000" android:cx="12" android:cy="9" android:r="3"/>
+    <!-- 小耳朵 -->
+    <path android:fillColor="#FFFFFF" android:pathData="M8,2 L9.5,0 L11,2 Z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M16,2 L14.5,0 L13,2 Z" />
 </vector>

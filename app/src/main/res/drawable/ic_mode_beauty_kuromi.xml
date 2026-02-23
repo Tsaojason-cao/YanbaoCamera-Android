@@ -1,0 +1,16 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- 心形主体 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12,21 C12,21 3,14 3,8 C3,5.24 5.24,3 8,3 C9.74,3 11.22,3.9 12,5.24 C12.78,3.9 14.26,3 16,3 C18.76,3 21,5.24 21,8 C21,14 12,21 12,21 Z" />
+    <!-- 心形内部小骷髅 -->
+    <circle android:fillColor="#000000" android:cx="10" android:cy="9" android:r="1"/>
+    <circle android:fillColor="#000000" android:cx="14" android:cy="9" android:r="1"/>
+    <path
+        android:fillColor="#000000"
+        android:pathData="M11,11 L13,11 L13,12 L11,12 Z" />
+</vector>

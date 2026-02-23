@@ -3,15 +3,16 @@
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-        <path
-        android:pathData="M13,2 L7,13 L11,13 L11,22 L17,11 L13,11 Z"
-        android:fillColor="#FFFFFF"/>
-        <path
-        android:pathData="M18,3 L20,3 M19,2 L19,4"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="2"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:fillColor="@android:color/transparent"/>
-    <path android:pathData="M14.5,2 L16,1 L17.5,2 L16,3 Z" android:fillColor="#EC4899"/>
+    <!-- 闪电主体 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M13,2 L7,13 L11,13 L11,22 L17,11 L13,11 Z" />
+    <!-- A字母（自动标识） -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M18,3 L20,8 M19,5.5 L21,5.5 M22,3 L22,8" />
+    <!-- 小耳朵 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M5,3 L6.5,1 L8,3 Z" />
 </vector>

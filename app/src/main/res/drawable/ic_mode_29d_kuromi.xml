@@ -1,0 +1,25 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- 数字 2 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M3,7 C3,5 4.5,4 6,4 C7.5,4 9,5 9,7 C9,9 3,12 3,12 L9,12 L9,14 L3,14" />
+    <!-- 数字 9 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12,14 C12,14 12,8 15.5,8 C19,8 19,12 15.5,12 C12,12 12,16 12,18 L19,18" />
+    <!-- D字 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M21,8 L21,18 C21,18 24,18 24,13 C24,8 21,8 21,8 Z" />
+    <!-- 库洛米小耳朵 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M4,3 L5.5,1 L7,3 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M17,3 L18.5,1 L20,3 Z" />
+</vector>

@@ -345,7 +345,7 @@ private fun QuickToolbar(
                 CameraViewModel.FlashMode.ON -> "开"
                 CameraViewModel.FlashMode.OFF -> "关"
             },
-            iconRes = R.drawable.ic_flash_kuromi,
+            iconRes = R.drawable.ic_flash_on_kuromi,
             isActive = flashMode != CameraViewModel.FlashMode.OFF,
             onClick = onFlashClick
         )
@@ -353,7 +353,7 @@ private fun QuickToolbar(
         // 比例
         QuickToolItem(
             label = aspectRatio.label,
-            iconRes = R.drawable.ic_aspect_ratio_kuromi,
+            iconRes = R.drawable.ic_aspect_kuromi,
             isActive = false,
             onClick = onAspectClick
         )
@@ -369,7 +369,7 @@ private fun QuickToolbar(
         // 翻转
         QuickToolItem(
             label = "翻转",
-            iconRes = R.drawable.ic_flip_camera_kuromi,
+            iconRes = R.drawable.ic_flip_kuromi,
             isActive = false,
             onClick = onFlipClick
         )

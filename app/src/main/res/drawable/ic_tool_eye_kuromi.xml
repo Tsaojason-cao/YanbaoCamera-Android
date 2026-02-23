@@ -3,21 +3,12 @@
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-        <path
-        android:pathData="M2,12 C2,12 6,6 12,6 C18,6 22,12 22,12 C22,12 18,18 12,18 C6,18 2,12 2,12 Z"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="2"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:fillColor="@android:color/transparent"/>
-        <path
-        android:pathData="M12,12 m-3,0 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="2"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:fillColor="@android:color/transparent"/>
-    <!-- 库洛米蝴蝶结 -->
-    <path android:pathData="M9.5,2.5 L12,1 L14.5,2.5 L12,4 Z" android:fillColor="#EC4899"/>
-    <path android:pathData="M11,2.5 L13,2.5" android:strokeColor="#EC4899" android:strokeWidth="1" android:fillColor="@android:color/transparent"/>
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M2,12 C2,12 6,6 12,6 C18,6 22,12 22,12 C22,12 18,18 12,18 C6,18 2,12 2,12 Z" />
+    <!-- 瞳孔（黑色） -->
+    <circle android:fillColor="#000000" android:cx="12" android:cy="12" android:r="3"/>
+    <!-- 高光 -->
+    <circle android:fillColor="#FFFFFF" android:cx="13" android:cy="11" android:r="1"/>
+    <!-- 蝴蝶结 -->
+    <path android:fillColor="#FFFFFF" android:pathData="M10,5 L12,3 L14,5 L12,7 Z" />
 </vector>

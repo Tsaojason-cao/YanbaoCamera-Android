@@ -3,28 +3,13 @@
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-        <path
-        android:pathData="M3,21 L3,3"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="2"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:fillColor="@android:color/transparent"/>
-        <path
-        android:pathData="M3,21 L21,21"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="2"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:fillColor="@android:color/transparent"/>
-        <path
-        android:pathData="M4,18 C8,18 8,6 12,6 C16,6 16,18 20,18"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="2"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:fillColor="@android:color/transparent"/>
-    <!-- 库洛米小耳朵 -->
-    <path android:pathData="M7,3 L8.5,1 L9.5,3 Z" android:fillColor="#EC4899"/>
-    <path android:pathData="M17,3 L15.5,1 L14.5,3 Z" android:fillColor="#EC4899"/>
+    <!-- 坐标轴 -->
+    <path android:fillColor="#FFFFFF" android:pathData="M3,21 L3,3" />
+    <path android:fillColor="#FFFFFF" android:pathData="M3,21 L21,21" />
+    <!-- 曲线 -->
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M4,18 C8,18 8,6 12,6 C16,6 16,18 20,18" />
+    <!-- 小耳朵 -->
+    <path android:fillColor="#FFFFFF" android:pathData="M9,2 L10.5,0 L12,2 Z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M15,2 L13.5,0 L12,2 Z" />
 </vector>

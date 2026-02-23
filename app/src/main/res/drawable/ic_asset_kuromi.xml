@@ -1,0 +1,14 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path android:fillColor="#FFFFFF" android:pathData="M2,7 L22,7 L22,20 L2,20 Z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M2,7 L6,3 L18,3 L22,7" />
+    <path android:fillColor="#000000" android:pathData="M3,8 L21,8 L21,19 L3,19 Z" />
+    <circle android:fillColor="#FFFFFF" android:cx="16" android:cy="13" android:r="2"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M16,13 L22,13" />
+    <!-- 小耳朵 -->
+    <path android:fillColor="#FFFFFF" android:pathData="M9,2 L10.5,0 L12,2 Z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M15,2 L13.5,0 L12,2 Z" />
+</vector>

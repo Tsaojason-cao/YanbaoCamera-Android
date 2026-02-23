@@ -228,7 +228,7 @@ private fun RelatedMemoryCard(item: MemoryItem, navController: NavController) {
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_gallery_kuromi),
+                painter = painterResource(id = R.drawable.ic_album_kuromi),
                 contentDescription = null,
                 tint = Color.White.copy(alpha = 0.5f),
                 modifier = Modifier.size(28.dp)

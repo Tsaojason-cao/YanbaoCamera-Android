@@ -4,29 +4,22 @@
     android:viewportWidth="24"
     android:viewportHeight="24">
     <!-- 时钟圆形 -->
-        <path
-        android:pathData="M12,4 m-8,0 a8,8 0 1,0 16,0 a8,8 0 1,0 -16,0"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="2"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:fillColor="@android:color/transparent"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12,4 C7.58,4 4,7.58 4,12 C4,16.42 7.58,20 12,20 C16.42,20 20,16.42 20,12 C20,7.58 16.42,4 12,4 Z" />
+    <!-- 时钟内部（黑色） -->
+    <circle android:fillColor="#000000" android:cx="12" android:cy="12" android:r="7"/>
     <!-- 时针 -->
-        <path
-        android:pathData="M12,4 L12,9"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="2"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:fillColor="@android:color/transparent"/>
-        <path
-        android:pathData="M12,9 L15,11"
-        android:strokeColor="#FFFFFF"
-        android:strokeWidth="2"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:fillColor="@android:color/transparent"/>
-    <!-- 小骷髅 -->
-    <path android:pathData="M12,0.0 m-1.5,0 a1.5,1.5 0 1,0 3,0 a1.5,1.5 0 1,0 -3,0" android:fillColor="#EC4899"/>
-    <path android:pathData="M11.4,1.8 L11.4,2.5 M12.6,1.8 L12.6,2.5" android:strokeColor="#EC4899" android:strokeWidth="0.8" android:fillColor="@android:color/transparent"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12,12 L12,7" />
+    <!-- 分针 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12,12 L15,12" />
+    <!-- 小骷髅（顶部） -->
+    <circle android:fillColor="#FFFFFF" android:cx="12" android:cy="2" android:r="1.5"/>
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M11,3.5 L13,3.5 L13,4.5 L11,4.5 Z" />
 </vector>

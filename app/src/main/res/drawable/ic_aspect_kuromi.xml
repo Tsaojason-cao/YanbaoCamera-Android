@@ -1,0 +1,22 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- 矩形外框 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M3,6 L21,6 L21,18 L3,18 Z" />
+    <!-- 内部黑色（镂空效果） -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M4,7 L20,7 L20,17 L4,17 Z" />
+    <!-- 比例分割线（白色） -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M9,7 L9,17 M15,7 L15,17" />
+    <!-- 库洛米蝴蝶结（顶部） -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M10,5 L12,3 L14,5 L12,7 Z" />
+</vector>

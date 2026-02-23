@@ -1,0 +1,17 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- 圆形外框 -->
+    <path android:fillColor="#FFFFFF"
+        android:pathData="M12,2 C6.48,2 2,6.48 2,12 C2,17.52 6.48,22 12,22 C17.52,22 22,17.52 22,12 C22,6.48 17.52,2 12,2 Z" />
+    <!-- 内部（黑色） -->
+    <circle android:fillColor="#000000" android:cx="12" android:cy="12" android:r="8"/>
+    <!-- i 字母 -->
+    <circle android:fillColor="#FFFFFF" android:cx="12" android:cy="8" android:r="1"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M11,11 L11,17 L13,17 L13,11 Z" />
+    <!-- 小耳朵 -->
+    <path android:fillColor="#FFFFFF" android:pathData="M9,1 L10.5,-1 L12,1 Z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M15,1 L13.5,-1 L12,1 Z" />
+</vector>

@@ -1,0 +1,20 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- 相机简化轮廓 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M9,4 L7,6 L4,6 C3,6 2,7 2,8 L2,18 C2,19 3,20 4,20 L20,20 C21,20 22,19 22,18 L22,8 C22,7 21,6 20,6 L17,6 L15,4 Z" />
+    <!-- 镜头 -->
+    <circle android:fillColor="#000000" android:cx="12" android:cy="13" android:r="4"/>
+    <circle android:fillColor="#FFFFFF" android:cx="12" android:cy="13" android:r="2"/>
+    <!-- 库洛米小耳朵 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M8,3 L9.5,1 L11,3 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M16,3 L14.5,1 L13,3 Z" />
+</vector>

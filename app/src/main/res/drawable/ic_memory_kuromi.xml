@@ -3,19 +3,17 @@
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-  <!-- 心形记忆 -->
-  <path
-      android:fillColor="@android:color/transparent"
-      android:pathData="M12,21 C12,21 3,15 3,9 C3,6.2 5.2,4 8,4 C9.7,4 11.2,4.9 12,6.2 C12.8,4.9 14.3,4 16,4 C18.8,4 21,6.2 21,9 C21,15 12,21 12,21 Z"
-      android:strokeColor="#EC4899"
-      android:strokeWidth="2"
-      android:strokeLineCap="round"
-      android:strokeLineJoin="round"/>
-  <!-- 蝴蝶结 -->
-  <path
-      android:fillColor="#EC4899"
-      android:pathData="M10,8 L12,10 L14,8 L12,9 Z"/>
-  <!-- 小耳朵 -->
-  <circle android:fillColor="#EC4899" android:cx="8.5" android:cy="3" android:r="1"/>
-  <circle android:fillColor="#EC4899" android:cx="15.5" android:cy="3" android:r="1"/>
+    <!-- 胶卷外框 -->
+    <path android:fillColor="#FFFFFF" android:pathData="M4,7 L4,17 L20,17 L20,7 Z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M4,10 L2,10 L2,14 L4,14" />
+    <path android:fillColor="#FFFFFF" android:pathData="M20,10 L22,10 L22,14 L20,14" />
+    <!-- 胶卷内部（黑色） -->
+    <path android:fillColor="#000000" android:pathData="M5,8 L19,8 L19,16 L5,16 Z" />
+    <!-- 胶卷孔 -->
+    <path android:fillColor="#FFFFFF" android:pathData="M7,8 L7,16 M10,8 L10,16 M14,8 L14,16 M17,8 L17,16" />
+    <!-- 骷髅 -->
+    <circle android:fillColor="#FFFFFF" android:cx="12" android:cy="5" android:r="2"/>
+    <circle android:fillColor="#000000" android:cx="11.3" android:cy="5" android:r="0.6"/>
+    <circle android:fillColor="#000000" android:cx="12.7" android:cy="5" android:r="0.6"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M11,7 L13,7 L13,8 L11,8 Z" />
 </vector>

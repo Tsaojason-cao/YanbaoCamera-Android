@@ -1,0 +1,21 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- AR立方体 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M12,3 L21,8 L21,16 L12,21 L3,16 L3,8 Z" />
+    <!-- 内部线（黑色） -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M12,3 L12,21 M3,8 L21,8 M3,16 L21,16" />
+    <!-- 库洛米小耳朵 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M9,2 L10.5,0 L12,2 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M15,2 L13.5,0 L12,2 Z" />
+</vector>
