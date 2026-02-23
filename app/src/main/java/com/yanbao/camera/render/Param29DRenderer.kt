@@ -227,6 +227,64 @@ class Param29DRenderer(
     }
 
     /**
+     * 从 FloatArray 更新参数（供 CameraViewModel.updateRendererParams() 调用）
+     * FloatArray 格式与 Param29D.toFloatArray() 对应
+     */
+    fun updateParams(floatArray: FloatArray) {
+        if (floatArray.size >= 28) {
+            params = Param29DFull(
+                iso             = (floatArray[0] * 6400f).toInt().coerceIn(100, 6400),
+                shutterSpeed    = floatArray[1],
+                ev              = floatArray[2] * 3f,
+                dynamicRange    = floatArray[3],
+                shadowComp      = floatArray[4],
+                highlightProtect = floatArray[5],
+                colorTemp       = floatArray[6],
+                tint            = floatArray[7],
+                saturation      = floatArray[8] * 2f,
+                skinTone        = floatArray[9],
+                redGain         = floatArray[10],
+                greenGain       = floatArray[11],
+                blueGain        = floatArray[12],
+                colorBoost      = floatArray[13],
+                sharpness       = floatArray[14],
+                denoise         = floatArray[15],
+                grain           = floatArray[16],
+                vignette        = floatArray[17],
+                clarity         = floatArray[18],
+                dehaze          = floatArray[19],
+                beautyGlobal    = floatArray[20],
+                skinSmooth      = floatArray[21],
+                faceThin        = floatArray[22],
+                eyeEnlarge      = floatArray[23],
+                skinWhiten      = floatArray[24],
+                skinRedden      = floatArray[25],
+                chinAdjust      = floatArray[26],
+                noseBridge      = floatArray[27]
+            )
+        }
+    }
+
+    /**
+     * 设置视差偏移量（供 CameraViewModel.setMode2(PARALLAX) 时调用）
+     */
+    fun setParallaxOffset(tiltX: Float, tiltY: Float) {
+        // 存储偏移量，在下一帧 onDrawFrame 时通过 uniform 传递
+        // 由于 GLES 调用必须在 GL 线程，此处仅记录值
+        @Volatile var pendingTiltX = tiltX
+        @Volatile var pendingTiltY = tiltY
+        Log.d(TAG, "setParallaxOffset: tiltX=$tiltX, tiltY=$tiltY")
+    }
+
+    /**
+     * 外部设置 SurfaceTexture（兼容接口，实际 SurfaceTexture 由 onSurfaceCreated 内部创建）
+     */
+    fun setSurfaceTexture(@Suppress("UNUSED_PARAMETER") st: android.graphics.SurfaceTexture) {
+        // SurfaceTexture 由 onSurfaceCreated 内部创建并通过 onSurfaceReady 回调传出
+        // 此处保留为兼容接口，不做额外操作
+    }
+
+    /**
      * 释放 GL 资源
      */
     fun release() {

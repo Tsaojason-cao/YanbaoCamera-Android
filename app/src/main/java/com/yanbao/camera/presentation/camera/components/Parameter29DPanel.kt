@@ -24,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.yanbao.camera.presentation.camera.ALL_29D_PARAMS
-import com.yanbao.camera.presentation.camera.Param29D
+import com.yanbao.camera.presentation.camera.Param29DDescriptor
 
 // ─────────────────────────────────────────────
 // 颜色常量
@@ -202,7 +202,7 @@ fun Parameter29DPanel(
 // ─────────────────────────────────────────────
 @Composable
 fun Param29DSliderRow(
-    param: Param29D,
+    param: Param29DDescriptor,
     value: Float,
     onChanged: (Float) -> Unit
 ) {

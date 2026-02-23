@@ -1,0 +1,29 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- 苹果风格圆角矩形相机 -->
+        <path
+        android:pathData="M5,4 C5,4 5,4 7,4 L17,4 C19,4 19,4 19,6 L19,18 C19,20 19,20 17,20 L7,20 C5,20 5,20 5,18 Z"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="@android:color/transparent"/>
+        <path
+        android:pathData="M12,14 m-3,0 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="@android:color/transparent"/>
+        <path
+        android:pathData="M15,6 L17,6"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:fillColor="@android:color/transparent"/>
+    <path android:pathData="M10.5,2.5 L12,1.5 L13.5,2.5 L12,3.5 Z" android:fillColor="#EC4899"/>
+</vector>

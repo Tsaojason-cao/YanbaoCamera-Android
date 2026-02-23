@@ -6,8 +6,12 @@ import android.util.Log
 import android.view.Surface
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.yanbao.camera.camera.Camera2Manager
 import com.yanbao.camera.core.camera.Camera2PreviewManager
 import com.yanbao.camera.core.util.Camera2ManagerEnhanced
+import com.yanbao.camera.filter.MasterFilterManager
+import com.yanbao.camera.render.Param29DRenderer
+import com.yanbao.camera.sensor.ParallaxSensor
 import com.yanbao.camera.data.lbs.LbsService
 import com.yanbao.camera.data.local.dao.YanbaoMemoryDao
 import com.yanbao.camera.data.local.entity.YanbaoMemoryFactory
@@ -532,9 +536,183 @@ class CameraViewModel @Inject constructor(
         }
     }
 
+    // ─── Phase 2: Camera2Manager + Param29D + ParallaxSensor ─────────────────
+
+    private val _currentMode2 = MutableStateFlow<com.yanbao.camera.presentation.camera.CameraMode>(
+        com.yanbao.camera.presentation.camera.CameraMode.BASIC
+    )
+    val currentMode2: StateFlow<com.yanbao.camera.presentation.camera.CameraMode> = _currentMode2.asStateFlow()
+
+    private val _params29D = MutableStateFlow(Param29D())
+    val params29D: StateFlow<Param29D> = _params29D.asStateFlow()
+
+    private val _isRecordingMemory = MutableStateFlow(false)
+    val isRecordingMemory: StateFlow<Boolean> = _isRecordingMemory.asStateFlow()
+
+    private val _flashMode2 = MutableStateFlow(0)
+    val flashMode2: StateFlow<Int> = _flashMode2.asStateFlow()
+
+    private val _aspectRatio2 = MutableStateFlow(0)
+    val aspectRatio2: StateFlow<Int> = _aspectRatio2.asStateFlow()
+
+    private val _timer2 = MutableStateFlow(0)
+    val timer2: StateFlow<Int> = _timer2.asStateFlow()
+
+    private val _lensFacing = MutableStateFlow(0)
+    val lensFacing: StateFlow<Int> = _lensFacing.asStateFlow()
+
+    private var cam2Manager: Camera2Manager? = null
+    private var param29DRenderer: Param29DRenderer? = null
+    private var parallaxSensor2: ParallaxSensor? = null
+    private var masterFilterManager: MasterFilterManager? = null
+    private val appDb by lazy { com.yanbao.camera.data.database.AppDatabase.getInstance(appContext) }
+
+    fun initCameraManager(context: Context) {
+        cam2Manager = Camera2Manager(context).apply {
+            onPhotoSaved = { file ->
+                viewModelScope.launch {
+                    saveMemoryFromFile(file.absolutePath)
+                }
+            }
+            onRecordingStopped = { file ->
+                viewModelScope.launch {
+                    saveMemoryFromFile(file.absolutePath, isVideo = true)
+                }
+            }
+        }
+        masterFilterManager = MasterFilterManager(context)
+        parallaxSensor2 = ParallaxSensor(context)
+    }
+
+    fun setRenderer(renderer: Param29DRenderer) {
+        this.param29DRenderer = renderer
+        updateRendererParams()
+    }
+
+    fun startCamera(surfaceTexture: android.graphics.SurfaceTexture, width: Int, height: Int) {
+        cam2Manager?.startCamera(surfaceTexture, width, height)
+    }
+
+    fun stopCam2() {
+        cam2Manager?.stopCamera()
+    }
+
+    fun setMode2(mode: com.yanbao.camera.presentation.camera.CameraMode) {
+        _currentMode2.value = mode
+        if (mode == com.yanbao.camera.presentation.camera.CameraMode.PARALLAX) {
+            parallaxSensor2?.start()
+            viewModelScope.launch {
+                parallaxSensor2?.tilt?.collect { (x, y) ->
+                    param29DRenderer?.setParallaxOffset(x, y)
+                }
+            }
+        } else {
+            parallaxSensor2?.stop()
+        }
+    }
+
+    fun takePhoto2() {
+        cam2Manager?.takePhoto()
+    }
+    // 小写别名（供 pasted_content_27 CameraScreen 调用）
+    fun takePhoto() { _captureRequested.value = true }
+    fun startVideo() = startVideo2()
+    fun stopVideo() = stopVideo2()
+    val isRecordingState: Boolean get() = cam2Manager?.isRecording() == true
+
+    fun startVideo2() {
+        val dir = appContext.getExternalFilesDir(null) ?: appContext.filesDir
+        val file = java.io.File(dir, "VID_${System.currentTimeMillis()}.mp4")
+        cam2Manager?.startRecording(file)
+    }
+
+    fun stopVideo2() {
+        cam2Manager?.stopRecording()
+    }
+
+    fun toggleMemoryRecording() {
+        _isRecordingMemory.value = !_isRecordingMemory.value
+    }
+
+    fun setFlashMode2(mode: Int) { _flashMode2.value = mode }
+    fun setAspectRatio2(ratio: Int) { _aspectRatio2.value = ratio }
+    fun setTimer2(seconds: Int) { _timer2.value = seconds }
+
+    // 别名方法（供 QuickToolbar.kt 调用）
+    fun setFlashMode(mode: Int) = setFlashMode2(mode)
+    fun setAspectRatio(ratio: Int) = setAspectRatio2(ratio)
+    fun setTimer(seconds: Int) = setTimer2(seconds)
+    val flashMode3: StateFlow<Int> = _flashMode2.asStateFlow()
+    val aspectRatio3: StateFlow<Int> = _aspectRatio2.asStateFlow()
+    val timer: StateFlow<Int> = _timer2.asStateFlow()
+
+    fun flipLens() {
+        _lensFacing.value = if (_lensFacing.value == 0) 1 else 0
+        cam2Manager?.flipLens()
+    }
+
+    fun update29DParam(block: Param29D.() -> Unit) {
+        _params29D.value = _params29D.value.copy().apply(block)
+        updateRendererParams()
+        if (_currentMode2.value == com.yanbao.camera.presentation.camera.CameraMode.NATIVE) {
+            val params = _params29D.value
+            cam2Manager?.setIso(params.iso)
+            cam2Manager?.setExposureTime(params.shutterSpeed.toLong())
+            cam2Manager?.setEv(params.ev.toInt())
+        }
+    }
+
+    private fun updateRendererParams() {
+        param29DRenderer?.updateParams(_params29D.value.toFloatArray())
+    }
+
+    fun setHardwareIso(value: Float) {
+        val iso = (value * 6300 + 100).toInt()
+        cam2Manager?.setIso(iso)
+        update29DParam { this.iso = iso }
+    }
+
+    fun setHardwareExposure(value: Float) {
+        val exp = (value * (30_000_000_000L - 1_000_000L) + 1_000_000L).toLong()
+        cam2Manager?.setExposureTime(exp)
+        update29DParam { shutterSpeed = (1_000_000_000L / exp).toString() }
+    }
+
+    fun setHardwareEv(value: Float) {
+        val ev = (value * 6 - 3).toInt()
+        cam2Manager?.setEv(ev)
+        update29DParam { this.ev = ev.toFloat() }
+    }
+
+    private fun saveMemoryFromFile(photoPath: String, isVideo: Boolean = false) {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val params = _params29D.value
+                val memory = com.yanbao.camera.data.database.MemoryEntity.fromParams29D(
+                    photoPath = photoPath,
+                    mode = _currentMode2.value.name,
+                    params = params,
+                    filterId = null,
+                    lat = null,
+                    lng = null,
+                    address = null,
+                    weather = null
+                )
+                appDb.memoryDao().insert(memory)
+                Log.d(TAG, "AUDIT_DB: saveMemoryFromFile path=$photoPath")
+            } catch (e: Exception) {
+                Log.e(TAG, "saveMemoryFromFile failed", e)
+            }
+        }
+    }
+
+    // ─── End Phase 2 ──────────────────────────────────────────────────────
+
     override fun onCleared() {
         super.onCleared()
         recordingJob?.cancel()
         camera2Manager?.closeCamera()
+        cam2Manager?.stopCamera()
+        parallaxSensor2?.stop()
     }
 }

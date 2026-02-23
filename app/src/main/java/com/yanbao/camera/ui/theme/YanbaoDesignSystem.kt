@@ -35,10 +35,14 @@ import kotlin.math.sin
 
 /** 主色：库洛米粉 */
 val KuromiPink = Color(0xFFEC4899)
+/** 全大写别名（供 pasted_content_27 代码引用） */
+val KUROMI_PINK = KuromiPink
 /** 次色：深紫 */
 val KuromiPurple = Color(0xFF9D4EDD)
 /** 背景：曜石黑 */
 val ObsidianBlack = Color(0xFF0A0A0A)
+/** 全大写别名（供 pasted_content_27 代码引用） */
+val OBSIDIAN_BLACK = ObsidianBlack
 /** 深背景 */
 val DeepBlack = Color(0xFF1A1A1A)
 /** 冷白 */

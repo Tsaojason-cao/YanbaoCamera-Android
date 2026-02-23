@@ -45,6 +45,32 @@ data class MemoryEntity(
 
     companion object {
         /**
+         * 从 Param29D 对象创建 MemoryEntity（供 CameraViewModel 直接调用）
+         */
+        fun fromParams29D(
+            photoPath: String,
+            mode: String,
+            params: com.yanbao.camera.presentation.camera.Param29D,
+            filterId: String? = null,
+            lat: Double? = null,
+            lng: Double? = null,
+            address: String? = null,
+            weather: String? = null
+        ): MemoryEntity {
+            val json = com.google.gson.Gson().toJson(params)
+            return MemoryEntity(
+                photoPath = photoPath,
+                mode = mode,
+                params29DJson = json,
+                filterId = filterId,
+                locationLat = lat,
+                locationLng = lng,
+                locationAddress = address,
+                weather = weather
+            )
+        }
+
+        /**
          * 从参数 Map 创建 MemoryEntity
          */
         fun fromParamsMap(
