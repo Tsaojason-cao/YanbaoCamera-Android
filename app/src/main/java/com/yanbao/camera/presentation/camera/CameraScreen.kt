@@ -276,15 +276,9 @@ fun CameraScreen(
 
             // ControlPanel（根据模式切换内容）
             ControlPanel(
-                mode = yanbaoMode,
-                camera29DState = camera29DState,
-                onParameterChange = { name, value -> viewModel.updateParameter(name, value) },
+                currentMode = yanbaoMode,
+                onModeChange = { viewModel.setYanbaoMode(it) },
                 onShutterClick = { viewModel.takePhoto(context) },
-                onVideoClick = { viewModel.toggleRecording(context) },
-                onGalleryClick = onGalleryClick,
-                onFlipCamera = { viewModel.flipCamera() },
-                lastPhotoUri = capturePreviewUri,
-                isRecording = isRecording,
                 modifier = Modifier.fillMaxWidth()
             )
 

@@ -14,6 +14,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -163,7 +164,7 @@ class ProfileViewModel @Inject constructor(
 
                     // 2. 记忆数：Room 数据库中的记忆条目数
                     val memoriesCount = try {
-                        yanbaoMemoryDao.getAll().size
+                        yanbaoMemoryDao.getAllMemories().first().size
                     } catch (e: Exception) { 0 }
 
                     // 3. 获赞数：从 SharedPreferences 读取（用户互动数据）

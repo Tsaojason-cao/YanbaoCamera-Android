@@ -425,7 +425,7 @@ class CameraViewModel @Inject constructor(
 
     // ─── 工具函数 ─────────────────────────────────────────────────────
 
-    private suspend fun reverseGeocodecode(lat: Double, lng: Double): String? {
+    private suspend fun reverseGeocode(lat: Double, lng: Double): String? {
         return withContext(Dispatchers.IO) {
             try {
                 val geocoder = android.location.Geocoder(appContext, java.util.Locale.getDefault())

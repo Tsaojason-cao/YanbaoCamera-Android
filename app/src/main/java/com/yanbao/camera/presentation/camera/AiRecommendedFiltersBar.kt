@@ -117,7 +117,7 @@ fun AiRecommendedFiltersBar(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            items(recommendedFilters, key = { it.name }) { filter ->
+            items(recommendedFilters, key = { it.id }) { filter ->
                 val isPinned = pinnedFilterIds.contains(filter.id)
                 val isSelected = filter.id == selectedFilterId
                 
