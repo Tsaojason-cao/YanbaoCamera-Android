@@ -455,6 +455,7 @@ fun PhotoDetailScreen(
         )
     }
 }
+}
 
 @Composable
 private fun ExifItem(label: String, value: String) {
@@ -508,5 +509,4 @@ private fun ActionButton(
             textAlign = TextAlign.Center
         )
     }
-}
 }
