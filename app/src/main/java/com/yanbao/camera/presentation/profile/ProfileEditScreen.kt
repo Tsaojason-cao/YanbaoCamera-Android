@@ -35,6 +35,8 @@ import com.yanbao.camera.presentation.theme.YanbaoPurple
 @Composable
 fun ProfileEditScreen(
     onBackClick: () -> Unit = {},
+    onBack: () -> Unit = {},
+    onSave: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -70,7 +72,7 @@ fun ProfileEditScreen(
                     text = "←",
                     fontSize = 24.sp,
                     color = Color.White,
-                    modifier = Modifier.clickable { onBackClick() }
+                    modifier = Modifier.clickable { onBackClick(); onBack() }
                 )
                 
                 Spacer(modifier = Modifier.width(16.dp))

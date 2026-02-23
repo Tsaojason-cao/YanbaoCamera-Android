@@ -36,7 +36,9 @@ import coil.compose.rememberAsyncImagePainter
 @Composable
 fun ProfileScreen(
     viewModel: ProfileViewModel = hiltViewModel(),
-    onBack: () -> Unit = {}
+    onBack: () -> Unit = {},
+    onBackClick: () -> Unit = {},
+    onEditProfile: () -> Unit = {}
 ) {
     val profile by viewModel.profile.collectAsState()
     val backupStatus by viewModel.backupStatus.collectAsState()
@@ -106,14 +108,23 @@ fun ProfileScreen(
                     )
                 }
                 
-                // 返回按钮
+                // 返回上一层按钮
                 IconButton(
-                    onClick = onBack,
+                    onClick = { onBack(); onBackClick() },
                     modifier = Modifier
                         .align(Alignment.TopStart)
                         .padding(16.dp)
                 ) {
                     Text("←", fontSize = 28.sp, color = Color.White)
+                }
+                // 编辑资料按钮（右上角）
+                IconButton(
+                    onClick = onEditProfile,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(16.dp)
+                ) {
+                    Text("✏️", fontSize = 22.sp)
                 }
                 
                 // 头像

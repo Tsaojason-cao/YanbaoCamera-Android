@@ -150,4 +150,10 @@ dependencies {
     
     // ExifInterface for EXIF metadata
     implementation("androidx.exifinterface:exifinterface:1.3.7")
+
+    // OSMDroid - OpenStreetMap 真实地图（无需 API Key）
+    implementation("org.osmdroid:osmdroid-android:6.1.18")
+
+    // AndroidView 封装 OSMDroid MapView
+    implementation("androidx.compose.ui:ui-viewbinding")
 }

@@ -43,7 +43,8 @@ import com.yanbao.camera.R
  */
 @Composable
 fun RecommendScreen(
-    viewModel: RecommendViewModel = hiltViewModel()
+    viewModel: RecommendViewModel = hiltViewModel(),
+    onBackClick: () -> Unit = {}
 ) {
     val selectedTab by viewModel.selectedTab.collectAsState()
     val spots by viewModel.filteredSpots.collectAsState()
@@ -61,11 +62,31 @@ fun RecommendScreen(
                 )
             )
     ) {
-        // --- 顶部标题 ---
+        // --- 顶部标题（含返回按钮） ---
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 48.dp, bottom = 0.dp)
+        ) {
+            // 返回上一层按钮
+            IconButton(
+                onClick = onBackClick,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(start = 8.dp)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_back),
+                    contentDescription = "返回",
+                    tint = Color.White,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 48.dp, bottom = 16.dp),
+                .padding(top = 8.dp, bottom = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(

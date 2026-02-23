@@ -38,21 +38,22 @@ import com.yanbao.camera.presentation.theme.*
  */
 @Composable
 fun EditorScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onNavigateBack: () -> Unit = {}
 ) {
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(OBSIDIAN_BLACK)
     ) {
-        EditorTopBar()
+        EditorTopBar(onNavigateBack = onNavigateBack)
         EditorPreviewPlaceholder()
         EditorToolGrid()
     }
 }
 
 @Composable
-private fun EditorTopBar() {
+private fun EditorTopBar(onNavigateBack: () -> Unit = {}) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -61,6 +62,15 @@ private fun EditorTopBar() {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
+        // 返回上一层按钮
+        IconButton(onClick = onNavigateBack) {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_back),
+                contentDescription = "返回",
+                tint = Color.White,
+                modifier = Modifier.size(24.dp)
+            )
+        }
         Text(
             text = "编辑器",
             fontSize = 22.sp,

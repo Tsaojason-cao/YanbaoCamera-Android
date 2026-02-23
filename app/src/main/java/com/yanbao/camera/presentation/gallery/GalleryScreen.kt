@@ -45,7 +45,8 @@ fun GalleryScreen(
     viewModel: GalleryViewModel = hiltViewModel(),
     onPhotoClick: (String) -> Unit = { photoId ->
         android.util.Log.d("GalleryScreen", "Photo clicked: $photoId")
-    }
+    },
+    onBackClick: () -> Unit = {}
 ) {
     val selectedTab by viewModel.selectedTab.collectAsState()
     val filteredPhotos by viewModel.filteredPhotos.collectAsState()
@@ -57,9 +58,9 @@ fun GalleryScreen(
     ) {
         // --- 顶部搜索与返回栏 ---
         GalleryTopBar(
-            onBackClick = { /* 返回 */ },
-            onHomeClick = { /* 跳转首页 */ },
-            onSearchClick = { /* 搜索逻辑 */ }
+            onBackClick = onBackClick,
+            onHomeClick = {},
+            onSearchClick = {}
         )
 
         // --- 核心分层过滤 Tab (对应截图：全部、雁宝记忆、大师、美人、29D) ---

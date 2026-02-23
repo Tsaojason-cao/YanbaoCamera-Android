@@ -55,7 +55,9 @@ private val MAP_PARK = Color(0xFF0A1F0A)
 @Composable
 fun LbsScreen(
     viewModel: LbsViewModel = hiltViewModel(),
-    onApplyFilter: (String) -> Unit = {}
+    onApplyFilter: (String) -> Unit = {},
+    onBackClick: () -> Unit = {},
+    navController: androidx.navigation.NavController? = null
 ) {
     val locations by viewModel.locations.collectAsStateWithLifecycle()
     val selectedLocation by viewModel.selectedLocation.collectAsStateWithLifecycle()
@@ -83,14 +85,28 @@ fun LbsScreen(
             modifier = Modifier.fillMaxSize()
         )
 
-        // ─── 顶部品牌标识 + 刷新按钮 ─────────────────────────────────
+        // ─── 顶部返回按钮 + 品牌标识 + 刷新按钮 ────────────────────────
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 48.dp, start = 16.dp, end = 16.dp),
+                .padding(top = 48.dp, start = 8.dp, end = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // 返回上一层
+            IconButton(
+                onClick = onBackClick,
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(OBSIDIAN_BLACK.copy(alpha = 0.7f), CircleShape)
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_back),
+                    contentDescription = "返回",
+                    tint = Color.White,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
             Text(
                 text = "yanbao AI",
                 color = Color.White,
