@@ -127,8 +127,8 @@ fun PhotoDetailScreen(
                         // 色温（白平衡模式）
                         val wb = exif.getAttributeInt(ExifInterface.TAG_WHITE_BALANCE, -1)
                         exifTemp = when (wb) {
-                            ExifInterface.WHITE_BALANCE_AUTO -> "自动"
-                            ExifInterface.WHITE_BALANCE_MANUAL -> "手动"
+                            ExifInterface.WHITE_BALANCE_AUTO.toInt() -> "自动"
+                            ExifInterface.WHITE_BALANCE_MANUAL.toInt() -> "手动"
                             else -> "--"
                         }
 
