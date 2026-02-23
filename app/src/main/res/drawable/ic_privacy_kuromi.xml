@@ -6,7 +6,7 @@
     <path android:fillColor="#FFFFFF"
         android:pathData="M8,11 L8,7 C8,4.79 9.79,3 12,3 C14.21,3 16,4.79 16,7 L16,11 Z" />
     <path android:fillColor="#FFFFFF" android:pathData="M4,11 L20,11 L20,21 L4,21 Z" />
-    <circle android:fillColor="#000000" android:cx="12" android:cy="16" android:r="2"/>
+    <path android:fillColor="#000000" android:pathData="M12.0,14.0 C13.1045694996,14.0 14.0,14.8954305004 14.0,16.0 C14.0,17.1045694996 13.1045694996,18.0 12.0,18.0 C10.8954305004,18.0 10.0,17.1045694996 10.0,16.0 C10.0,14.8954305004 10.8954305004,14.0 12.0,14.0 Z"/>
     <path android:fillColor="#FFFFFF" android:pathData="M12,18 L12,20" />
     <!-- 小耳朵 -->
     <path android:fillColor="#FFFFFF" android:pathData="M9,2 L10.5,0 L12,2 Z" />

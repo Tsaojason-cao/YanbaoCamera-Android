@@ -12,8 +12,8 @@
         android:fillColor="#000000"
         android:pathData="M6,5 L18,5 L18,19 L6,19 Z" />
     <!-- 相机镜头（白色） -->
-    <circle android:fillColor="#FFFFFF" android:cx="12" android:cy="12" android:r="3"/>
-    <circle android:fillColor="#000000" android:cx="12" android:cy="12" android:r="1.5"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M12.0,9.0 C13.6568542494,9.0 15.0,10.3431457506 15.0,12.0 C15.0,13.6568542494 13.6568542494,15.0 12.0,15.0 C10.3431457506,15.0 9.0,13.6568542494 9.0,12.0 C9.0,10.3431457506 10.3431457506,9.0 12.0,9.0 Z"/>
+    <path android:fillColor="#000000" android:pathData="M12.0,10.5 C12.8284271247,10.5 13.5,11.1715728753 13.5,12.0 C13.5,12.8284271247 12.8284271247,13.5 12.0,13.5 C11.1715728753,13.5 10.5,12.8284271247 10.5,12.0 C10.5,11.1715728753 11.1715728753,10.5 12.0,10.5 Z"/>
     <!-- 库洛米蝴蝶结（顶部） -->
     <path
         android:fillColor="#FFFFFF"

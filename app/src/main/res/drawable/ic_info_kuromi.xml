@@ -7,9 +7,9 @@
     <path android:fillColor="#FFFFFF"
         android:pathData="M12,2 C6.48,2 2,6.48 2,12 C2,17.52 6.48,22 12,22 C17.52,22 22,17.52 22,12 C22,6.48 17.52,2 12,2 Z" />
     <!-- 内部（黑色） -->
-    <circle android:fillColor="#000000" android:cx="12" android:cy="12" android:r="8"/>
+    <path android:fillColor="#000000" android:pathData="M12.0,4.0 C16.4182779984,4.0 20.0,7.5817220016 20.0,12.0 C20.0,16.4182779984 16.4182779984,20.0 12.0,20.0 C7.5817220016,20.0 4.0,16.4182779984 4.0,12.0 C4.0,7.5817220016 7.5817220016,4.0 12.0,4.0 Z"/>
     <!-- i 字母 -->
-    <circle android:fillColor="#FFFFFF" android:cx="12" android:cy="8" android:r="1"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M12.0,7.0 C12.5522847498,7.0 13.0,7.4477152502 13.0,8.0 C13.0,8.5522847498 12.5522847498,9.0 12.0,9.0 C11.4477152502,9.0 11.0,8.5522847498 11.0,8.0 C11.0,7.4477152502 11.4477152502,7.0 12.0,7.0 Z"/>
     <path android:fillColor="#FFFFFF" android:pathData="M11,11 L11,17 L13,17 L13,11 Z" />
     <!-- 小耳朵 -->
     <path android:fillColor="#FFFFFF" android:pathData="M9,1 L10.5,-1 L12,1 Z" />

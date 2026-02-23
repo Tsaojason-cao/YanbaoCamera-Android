@@ -6,12 +6,12 @@
     <path android:fillColor="#FFFFFF"
         android:pathData="M12,20 C8,20 5,17 5,13 L5,10 C5,6 8,3 12,3 C16,3 19,6 19,10 L19,13 C19,17 16,20 12,20 Z" />
     <!-- 眼睛（黑色） -->
-    <circle android:fillColor="#000000" android:cx="9" android:cy="11" android:r="1"/>
-    <circle android:fillColor="#000000" android:cx="15" android:cy="11" android:r="1"/>
+    <path android:fillColor="#000000" android:pathData="M9.0,10.0 C9.5522847498,10.0 10.0,10.4477152502 10.0,11.0 C10.0,11.5522847498 9.5522847498,12.0 9.0,12.0 C8.4477152502,12.0 8.0,11.5522847498 8.0,11.0 C8.0,10.4477152502 8.4477152502,10.0 9.0,10.0 Z"/>
+    <path android:fillColor="#000000" android:pathData="M15.0,10.0 C15.5522847498,10.0 16.0,10.4477152502 16.0,11.0 C16.0,11.5522847498 15.5522847498,12.0 15.0,12.0 C14.4477152502,12.0 14.0,11.5522847498 14.0,11.0 C14.0,10.4477152502 14.4477152502,10.0 15.0,10.0 Z"/>
     <!-- 嘴巴 -->
     <path android:fillColor="#000000"
         android:pathData="M9,14 C9,15.1 10.34,16 12,16 C13.66,16 15,15.1 15,14" />
     <!-- 骷髅装饰 -->
-    <circle android:fillColor="#FFFFFF" android:cx="12" android:cy="1.5" android:r="1.5"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M12.0,0.0 C12.8284271247,0.0 13.5,0.6715728753000001 13.5,1.5 C13.5,2.3284271247 12.8284271247,3.0 12.0,3.0 C11.1715728753,3.0 10.5,2.3284271247 10.5,1.5 C10.5,0.6715728753000001 11.1715728753,0.0 12.0,0.0 Z"/>
     <path android:fillColor="#FFFFFF" android:pathData="M11,3 L13,3 L13,4 L11,4 Z" />
 </vector>

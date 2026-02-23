@@ -21,6 +21,6 @@
       android:fillColor="#EC4899"
       android:pathData="M15,11 L15,13 L17,13 Z"/>
   <!-- 小耳朵 -->
-  <circle android:fillColor="#EC4899" android:cx="6" android:cy="5" android:r="1.2"/>
-  <circle android:fillColor="#EC4899" android:cx="9" android:cy="4" android:r="1.2"/>
+  <path android:fillColor="#EC4899" android:pathData="M6.0,3.8 C6.66274169976,3.8 7.2,4.33725830024 7.2,5.0 C7.2,5.66274169976 6.66274169976,6.2 6.0,6.2 C5.33725830024,6.2 4.8,5.66274169976 4.8,5.0 C4.8,4.33725830024 5.33725830024,3.8 6.0,3.8 Z"/>
+  <path android:fillColor="#EC4899" android:pathData="M9.0,2.8 C9.66274169976,2.8 10.2,3.3372583002400003 10.2,4.0 C10.2,4.66274169976 9.66274169976,5.2 9.0,5.2 C8.33725830024,5.2 7.8,4.66274169976 7.8,4.0 C7.8,3.3372583002400003 8.33725830024,2.8 9.0,2.8 Z"/>
 </vector>

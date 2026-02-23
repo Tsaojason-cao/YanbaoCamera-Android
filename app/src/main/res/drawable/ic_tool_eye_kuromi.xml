@@ -6,9 +6,9 @@
     <path android:fillColor="#FFFFFF"
         android:pathData="M2,12 C2,12 6,6 12,6 C18,6 22,12 22,12 C22,12 18,18 12,18 C6,18 2,12 2,12 Z" />
     <!-- 瞳孔（黑色） -->
-    <circle android:fillColor="#000000" android:cx="12" android:cy="12" android:r="3"/>
+    <path android:fillColor="#000000" android:pathData="M12.0,9.0 C13.6568542494,9.0 15.0,10.3431457506 15.0,12.0 C15.0,13.6568542494 13.6568542494,15.0 12.0,15.0 C10.3431457506,15.0 9.0,13.6568542494 9.0,12.0 C9.0,10.3431457506 10.3431457506,9.0 12.0,9.0 Z"/>
     <!-- 高光 -->
-    <circle android:fillColor="#FFFFFF" android:cx="13" android:cy="11" android:r="1"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M13.0,10.0 C13.5522847498,10.0 14.0,10.4477152502 14.0,11.0 C14.0,11.5522847498 13.5522847498,12.0 13.0,12.0 C12.4477152502,12.0 12.0,11.5522847498 12.0,11.0 C12.0,10.4477152502 12.4477152502,10.0 13.0,10.0 Z"/>
     <!-- 蝴蝶结 -->
     <path android:fillColor="#FFFFFF" android:pathData="M10,5 L12,3 L14,5 L12,7 Z" />
 </vector>

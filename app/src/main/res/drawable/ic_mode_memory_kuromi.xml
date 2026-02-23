@@ -8,8 +8,8 @@
         android:fillColor="#FFFFFF"
         android:pathData="M12,4 C8,4 5,7 5,11 C5,15 8,19 12,19 C16,19 19,15 19,11 C19,7 16,4 12,4 Z" />
     <!-- 眼睛（黑色） -->
-    <circle android:fillColor="#000000" android:cx="9" android:cy="11" android:r="1.5"/>
-    <circle android:fillColor="#000000" android:cx="15" android:cy="11" android:r="1.5"/>
+    <path android:fillColor="#000000" android:pathData="M9.0,9.5 C9.8284271247,9.5 10.5,10.1715728753 10.5,11.0 C10.5,11.8284271247 9.8284271247,12.5 9.0,12.5 C8.1715728753,12.5 7.5,11.8284271247 7.5,11.0 C7.5,10.1715728753 8.1715728753,9.5 9.0,9.5 Z"/>
+    <path android:fillColor="#000000" android:pathData="M15.0,9.5 C15.8284271247,9.5 16.5,10.1715728753 16.5,11.0 C16.5,11.8284271247 15.8284271247,12.5 15.0,12.5 C14.1715728753,12.5 13.5,11.8284271247 13.5,11.0 C13.5,10.1715728753 14.1715728753,9.5 15.0,9.5 Z"/>
     <!-- 下颌骨 -->
     <path
         android:fillColor="#FFFFFF"

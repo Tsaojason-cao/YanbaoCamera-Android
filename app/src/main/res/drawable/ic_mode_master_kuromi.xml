@@ -12,7 +12,7 @@
         android:fillColor="#FFFFFF"
         android:pathData="M3,20 L21,20 L21,22 L3,22 Z" />
     <!-- 宝石（黑色） -->
-    <circle android:fillColor="#000000" android:cx="12" android:cy="15" android:r="1.5"/>
+    <path android:fillColor="#000000" android:pathData="M12.0,13.5 C12.8284271247,13.5 13.5,14.1715728753 13.5,15.0 C13.5,15.8284271247 12.8284271247,16.5 12.0,16.5 C11.1715728753,16.5 10.5,15.8284271247 10.5,15.0 C10.5,14.1715728753 11.1715728753,13.5 12.0,13.5 Z"/>
     <!-- 库洛米蝴蝶结 -->
     <path
         android:fillColor="#FFFFFF"

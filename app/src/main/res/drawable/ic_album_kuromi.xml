@@ -12,7 +12,7 @@
         android:fillColor="#000000"
         android:pathData="M3,9 L21,9 M3,15 L21,15 M9,3 L9,21 M15,3 L15,21" />
     <!-- 小骷髅头（顶部中央） -->
-    <circle android:fillColor="#FFFFFF" android:cx="12" android:cy="1.5" android:r="1.5"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M12.0,0.0 C12.8284271247,0.0 13.5,0.6715728753000001 13.5,1.5 C13.5,2.3284271247 12.8284271247,3.0 12.0,3.0 C11.1715728753,3.0 10.5,2.3284271247 10.5,1.5 C10.5,0.6715728753000001 11.1715728753,0.0 12.0,0.0 Z"/>
     <path
         android:fillColor="#FFFFFF"
         android:pathData="M11,3 L13,3 L13,4.5 L11,4.5 Z" />

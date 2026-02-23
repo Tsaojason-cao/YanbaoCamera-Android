@@ -8,9 +8,9 @@
         android:fillColor="#FFFFFF"
         android:pathData="M3,6 L21,6 M3,12 L21,12 M3,18 L21,18" />
     <!-- 滑块圆点 -->
-    <circle android:fillColor="#FFFFFF" android:cx="8" android:cy="6" android:r="2"/>
-    <circle android:fillColor="#FFFFFF" android:cx="16" android:cy="12" android:r="2"/>
-    <circle android:fillColor="#FFFFFF" android:cx="10" android:cy="18" android:r="2"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M8.0,4.0 C9.1045694996,4.0 10.0,4.8954305004 10.0,6.0 C10.0,7.1045694996 9.1045694996,8.0 8.0,8.0 C6.8954305004,8.0 6.0,7.1045694996 6.0,6.0 C6.0,4.8954305004 6.8954305004,4.0 8.0,4.0 Z"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M16.0,10.0 C17.1045694996,10.0 18.0,10.8954305004 18.0,12.0 C18.0,13.1045694996 17.1045694996,14.0 16.0,14.0 C14.8954305004,14.0 14.0,13.1045694996 14.0,12.0 C14.0,10.8954305004 14.8954305004,10.0 16.0,10.0 Z"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M10.0,16.0 C11.1045694996,16.0 12.0,16.8954305004 12.0,18.0 C12.0,19.1045694996 11.1045694996,20.0 10.0,20.0 C8.8954305004,20.0 8.0,19.1045694996 8.0,18.0 C8.0,16.8954305004 8.8954305004,16.0 10.0,16.0 Z"/>
     <!-- 库洛米蝴蝶结 -->
     <path
         android:fillColor="#FFFFFF"

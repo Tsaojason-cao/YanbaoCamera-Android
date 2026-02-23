@@ -8,9 +8,9 @@
         android:fillColor="#FFFFFF"
         android:pathData="M9,2 L7.17,4H4c-1.1,0-2,0.9-2,2v12c0,1.1 0.9,2 2,2h16c1.1,0 2,-0.9 2,-2V6c0-1.1-0.9-2-2-2h-3.17L15,2H9z" />
     <!-- 镜头（黑色内圆） -->
-    <circle android:fillColor="#000000" android:cx="12" android:cy="12" android:r="4"/>
+    <path android:fillColor="#000000" android:pathData="M12.0,8.0 C14.2091389992,8.0 16.0,9.7908610008 16.0,12.0 C16.0,14.2091389992 14.2091389992,16.0 12.0,16.0 C9.7908610008,16.0 8.0,14.2091389992 8.0,12.0 C8.0,9.7908610008 9.7908610008,8.0 12.0,8.0 Z"/>
     <!-- 镜头高光 -->
-    <circle android:fillColor="#FFFFFF" android:cx="12" android:cy="12" android:r="2"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M12.0,10.0 C13.1045694996,10.0 14.0,10.8954305004 14.0,12.0 C14.0,13.1045694996 13.1045694996,14.0 12.0,14.0 C10.8954305004,14.0 10.0,13.1045694996 10.0,12.0 C10.0,10.8954305004 10.8954305004,10.0 12.0,10.0 Z"/>
     <!-- 库洛米蝴蝶结 -->
     <path
         android:fillColor="#FFFFFF"

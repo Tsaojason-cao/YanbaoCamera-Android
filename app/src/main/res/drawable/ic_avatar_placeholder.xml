@@ -5,10 +5,10 @@
     <path android:fillColor="#EC4899" android:pathData="M28,18 Q32,10 36,18 Z"/>
     <path android:fillColor="#EC4899" android:pathData="M44,18 Q48,10 52,18 Z"/>
     <!-- 脸 -->
-    <circle android:fillColor="#FFFFFF" android:cx="40" android:cy="44" android:r="22"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M40.0,22.0 C52.1502644956,22.0 62.0,31.8497355044 62.0,44.0 C62.0,56.1502644956 52.1502644956,66.0 40.0,66.0 C27.8497355044,66.0 18.0,56.1502644956 18.0,44.0 C18.0,31.8497355044 27.8497355044,22.0 40.0,22.0 Z"/>
     <!-- 眼睛 -->
-    <circle android:fillColor="#0A0A0A" android:cx="33" android:cy="42" android:r="3"/>
-    <circle android:fillColor="#0A0A0A" android:cx="47" android:cy="42" android:r="3"/>
+    <path android:fillColor="#0A0A0A" android:pathData="M33.0,39.0 C34.6568542494,39.0 36.0,40.3431457506 36.0,42.0 C36.0,43.6568542494 34.6568542494,45.0 33.0,45.0 C31.3431457506,45.0 30.0,43.6568542494 30.0,42.0 C30.0,40.3431457506 31.3431457506,39.0 33.0,39.0 Z"/>
+    <path android:fillColor="#0A0A0A" android:pathData="M47.0,39.0 C48.6568542494,39.0 50.0,40.3431457506 50.0,42.0 C50.0,43.6568542494 48.6568542494,45.0 47.0,45.0 C45.3431457506,45.0 44.0,43.6568542494 44.0,42.0 C44.0,40.3431457506 45.3431457506,39.0 47.0,39.0 Z"/>
     <!-- 嘴 -->
     <path android:strokeColor="#EC4899" android:strokeWidth="2"
         android:strokeLineCap="round" android:pathData="M36,50 Q40,54 44,50"/>

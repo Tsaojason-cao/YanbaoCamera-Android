@@ -4,7 +4,7 @@
     android:viewportWidth="24"
     android:viewportHeight="24">
     <!-- 太阳圆形 -->
-    <circle android:fillColor="#FFFFFF" android:cx="12" android:cy="12" android:r="5"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M12.0,7.0 C14.761423749,7.0 17.0,9.238576251 17.0,12.0 C17.0,14.761423749 14.761423749,17.0 12.0,17.0 C9.238576251,17.0 7.0,14.761423749 7.0,12.0 C7.0,9.238576251 9.238576251,7.0 12.0,7.0 Z"/>
     <!-- 光芒线 -->
     <path android:fillColor="#FFFFFF" android:pathData="M12,2 L12,4" />
     <path android:fillColor="#FFFFFF" android:pathData="M20,12 L22,12" />

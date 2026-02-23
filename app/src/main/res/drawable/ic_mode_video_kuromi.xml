@@ -12,9 +12,9 @@
         android:fillColor="#FFFFFF"
         android:pathData="M14,10 L22,7 L22,17 L14,14 Z" />
     <!-- 小骷髅（摄像机主体上方） -->
-    <circle android:fillColor="#FFFFFF" android:cx="8" android:cy="5" android:r="2"/>
-    <circle android:fillColor="#000000" android:cx="7" android:cy="5" android:r="0.6"/>
-    <circle android:fillColor="#000000" android:cx="9" android:cy="5" android:r="0.6"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M8.0,3.0 C9.1045694996,3.0 10.0,3.8954305004 10.0,5.0 C10.0,6.1045694996 9.1045694996,7.0 8.0,7.0 C6.8954305004,7.0 6.0,6.1045694996 6.0,5.0 C6.0,3.8954305004 6.8954305004,3.0 8.0,3.0 Z"/>
+    <path android:fillColor="#000000" android:pathData="M7.0,4.4 C7.33137084988,4.4 7.6,4.66862915012 7.6,5.0 C7.6,5.33137084988 7.33137084988,5.6 7.0,5.6 C6.66862915012,5.6 6.4,5.33137084988 6.4,5.0 C6.4,4.66862915012 6.66862915012,4.4 7.0,4.4 Z"/>
+    <path android:fillColor="#000000" android:pathData="M9.0,4.4 C9.33137084988,4.4 9.6,4.66862915012 9.6,5.0 C9.6,5.33137084988 9.33137084988,5.6 9.0,5.6 C8.66862915012,5.6 8.4,5.33137084988 8.4,5.0 C8.4,4.66862915012 8.66862915012,4.4 9.0,4.4 Z"/>
     <path
         android:fillColor="#FFFFFF"
         android:pathData="M7,7 L7,8 L8,8 L8,7.5 L9,7.5 L9,8 L10,8 L10,7 Z" />

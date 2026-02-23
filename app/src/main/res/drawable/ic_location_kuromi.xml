@@ -8,7 +8,7 @@
         android:fillColor="#FFFFFF"
         android:pathData="M12,2 C8.13,2 5,5.13 5,9 C5,14.25 12,22 12,22 C12,22 19,14.25 19,9 C19,5.13 15.87,2 12,2 Z" />
     <!-- 内圆（黑色） -->
-    <circle android:fillColor="#000000" android:cx="12" android:cy="9" android:r="2.5"/>
+    <path android:fillColor="#000000" android:pathData="M12.0,6.5 C13.3807118745,6.5 14.5,7.6192881255 14.5,9.0 C14.5,10.3807118745 13.3807118745,11.5 12.0,11.5 C10.6192881255,11.5 9.5,10.3807118745 9.5,9.0 C9.5,7.6192881255 10.6192881255,6.5 12.0,6.5 Z"/>
     <!-- 库洛米小耳朵（左） -->
     <path
         android:fillColor="#FFFFFF"

@@ -5,7 +5,7 @@
     android:viewportHeight="24">
     <path android:fillColor="#FFFFFF"
         android:pathData="M12,2 C8.13,2 5,5.13 5,9 C5,14.25 12,22 12,22 C12,22 19,14.25 19,9 C19,5.13 15.87,2 12,2 Z" />
-    <circle android:fillColor="#000000" android:cx="12" android:cy="9" android:r="3"/>
+    <path android:fillColor="#000000" android:pathData="M12.0,6.0 C13.6568542494,6.0 15.0,7.3431457506 15.0,9.0 C15.0,10.6568542494 13.6568542494,12.0 12.0,12.0 C10.3431457506,12.0 9.0,10.6568542494 9.0,9.0 C9.0,7.3431457506 10.3431457506,6.0 12.0,6.0 Z"/>
     <!-- 小耳朵 -->
     <path android:fillColor="#FFFFFF" android:pathData="M8,2 L9.5,0 L11,2 Z" />
     <path android:fillColor="#FFFFFF" android:pathData="M16,2 L14.5,0 L13,2 Z" />

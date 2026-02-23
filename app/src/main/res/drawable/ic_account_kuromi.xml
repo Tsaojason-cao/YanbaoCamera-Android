@@ -3,11 +3,11 @@
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-    <circle android:fillColor="#FFFFFF" android:cx="12" android:cy="8" android:r="4"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M12.0,4.0 C14.2091389992,4.0 16.0,5.7908610008 16.0,8.0 C16.0,10.2091389992 14.2091389992,12.0 12.0,12.0 C9.7908610008,12.0 8.0,10.2091389992 8.0,8.0 C8.0,5.7908610008 9.7908610008,4.0 12.0,4.0 Z"/>
     <path android:fillColor="#FFFFFF"
         android:pathData="M4,22 C4,17.58 7.58,14 12,14 C16.42,14 20,17.58 20,22 Z" />
     <!-- 状态标记（右上角） -->
-    <circle android:fillColor="#FFFFFF" android:cx="18" android:cy="6" android:r="3"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M18.0,3.0 C19.6568542494,3.0 21.0,4.3431457506 21.0,6.0 C21.0,7.6568542494 19.6568542494,9.0 18.0,9.0 C16.3431457506,9.0 15.0,7.6568542494 15.0,6.0 C15.0,4.3431457506 16.3431457506,3.0 18.0,3.0 Z"/>
     <path android:fillColor="#000000" android:pathData="M17,6 L18,7 L20,5" />
     <!-- 蝴蝶结 -->
     <path android:fillColor="#FFFFFF" android:pathData="M10,4 L12,2 L14,4 L12,6 Z" />

@@ -9,6 +9,6 @@
     <path android:fillColor="#000000" android:pathData="M6,7 L7,20 L17,20 L18,7 Z" />
     <path android:fillColor="#FFFFFF" android:pathData="M10,10 L10,17 M14,10 L14,17" />
     <!-- 骷髅 -->
-    <circle android:fillColor="#FFFFFF" android:cx="12" android:cy="2" android:r="1.5"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M12.0,0.5 C12.8284271247,0.5 13.5,1.1715728753 13.5,2.0 C13.5,2.8284271247 12.8284271247,3.5 12.0,3.5 C11.1715728753,3.5 10.5,2.8284271247 10.5,2.0 C10.5,1.1715728753 11.1715728753,0.5 12.0,0.5 Z"/>
     <path android:fillColor="#FFFFFF" android:pathData="M11,3.5 L13,3.5 L13,4.5 L11,4.5 Z" />
 </vector>

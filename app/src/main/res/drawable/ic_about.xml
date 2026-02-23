@@ -4,10 +4,10 @@
     <!-- 蝴蝶结 -->
     <path android:fillColor="#EC4899" android:pathData="M10,2 Q12,4 14,2 Q12,0 10,2 Z"/>
     <!-- 圆圈 -->
-    <circle android:strokeColor="#FFFFFF" android:strokeWidth="2" android:cx="12" android:cy="12" android:r="10"/>
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="2" android:pathData="M12.0,2.0 C17.522847498,2.0 22.0,6.477152502 22.0,12.0 C22.0,17.522847498 17.522847498,22.0 12.0,22.0 C6.477152502,22.0 2.0,17.522847498 2.0,12.0 C2.0,6.477152502 6.477152502,2.0 12.0,2.0 Z"/>
     <!-- i -->
-    <line android:strokeColor="#FFFFFF" android:strokeWidth="2"
-        android:strokeLineCap="round" android:x1="12" android:y1="16" android:x2="12" android:y2="12"/>
-    <line android:strokeColor="#FFFFFF" android:strokeWidth="2"
-        android:strokeLineCap="round" android:x1="12" android:y1="8" android:x2="12.01" android:y2="8"/>
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="2"
+        android:strokeLineCap="round" android:pathData="M12,16 L12,12"/>
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="2"
+        android:strokeLineCap="round" android:pathData="M12,8 L12.01,8"/>
 </vector>

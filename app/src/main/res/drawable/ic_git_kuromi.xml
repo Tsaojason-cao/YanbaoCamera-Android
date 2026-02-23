@@ -4,14 +4,14 @@
     android:viewportWidth="24"
     android:viewportHeight="24">
     <!-- Git 分支图 -->
-    <circle android:fillColor="#FFFFFF" android:cx="6" android:cy="18" android:r="2"/>
-    <circle android:fillColor="#FFFFFF" android:cx="6" android:cy="8" android:r="2"/>
-    <circle android:fillColor="#FFFFFF" android:cx="18" android:cy="8" android:r="2"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M6.0,16.0 C7.1045694996,16.0 8.0,16.8954305004 8.0,18.0 C8.0,19.1045694996 7.1045694996,20.0 6.0,20.0 C4.8954305004,20.0 4.0,19.1045694996 4.0,18.0 C4.0,16.8954305004 4.8954305004,16.0 6.0,16.0 Z"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M6.0,6.0 C7.1045694996,6.0 8.0,6.8954305004 8.0,8.0 C8.0,9.1045694996 7.1045694996,10.0 6.0,10.0 C4.8954305004,10.0 4.0,9.1045694996 4.0,8.0 C4.0,6.8954305004 4.8954305004,6.0 6.0,6.0 Z"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M18.0,6.0 C19.1045694996,6.0 20.0,6.8954305004 20.0,8.0 C20.0,9.1045694996 19.1045694996,10.0 18.0,10.0 C16.8954305004,10.0 16.0,9.1045694996 16.0,8.0 C16.0,6.8954305004 16.8954305004,6.0 18.0,6.0 Z"/>
     <path android:fillColor="#FFFFFF" android:pathData="M6,10 L6,16" />
     <path android:fillColor="#FFFFFF" android:pathData="M6,8 C6,8 6,4 10,4 L18,4 L18,8" />
     <!-- 骷髅 -->
-    <circle android:fillColor="#FFFFFF" android:cx="18" android:cy="5" android:r="2"/>
-    <circle android:fillColor="#000000" android:cx="17.3" android:cy="5" android:r="0.6"/>
-    <circle android:fillColor="#000000" android:cx="18.7" android:cy="5" android:r="0.6"/>
+    <path android:fillColor="#FFFFFF" android:pathData="M18.0,3.0 C19.1045694996,3.0 20.0,3.8954305004 20.0,5.0 C20.0,6.1045694996 19.1045694996,7.0 18.0,7.0 C16.8954305004,7.0 16.0,6.1045694996 16.0,5.0 C16.0,3.8954305004 16.8954305004,3.0 18.0,3.0 Z"/>
+    <path android:fillColor="#000000" android:pathData="M17.3,4.4 C17.63137084988,4.4 17.900000000000002,4.66862915012 17.900000000000002,5.0 C17.900000000000002,5.33137084988 17.63137084988,5.6 17.3,5.6 C16.96862915012,5.6 16.7,5.33137084988 16.7,5.0 C16.7,4.66862915012 16.96862915012,4.4 17.3,4.4 Z"/>
+    <path android:fillColor="#000000" android:pathData="M18.7,4.4 C19.03137084988,4.4 19.3,4.66862915012 19.3,5.0 C19.3,5.33137084988 19.03137084988,5.6 18.7,5.6 C18.36862915012,5.6 18.099999999999998,5.33137084988 18.099999999999998,5.0 C18.099999999999998,4.66862915012 18.36862915012,4.4 18.7,4.4 Z"/>
     <path android:fillColor="#FFFFFF" android:pathData="M17,7 L19,7 L19,8 L17,8 Z" />
 </vector>

@@ -5,11 +5,11 @@
     <path android:fillColor="#EC4899" android:pathData="M8,2 Q9,0 10,2 Z"/>
     <path android:fillColor="#EC4899" android:pathData="M14,2 Q15,0 16,2 Z"/>
     <!-- 圆圈 -->
-    <circle android:strokeColor="#FFFFFF" android:strokeWidth="2" android:cx="12" android:cy="12" android:r="10"/>
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="2" android:pathData="M12.0,2.0 C17.522847498,2.0 22.0,6.477152502 22.0,12.0 C22.0,17.522847498 17.522847498,22.0 12.0,22.0 C6.477152502,22.0 2.0,17.522847498 2.0,12.0 C2.0,6.477152502 6.477152502,2.0 12.0,2.0 Z"/>
     <!-- 问号 -->
     <path android:strokeColor="#FFFFFF" android:strokeWidth="2"
         android:strokeLineCap="round" android:strokeLineJoin="round"
         android:pathData="M9.09,9a3,3 0,0,1,5.83,1c0,2-3,3-3,3"/>
-    <line android:strokeColor="#FFFFFF" android:strokeWidth="2"
-        android:strokeLineCap="round" android:x1="12" android:y1="17" android:x2="12.01" android:y2="17"/>
+    <path android:strokeColor="#FFFFFF" android:strokeWidth="2"
+        android:strokeLineCap="round" android:pathData="M12,17 L12.01,17"/>
 </vector>
