@@ -10,7 +10,6 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -18,9 +17,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.yanbao.camera.ui.theme.KuromiPink
-
-private val KUROMI_PINK = KuromiPink
 
 @Composable
 fun Param29DPanel(viewModel: CameraViewModel) {
@@ -75,9 +71,9 @@ fun Param29DPanel(viewModel: CameraViewModel) {
                     ParamSlider(
                         name = "EV",
                         value = (params.ev + 3f) / 6f,
-                        onValueChange = { viewModel.update29DParam { ev = it * 6 - 3 } },
+                        onValueChange = { viewModel.update29DParam { ev = it * 6f - 3f } },
                         valueRange = 0f..1f,
-                        formatValue = { "${String.format("%.1f", it * 6 - 3)} EV" }
+                        formatValue = { "${(it * 6f - 3f).format(1)} EV" }
                     )
                 }
                 1 -> { // 色彩
@@ -95,6 +91,13 @@ fun Param29DPanel(viewModel: CameraViewModel) {
                         valueRange = 0f..1f,
                         formatValue = { "${(it * 200).toInt()}%" }
                     )
+                    ParamSlider(
+                        name = "色调",
+                        value = (params.tint + 100f) / 200f,
+                        onValueChange = { viewModel.update29DParam { tint = (it * 200 - 100).toInt() } },
+                        valueRange = 0f..1f,
+                        formatValue = { "${(it * 200 - 100).toInt()}" }
+                    )
                 }
                 2 -> { // 纹理
                     ParamSlider(
@@ -102,28 +105,42 @@ fun Param29DPanel(viewModel: CameraViewModel) {
                         value = params.sharpness / 100f,
                         onValueChange = { viewModel.update29DParam { sharpness = (it * 100).toInt() } },
                         valueRange = 0f..1f,
-                        formatValue = { "${(it * 100).toInt()}%" }
+                        formatValue = { "${(it * 100).toInt()}" }
                     )
                     ParamSlider(
                         name = "降噪",
                         value = params.denoise / 100f,
                         onValueChange = { viewModel.update29DParam { denoise = (it * 100).toInt() } },
                         valueRange = 0f..1f,
-                        formatValue = { "${(it * 100).toInt()}%" }
+                        formatValue = { "${(it * 100).toInt()}" }
+                    )
+                    ParamSlider(
+                        name = "暗角",
+                        value = params.vignette / 100f,
+                        onValueChange = { viewModel.update29DParam { vignette = (it * 100).toInt() } },
+                        valueRange = 0f..1f,
+                        formatValue = { "${(it * 100).toInt()}" }
                     )
                 }
                 3 -> { // 美颜
                     ParamSlider(
-                        name = "全局",
-                        value = params.beautyGlobal / 100f,
-                        onValueChange = { viewModel.update29DParam { beautyGlobal = (it * 100).toInt() } },
+                        name = "磨皮",
+                        value = params.skinSmooth / 100f,
+                        onValueChange = { viewModel.update29DParam { skinSmooth = (it * 100).toInt() } },
                         valueRange = 0f..1f,
                         formatValue = { "${(it * 100).toInt()}%" }
                     )
                     ParamSlider(
-                        name = "磨皮",
-                        value = params.skinSmooth / 100f,
-                        onValueChange = { viewModel.update29DParam { skinSmooth = (it * 100).toInt() } },
+                        name = "美白",
+                        value = params.skinWhiten / 100f,
+                        onValueChange = { viewModel.update29DParam { skinWhiten = (it * 100).toInt() } },
+                        valueRange = 0f..1f,
+                        formatValue = { "${(it * 100).toInt()}%" }
+                    )
+                    ParamSlider(
+                        name = "瘦脸",
+                        value = params.faceThin / 100f,
+                        onValueChange = { viewModel.update29DParam { faceThin = (it * 100).toInt() } },
                         valueRange = 0f..1f,
                         formatValue = { "${(it * 100).toInt()}%" }
                     )
@@ -167,3 +184,5 @@ fun ParamSlider(
         )
     }
 }
+
+private fun Float.format(digits: Int) = "%.${digits}f".format(this)

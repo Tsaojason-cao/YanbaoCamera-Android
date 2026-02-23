@@ -12,10 +12,9 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
-import com.yanbao.camera.ui.theme.KuromiPink
-
-private val KUROMI_PINK = KuromiPink
+import com.yanbao.camera.ui.theme.KUROMI_PINK
 
 @Composable
 fun ShutterButton(
@@ -25,7 +24,6 @@ fun ShutterButton(
 ) {
     Box(
         modifier = modifier
-            .size(80.dp)
             .drawBehind {
                 // 最外层光晕
                 drawCircle(
@@ -39,11 +37,10 @@ fun ShutterButton(
                 drawCircle(
                     color = KUROMI_PINK.copy(alpha = 0.8f),
                     radius = size.minDimension / 2 - 4.dp.toPx(),
-                    style = androidx.compose.ui.graphics.drawscope.Stroke(width = 2.dp.toPx())
+                    style = Stroke(width = 2.dp.toPx())
                 )
             }
-            .clickable { onClick() },
-        contentAlignment = Alignment.Center
+            .clickable { onClick() }
     ) {
         Box(
             modifier = Modifier
