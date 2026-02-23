@@ -110,8 +110,7 @@ fun ControlPanel(
                         memories = recentMemories,
                         modifier = Modifier.fillMaxSize()
                     )
-                    YanbaoMode.GALLERY -> GalleryPreview(
-                        thumbnails = galleryThumbnails,
+                    YanbaoMode.VIDEO_MASTER -> VideoMasterControls(
                         modifier = Modifier.fillMaxSize()
                     )
                 }
@@ -797,6 +796,78 @@ fun ARControls(modifier: Modifier = Modifier) {
                 if (selectedARMode == mode) {
                     Box(
                         modifier = Modifier.size(8.dp).clip(CircleShape).background(Color(0xFFFF71CE))
+                    )
+                }
+            }
+        }
+    }
+}
+
+// ─── 视频大师控制 ──────────────────────────────────────────────────────────────
+
+@Composable
+fun VideoMasterControls(modifier: Modifier = Modifier) {
+    val videoParams = listOf("分辨率", "帧率", "码率", "防抖", "对焦")
+    var selectedParam by remember { mutableStateOf("分辨率") }
+    val paramValues = mapOf(
+        "分辨率" to listOf("4K", "1080P", "720P"),
+        "帧率" to listOf("60fps", "30fps", "24fps"),
+        "码率" to listOf("高", "中", "低"),
+        "防抖" to listOf("开启", "关闭"),
+        "对焦" to listOf("自动", "手动")
+    )
+    Column(
+        modifier = modifier.fillMaxWidth().padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Text(
+            text = "视频大师",
+            color = Color.White,
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Bold
+        )
+        // 参数选择器
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            items(videoParams.size) { i ->
+                val param = videoParams[i]
+                val isSelected = selectedParam == param
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(if (isSelected) KUROMI_PINK else Color.White.copy(alpha = 0.1f))
+                        .clickable { selectedParam = param }
+                        .padding(horizontal = 12.dp, vertical = 6.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = param,
+                        color = Color.White,
+                        fontSize = 12.sp,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                    )
+                }
+            }
+        }
+        // 当前参数的值选择
+        val values = paramValues[selectedParam] ?: emptyList()
+        var selectedValue by remember(selectedParam) { mutableStateOf(values.firstOrNull() ?: "") }
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            items(values.size) { i ->
+                val value = values[i]
+                val isActive = selectedValue == value
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(if (isActive) Color(0xFF9B59B6) else Color.White.copy(alpha = 0.07f))
+                        .clickable { selectedValue = value }
+                        .padding(horizontal = 14.dp, vertical = 8.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = value,
+                        color = if (isActive) Color.White else Color.White.copy(alpha = 0.7f),
+                        fontSize = 13.sp,
+                        fontWeight = if (isActive) FontWeight.Bold else FontWeight.Normal
                     )
                 }
             }

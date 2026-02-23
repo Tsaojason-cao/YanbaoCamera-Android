@@ -42,7 +42,7 @@ private val CARD_BG = Color(0xFF1E1E1E)
  * - 圆形头像（带粉色光晕）
  * - 昵称 / ID / 会员号 / 与雁宝同行天数
  * - 统计数据卡片（作品数 / 记忆数 / 获赞数）
- * - 11个设置项（含开关、清理缓存、Git备份等）
+ * - 15个设置项（含开关、清理缓存、Git备份等）
  * - 所有图标使用真实 drawable，无 emoji
  */
 @Composable
@@ -325,7 +325,7 @@ fun ProfileScreen(
             Spacer(modifier = Modifier.height(20.dp))
         }
 
-        // ─── 设置列表（11项）────────────────────────────────────────────
+        // ─── 设置列表（15项）────────────────────────────────────────────
         item {
             Card(
                 modifier = Modifier
@@ -335,78 +335,104 @@ fun ProfileScreen(
                 colors = CardDefaults.cardColors(containerColor = CARD_BG)
             ) {
                 Column {
-                    // 1. 更换背景
+                    // 1. 个人隐私
                     SettingItem(
-                        iconRes = R.drawable.ic_album_kuromi,
-                        title = "更换背景",
-                        subtitle = "自定义个人主页背景",
-                        onClick = { backgroundLauncher.launch("image/*") }
+                        iconRes = R.drawable.ic_privacy_kuromi,
+                        title = "个人隐私",
+                        subtitle = "管理数据权限",
+                        onClick = { onPrivacy() }
                     )
                     SettingDivider()
-
-                    // 2. 更换头像
+                    // 2. 账号状态
                     SettingItem(
-                        iconRes = R.drawable.ic_camera_kuromi,
-                        title = "更换头像",
-                        subtitle = "从相册选择头像",
-                        onClick = { avatarLauncher.launch("image/*") }
-                    )
-                    SettingDivider()
-
-                    // 3. 修改 ID
-                    SettingItem(
-                        iconRes = R.drawable.ic_edit_kuromi,
-                        title = "修改 ID",
-                        subtitle = profile.userId,
-                        onClick = { showIdDialog = true }
-                    )
-                    SettingDivider()
-
-                    // 4. 通知设置（开关）
-                    SettingItemWithSwitch(
                         iconRes = R.drawable.ic_account_kuromi,
-                        title = "推送通知",
-                        subtitle = "接收雁宝记忆提醒",
-                        checked = notificationsEnabled,
-                        onCheckedChange = { viewModel.toggleNotifications() }
+                        title = "账号状态",
+                        subtitle = "公开",
+                        onClick = { android.util.Log.d("ProfileScreen", "账号状态页") }
                     )
                     SettingDivider()
-
-                    // 5. 自动备份（开关）
-                    SettingItemWithSwitch(
+                    // 3. LBS定位
+                    SettingItem(
+                        iconRes = R.drawable.ic_lbs_kuromi,
+                        title = "LBS定位",
+                        subtitle = "位置服务设置",
+                        onClick = { android.util.Log.d("ProfileScreen", "LBS定位页") }
+                    )
+                    SettingDivider()
+                    // 4. 资产管理
+                    SettingItem(
+                        iconRes = R.drawable.ic_asset_kuromi,
+                        title = "资产管理",
+                        subtitle = "查看我的资产",
+                        onClick = { android.util.Log.d("ProfileScreen", "资产管理页") }
+                    )
+                    SettingDivider()
+                    // 5. 我的雁宝记忆
+                    SettingItem(
                         iconRes = R.drawable.ic_memory_kuromi,
-                        title = "自动 Git 备份",
-                        subtitle = if (autoBackupEnabled) "已开启" else "已关闭",
-                        checked = autoBackupEnabled,
-                        onCheckedChange = { viewModel.toggleAutoBackup() }
+                        title = "我的雁宝记忆",
+                        subtitle = "${stats.memoriesCount}个",
+                        onClick = { android.util.Log.d("ProfileScreen", "雁宝记忆页") }
                     )
                     SettingDivider()
-
-                    // 6. 高质量导出（开关）
+                    // 6. 交易记录
+                    SettingItem(
+                        iconRes = R.drawable.ic_transaction_kuromi,
+                        title = "交易记录",
+                        subtitle = "查看消费明细",
+                        onClick = { android.util.Log.d("ProfileScreen", "交易记录页") }
+                    )
+                    SettingDivider()
+                    // 7. 内容设置
+                    SettingItem(
+                        iconRes = R.drawable.ic_content_kuromi,
+                        title = "内容设置",
+                        subtitle = "管理内容展示偏好",
+                        onClick = { android.util.Log.d("ProfileScreen", "内容设置页") }
+                    )
+                    SettingDivider()
+                    // 8. 相机预设
+                    SettingItem(
+                        iconRes = R.drawable.ic_camera_preset_kuromi,
+                        title = "相机预设",
+                        subtitle = "自定义拍摄参数预设",
+                        onClick = { android.util.Log.d("ProfileScreen", "相机预设页") }
+                    )
+                    SettingDivider()
+                    // 9. 浮水印
+                    SettingItem(
+                        iconRes = R.drawable.ic_watermark_kuromi,
+                        title = "浮水印",
+                        subtitle = "设置照片水印样式",
+                        onClick = { android.util.Log.d("ProfileScreen", "浮水印设置页") }
+                    )
+                    SettingDivider()
+                    // 10. HD高画质上传
                     SettingItemWithSwitch(
                         iconRes = R.drawable.ic_hd_kuromi,
-                        title = "高质量导出",
+                        title = "HD高画质上传",
                         subtitle = "分享时保留原始画质",
                         checked = highQualityExport,
                         onCheckedChange = { viewModel.toggleHighQualityExport() }
                     )
                     SettingDivider()
-
-                    // 7. Git 同步备份
+                    // 11. 系统工具
                     SettingItem(
-                        iconRes = R.drawable.ic_git_kuromi,
-                        title = "Git 同步备份",
-                        subtitle = backupStatus ?: "立即备份雁宝记忆到 GitHub",
-                        subtitleColor = when {
-                            backupStatus?.startsWith("[OK]") == true -> Color(0xFF10B981)
-                            backupStatus?.startsWith("[ERR]") == true -> Color(0xFFFF6B6B)
-                            else -> Color.White.copy(alpha = 0.5f)
-                        },
-                        onClick = { viewModel.performGitBackup() }
+                        iconRes = R.drawable.ic_system_kuromi,
+                        title = "系统工具",
+                        subtitle = "设备信息与诊断",
+                        onClick = { android.util.Log.d("ProfileScreen", "系统工具页") }
                     )
                     SettingDivider()
-
-                    // 8. 清理缓存
+                    // 12. 语言选择
+                    SettingItem(
+                        iconRes = R.drawable.ic_language_kuromi,
+                        title = "语言选择",
+                        subtitle = "简体中文",
+                        onClick = { android.util.Log.d("ProfileScreen", "语言选择页") }
+                    )
+                    SettingDivider()
+                    // 13. 清理缓存
                     SettingItem(
                         iconRes = R.drawable.ic_clear_cache_kuromi,
                         title = "清理缓存",
@@ -419,31 +445,25 @@ fun ProfileScreen(
                         onClick = { showClearCacheDialog = true }
                     )
                     SettingDivider()
-
-                    // 9. 隐私设置
+                    // 14. Git备份
                     SettingItem(
-                        iconRes = R.drawable.ic_privacy_kuromi,
-                        title = "隐私设置",
-                        subtitle = "管理数据权限",
-                        onClick = { onPrivacy() }
+                        iconRes = R.drawable.ic_git_kuromi,
+                        title = "Git备份",
+                        subtitle = backupStatus ?: "立即备份雁宝记忆到 GitHub",
+                        subtitleColor = when {
+                            backupStatus?.startsWith("[OK]") == true -> Color(0xFF10B981)
+                            backupStatus?.startsWith("[ERR]") == true -> Color(0xFFFF6B6B)
+                            else -> Color.White.copy(alpha = 0.5f)
+                        },
+                        onClick = { viewModel.performGitBackup() }
                     )
                     SettingDivider()
-
-                    // 10. 帮助中心
+                    // 15. 检查更新
                     SettingItem(
                         iconRes = R.drawable.ic_update_kuromi,
-                        title = "帮助中心",
-                        subtitle = "使用教程与常见问题",
-                        onClick = { onHelp() }
-                    )
-                    SettingDivider()
-
-                    // 11. 关于雁宝
-                    SettingItem(
-                        iconRes = R.drawable.ic_update_kuromi,
-                        title = "关于雁宝 AI",
-                        subtitle = "版本 1.0.0 · Phase 1",
-                        onClick = { onAbout() },
+                        title = "检查更新",
+                        subtitle = "v1.0.0",
+                        onClick = { onHelp() },
                         showArrow = false
                     )
                 }

@@ -69,60 +69,60 @@ fun HomeScreen(
         ) {
             Spacer(modifier = Modifier.height(20.dp))
 
-            // ── 顶部：头像行 ──────────────────────────
-            // 头像居中
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(96.dp)
-                        .clip(CircleShape)
-                        .background(Color(0xFFEEDDFF)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter            = painterResource(R.drawable.avatar_user),
-                        contentDescription = "头像",
-                        modifier           = Modifier
-                            .size(96.dp)
-                            .clip(CircleShape),
-                        contentScale       = ContentScale.Crop
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // ── 顶部：第1行 早安！(左) + 28℃(右) ────
+            // ── 顶部：三列布局 早安文字(左) | 头像(中) | 温度天气(右) ────
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment     = Alignment.Top
+                verticalAlignment     = Alignment.CenterVertically
             ) {
                 // 左侧：早安！+ 副文字
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text       = uiState.greeting,
-                        fontSize   = 24.sp,
+                        fontSize   = 22.sp,
                         fontWeight = FontWeight.Bold,
                         color      = TEXT_BLACK
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
                         text     = uiState.greetingSub,
-                        fontSize = 14.sp,
-                        color    = TEXT_GRAY
+                        fontSize = 13.sp,
+                        color    = TEXT_GRAY,
+                        maxLines = 2
                     )
                 }
-                // 右侧：yanbao AI + 温度 + 天气
-                Column(horizontalAlignment = Alignment.End) {
+                // 中间：头像（粉紫渐变圆圈边框）
+                Box(
+                    modifier = Modifier
+                        .padding(horizontal = 12.dp)
+                        .size(72.dp)
+                        .clip(CircleShape)
+                        .background(
+                            Brush.linearGradient(
+                                listOf(Color(0xFFC084FC), Color(0xFFF9A8D4))
+                            )
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter            = painterResource(R.drawable.avatar_user),
+                        contentDescription = "头像",
+                        modifier           = Modifier
+                            .size(64.dp)
+                            .clip(CircleShape),
+                        contentScale       = ContentScale.Crop
+                    )
+                }
+                // 右侧：温度 + 天气
+                Column(
+                    horizontalAlignment = Alignment.End,
+                    modifier = Modifier.weight(1f)
+                ) {
                     Text(
                         text       = "yanbao AI",
-                        fontSize   = 12.sp,
+                        fontSize   = 11.sp,
                         fontWeight = FontWeight.SemiBold,
                         color      = TEXT_GRAY
                     )
@@ -364,15 +364,26 @@ private fun PopularPlaceCard(place: PopularPlace, onClick: () -> Unit) {
                 "北海坑境" -> R.drawable.place_hokkaido
                 else       -> R.drawable.place_taipei101
             }
-            Image(
-                painter            = painterResource(photoRes),
-                contentDescription = place.name,
-                modifier           = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp)
-                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
-                contentScale       = ContentScale.Crop
-            )
+            Box {
+                Image(
+                    painter            = painterResource(photoRes),
+                    contentDescription = place.name,
+                    modifier           = Modifier
+                        .fillMaxWidth()
+                        .height(100.dp)
+                        .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
+                    contentScale       = ContentScale.Crop
+                )
+                // 库洛米角色叠加图标（右下角）
+                Image(
+                    painter            = painterResource(R.drawable.ic_marker_kuromi),
+                    contentDescription = null,
+                    modifier           = Modifier
+                        .size(36.dp)
+                        .align(Alignment.BottomEnd)
+                        .padding(4.dp)
+                )
+            }
             Column(modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp)) {
                 Text(
                     text       = place.name,

@@ -15,8 +15,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -192,11 +194,11 @@ fun EditorScreen(
             }
         }
 
-        // 图片预览区
+        // 图片预览区（占据屏幕约50%高度）
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(260.dp)
+                .weight(1f)
                 .background(Color(0xFF1A1A1A)),
             contentAlignment = Alignment.Center
         ) {
@@ -289,17 +291,47 @@ fun EditorScreen(
             }
         }
 
-        // 编辑工具网格
+        // 工具分类导航栏（设计图：裁剪/调整/滤镜/美颜/创意/高级）
+        val toolCategories = listOf("全部", "裁剪", "调整", "滤镜", "美颜", "创意", "高级")
+        val toolCategoryMap = mapOf(
+            "裁剪" to listOf("裁剪", "旋转", "翻转"),
+            "调整" to listOf("亮度", "对比度", "饱和度", "曲线", "HSL", "色温", "色调"),
+            "滤镜" to listOf("滤镜"),
+            "美颜" to listOf("美颜"),
+            "创意" to listOf("文字", "贴纸"),
+            "高级" to listOf("锐化", "降噪", "暗角", "29D同步")
+        )
+        var selectedCategory by remember { mutableStateOf("全部") }
+        val filteredTools = if (selectedCategory == "全部") editorTools
+            else editorTools.filter { tool -> toolCategoryMap[selectedCategory]?.contains(tool.name) == true }
+        LazyRow(
+            modifier = Modifier.fillMaxWidth().background(Color(0xFF111111)).padding(horizontal = 12.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(toolCategories) { cat ->
+                val isActive = selectedCategory == cat
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(if (isActive) KUROMI_PINK else Color.White.copy(alpha = 0.1f))
+                        .clickable { selectedCategory = cat }
+                        .padding(horizontal = 14.dp, vertical = 6.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = cat, color = if (isActive) Color.White else Color.White.copy(alpha = 0.6f), fontSize = 13.sp, fontWeight = if (isActive) FontWeight.Bold else FontWeight.Normal)
+                }
+            }
+        }
+        // 编辑工具网格（设计图：4列网格）
         Column(modifier = Modifier.fillMaxWidth().weight(1f).padding(horizontal = 12.dp, vertical = 8.dp)) {
-            Text(text = "编辑工具", fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color.White.copy(alpha = 0.7f), modifier = Modifier.padding(bottom = 8.dp))
             LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
+                columns = GridCells.Fixed(4),
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(editorTools.size, key = { editorTools[it].name }) { index ->
-                    val tool = editorTools[index]
+                items(filteredTools.size, key = { filteredTools[it].name }) { index ->
+                    val tool = filteredTools[index]
                     val isSelected = selectedTool?.name == tool.name
                     Column(
                         modifier = Modifier

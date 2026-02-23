@@ -153,15 +153,9 @@ class GalleryViewModel @Inject constructor(
                     photo.path.contains(path) || path.contains(photo.path)
                 } || photo.mode?.contains("MEMORY", ignoreCase = true) == true
             }
-            GalleryTab.MASTER -> allPhotosCache.filter {
-                it.mode?.contains("MASTER", ignoreCase = true) == true
-            }
-            GalleryTab.BEAUTY -> allPhotosCache.filter {
-                it.mode?.contains("BEAUTY", ignoreCase = true) == true
-            }
-            GalleryTab.D29 -> allPhotosCache.filter {
-                it.mode?.contains("29D", ignoreCase = true) == true ||
-                it.mode?.contains("2.9D", ignoreCase = true) == true
+            GalleryTab.LBS -> allPhotosCache.filter {
+                it.mode?.contains("LBS", ignoreCase = true) == true ||
+                it.mode?.contains("RECOMMEND", ignoreCase = true) == true
             }
         }
 

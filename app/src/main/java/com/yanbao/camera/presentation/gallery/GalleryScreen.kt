@@ -247,9 +247,7 @@ private fun PhotoGridItem(
 enum class GalleryTab(val index: Int, val displayName: String) {
     ALL(0, "全部"),
     MEMORY(1, "雁宝记忆"),
-    MASTER(2, "大师"),
-    BEAUTY(3, "美人"),
-    D29(4, "29D")
+    LBS(2, "推荐LBS")
 }
 
 data class Photo(

@@ -139,8 +139,8 @@ class CameraViewModel @Inject constructor(
     fun setYanbaoMode(mode: YanbaoMode) {
         viewModelScope.launch {
             _yanbaoMode.value = mode
-            // 视频大师模式自动切换到 VIDEO
-            _currentMode.value = if (mode == YanbaoMode.AR) CameraMode.VIDEO else CameraMode.PHOTO
+            // 视频大师模式和 AR 模式自动切换到 VIDEO
+            _currentMode.value = if (mode == YanbaoMode.AR || mode == YanbaoMode.VIDEO_MASTER) CameraMode.VIDEO else CameraMode.PHOTO
             Log.d(TAG, "YanbaoMode → $mode")
         }
     }

@@ -105,15 +105,44 @@ class LbsViewModel @Inject constructor(
                         "需要位置权限以显示附近地点" else "位置服务未开启，显示默认区域"
                 }
 
-                // 2. 加载附近地点（内置热门地点 + 真实距离计算）
-                val hotspots = getHotspots()
-                val locationsWithDistance = hotspots.map { spot ->
-                    val distanceKm = haversineDistance(
-                        centerLat, centerLng,
-                        spot.latLng.latitude, spot.latLng.longitude
-                    )
-                    spot.copy(distance = formatDistance(distanceKm))
-                }.sortedBy { parseDistanceKm(it.distance) }
+                // 2. 优先通过 SerpApi 查询附近真实地点，失败则降级到内置数据
+                val serpApiPlaces = withContext(Dispatchers.IO) {
+                    try {
+                        com.yanbao.camera.data.lbs.SerpApiService.searchNearbyPhotoSpots(
+                            lat = centerLat,
+                            lng = centerLng,
+                            query = "摄影 景点 打卡"
+                        )
+                    } catch (e: Exception) {
+                        Log.w(TAG, "SerpApi failed, using fallback: ${e.message}")
+                        emptyList()
+                    }
+                }
+
+                val locationsWithDistance = if (serpApiPlaces.isNotEmpty()) {
+                    // SerpApi 数据转换为 LocationItem
+                    serpApiPlaces.map { place ->
+                        LocationItem(
+                            id = place.id,
+                            name = place.name,
+                            latLng = LatLngSimple(place.latitude, place.longitude),
+                            rating = place.rating,
+                            distance = place.distance,
+                            thumbnailUrl = place.thumbnailUrl,
+                            filterSuggestion = place.filterSuggestion
+                        )
+                    }
+                } else {
+                    // 降级：使用内置热门地点
+                    Log.d(TAG, "Using built-in hotspots as fallback")
+                    getHotspots().map { spot ->
+                        val distanceKm = haversineDistance(
+                            centerLat, centerLng,
+                            spot.latLng.latitude, spot.latLng.longitude
+                        )
+                        spot.copy(distance = formatDistance(distanceKm))
+                    }.sortedBy { parseDistanceKm(it.distance) }
+                }
 
                 _locations.value = locationsWithDistance
                 Log.d(TAG, "Loaded ${locationsWithDistance.size} locations, center: $centerLat, $centerLng")
