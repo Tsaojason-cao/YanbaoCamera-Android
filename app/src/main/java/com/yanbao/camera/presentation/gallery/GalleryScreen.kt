@@ -212,6 +212,8 @@ enum class GalleryTab(val index: Int, val displayName: String) {
 data class Photo(
     val id: String,
     val path: String,
+    val contentUri: String? = null,   // content:// URI，用于 Coil 加载和 EXIF 读取
     val hasMetadata: Boolean = false,
+    val isMemory: Boolean = false,     // 是否为雁宝记忆照片
     val mode: String? = null
 )

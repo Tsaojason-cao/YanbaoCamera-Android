@@ -221,8 +221,10 @@ class GalleryViewModel @Inject constructor(
 
                     val photo = Photo(
                         id = id.toString(),
-                        path = contentUri.toString(), // 使用 content:// URI
+                        path = contentUri.toString(),
+                        contentUri = contentUri.toString(), // content:// URI，用于 Coil 加载和 EXIF
                         hasMetadata = mode != "NORMAL" && mode != "未知模式" && mode != "普通模式",
+                        isMemory = false, // 将在下方与 Room 关联后设置
                         mode = mode
                     )
                     photos[path] = photo
@@ -253,11 +255,14 @@ class GalleryViewModel @Inject constructor(
                                 YanbaoExifParser.getPhotoMetadata(file.absolutePath)
                             } catch (e: Exception) { null }
 
+                            val fileUri = Uri.fromFile(file).toString()
                             photos[file.absolutePath] = Photo(
                                 id = file.nameWithoutExtension,
-                                path = Uri.fromFile(file).toString(),
+                                path = fileUri,
+                                contentUri = fileUri,
                                 hasMetadata = params?.mode != null &&
                                     params.mode != "未知模式" && params.mode != "普通模式",
+                                isMemory = false,
                                 mode = params?.mode ?: "NORMAL"
                             )
                         }
@@ -277,6 +282,24 @@ class GalleryViewModel @Inject constructor(
      */
     fun onPhotoClick(photo: Photo) {
         Log.d(TAG, "Photo clicked: id=${photo.id}, path=${photo.path}, mode=${photo.mode}")
+    }
+
+    /**
+     * 删除单张照片（由照片详情页调用）
+     */
+    fun deletePhoto(photoId: String) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                try {
+                    val photo = allPhotosCache.find { it.id == photoId } ?: return@withContext
+                    val uri = Uri.parse(photo.contentUri ?: photo.path)
+                    context.contentResolver.delete(uri, null, null)
+                } catch (e: Exception) {
+                    Log.e(TAG, "Delete single photo failed for $photoId", e)
+                }
+            }
+            loadPhotos()
+        }
     }
 
     /**
