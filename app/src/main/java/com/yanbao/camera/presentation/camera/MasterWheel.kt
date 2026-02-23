@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.yanbao.camera.ui.theme.KUROMI_PINK
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 

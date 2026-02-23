@@ -29,7 +29,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun CameraScreen(
     viewModel: CameraViewModel = hiltViewModel(),
-    onNavigateToGallery: () -> Unit = {}
+    onNavigateToGallery: () -> Unit = {},
+    onBackClick: () -> Unit = {}
 ) {
     val currentMode by viewModel.currentMode.collectAsStateWithLifecycle()
     val isRecording by viewModel.isRecordingMemory.collectAsStateWithLifecycle()
