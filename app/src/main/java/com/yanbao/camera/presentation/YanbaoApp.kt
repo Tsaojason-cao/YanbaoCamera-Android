@@ -155,9 +155,7 @@ fun YanbaoApp() {
                         fadeOut(animationSpec = tween(180, easing = FastOutLinearInEasing))
                     }
                 ) {
-                    CameraScreen(
-                        onBackClick = { navController.popBackStack() }
-                    )
+                    CameraScreen()
                 }
 
                 composable(
