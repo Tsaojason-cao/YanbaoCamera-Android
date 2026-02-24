@@ -9,10 +9,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.annotation.RequiresApi
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -71,14 +70,7 @@ fun CameraScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(layer1Height)
-                .align(Alignment.BottomCenter)
-                .graphicsLayer {
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-                        renderEffect = android.graphics.RenderEffect.createBlurEffect(
-                            40f, 40f, android.graphics.Shader.TileMode.CLAMP
-                        )
-                    }
-                },
+                .align(Alignment.BottomCenter),
             color = OBSIDIAN_BLACK.copy(alpha = 0.85f),
             shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
         ) {
