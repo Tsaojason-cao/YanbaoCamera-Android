@@ -2,6 +2,8 @@ package com.yanbao.camera.presentation.camera
 
 import android.graphics.RenderEffect
 import android.graphics.Shader
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -34,11 +36,13 @@ fun GlassPanel(
             .clip(RoundedCornerShape(cornerRadius))
             .background(CameraColors.GlassBgDark)
             .graphicsLayer {
-                renderEffect = RenderEffect.createBlurEffect(
-                    CameraDimens.BlurRadius.toPx(),
-                    CameraDimens.BlurRadius.toPx(),
-                    Shader.TileMode.CLAMP
-                )
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    renderEffect = RenderEffect.createBlurEffect(
+                        CameraDimens.BlurRadius.toPx(),
+                        CameraDimens.BlurRadius.toPx(),
+                        Shader.TileMode.CLAMP
+                    ).asComposeRenderEffect()
+                }
             }
             .then(Modifier.drawBehind {
                 val strokeWidth = CameraDimens.NeonBorderWidth.toPx()
