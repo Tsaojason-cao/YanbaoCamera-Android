@@ -25,6 +25,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import android.util.Log
+import androidx.compose.foundation.gestures.detectTapGestures
 import com.yanbao.camera.R
 import com.yanbao.camera.ui.theme.KUROMI_PINK
 import com.yanbao.camera.ui.theme.KUROMI_PURPLE
@@ -59,7 +61,10 @@ fun Param29DPanel(viewModel: CameraViewModel) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .clickable { selectedTab = index }
+                        .clickable {
+                            selectedTab = index
+                            Log.d("AUDIT_29D", "tab_selected=$title")
+                        }
                         .padding(horizontal = 8.dp, vertical = 6.dp)
                 ) {
                     Text(
@@ -70,11 +75,12 @@ fun Param29DPanel(viewModel: CameraViewModel) {
                     )
                     if (selectedTab == index) {
                         Spacer(modifier = Modifier.height(3.dp))
-                        Box(
-                            modifier = Modifier
-                                .width(28.dp)
-                                .height(2.dp)
-                                .background(KUROMI_PINK, RoundedCornerShape(1.dp))
+                        // 蝴蝶结图标指示器（按指令四）
+                        Icon(
+                            painter = painterResource(R.drawable.ic_bow_kuromi),
+                            contentDescription = null,
+                            tint = KUROMI_PINK,
+                            modifier = Modifier.size(14.dp)
                         )
                     }
                 }
@@ -95,7 +101,14 @@ fun Param29DPanel(viewModel: CameraViewModel) {
                         label = "ISO",
                         value = params.iso / 6400f,
                         displayValue = "${params.iso}",
-                        onValueChange = { viewModel.update29DParam { iso = (it * 6400).toInt().coerceIn(50, 6400) } },
+                        onValueChange = {
+                            viewModel.update29DParam { iso = (it * 6400).toInt().coerceIn(50, 6400) }
+                            Log.d("AUDIT_29D", "iso=${(it * 6400).toInt()}")
+                        },
+                        onLongPressReset = {
+                            viewModel.update29DParam { iso = 400 }
+                            Log.d("AUDIT_29D", "iso_reset=400")
+                        },
                         modifier = Modifier.weight(1f)
                     )
                     // EV
@@ -214,6 +227,7 @@ fun KuromiParamSlider(
     value: Float,
     displayValue: String,
     onValueChange: (Float) -> Unit,
+    onLongPressReset: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -230,7 +244,10 @@ fun KuromiParamSlider(
                 text = label,
                 color = Color.White,
                 fontSize = 11.sp,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier.pointerInput(Unit) {
+                    detectTapGestures(onLongPress = { onLongPressReset?.invoke() })
+                }
             )
             Text(
                 text = displayValue,

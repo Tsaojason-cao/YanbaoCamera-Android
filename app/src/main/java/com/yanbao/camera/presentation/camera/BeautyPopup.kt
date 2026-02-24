@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import android.util.Log
 import com.yanbao.camera.R
 import com.yanbao.camera.ui.theme.KUROMI_PINK
 
@@ -55,6 +56,9 @@ fun BeautyPopup(
     )
 
     var selectedPreset by remember { mutableStateOf("natural") }
+    var skinSmooth by remember { mutableStateOf(0.6f) }
+    var skinWhiten by remember { mutableStateOf(0.4f) }
+    var faceThin by remember { mutableStateOf(0.3f) }
 
     Dialog(onDismissRequest = onDismiss) {
         Box(
@@ -108,7 +112,10 @@ fun BeautyPopup(
                             BeautyPresetButton(
                                 preset = preset,
                                 isSelected = isSelected,
-                                onClick = { selectedPreset = preset.id }
+                                onClick = {
+                                    selectedPreset = preset.id
+                                    Log.d("AUDIT_BEAUTY", "preset_selected=${preset.id}")
+                                }
                             )
                         }
                     }
@@ -124,7 +131,41 @@ fun BeautyPopup(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // 磨皮/美白/瘦脸 NeonSlider（按指令四）
+                NeonSlider(
+                    value = skinSmooth,
+                    onValueChange = {
+                        skinSmooth = it
+                        Log.d("AUDIT_BEAUTY", "smooth=${String.format("%.2f", it)}")
+                    },
+                    onLongPressReset = { skinSmooth = 0.6f },
+                    label = "磨皮",
+                    valueText = "${(skinSmooth * 100).toInt()}%"
+                )
+                NeonSlider(
+                    value = skinWhiten,
+                    onValueChange = {
+                        skinWhiten = it
+                        Log.d("AUDIT_BEAUTY", "whiten=${String.format("%.2f", it)}")
+                    },
+                    onLongPressReset = { skinWhiten = 0.4f },
+                    label = "美白",
+                    valueText = "${(skinWhiten * 100).toInt()}%"
+                )
+                NeonSlider(
+                    value = faceThin,
+                    onValueChange = {
+                        faceThin = it
+                        Log.d("AUDIT_BEAUTY", "slim=${String.format("%.2f", it)}")
+                    },
+                    onLongPressReset = { faceThin = 0.3f },
+                    label = "瘦脸",
+                    valueText = "${(faceThin * 100).toInt()}%"
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
 
                 // 底部按钮
                 Row(
@@ -160,7 +201,10 @@ fun BeautyPopup(
                                 )
                             )
                             .border(1.5.dp, KUROMI_PINK, RoundedCornerShape(24.dp))
-                            .clickable { onApply(selectedPreset) },
+                            .clickable {
+                                Log.d("AUDIT_BEAUTY", "applied preset=$selectedPreset smooth=${(skinSmooth*100).toInt()} whiten=${(skinWhiten*100).toInt()} slim=${(faceThin*100).toInt()}")
+                                onApply(selectedPreset)
+                            },
                         contentAlignment = Alignment.Center
                     ) {
                         Text(text = "应用", color = KUROMI_PINK, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)

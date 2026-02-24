@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import android.util.Log
 import com.yanbao.camera.R
 import com.yanbao.camera.ui.theme.KUROMI_PINK
 
@@ -117,7 +118,10 @@ fun MasterModePopup(
                                     MasterFilterItem(
                                         filter = filter,
                                         isSelected = isSelected,
-                                        onClick = { selectedFilter = filter.id }
+                                        onClick = {
+                                            selectedFilter = filter.id
+                                            Log.d("AUDIT_MASTER", "filter_selected=${filter.id} name=${filter.name}")
+                                        }
                                     )
                                 }
                             }
@@ -171,7 +175,10 @@ fun MasterModePopup(
                                 )
                             )
                             .border(1.5.dp, KUROMI_PINK, RoundedCornerShape(24.dp))
-                            .clickable { onApply(selectedFilter) },
+                            .clickable {
+                                Log.d("AUDIT_MASTER", "filter_applied=$selectedFilter")
+                                onApply(selectedFilter)
+                            },
                         contentAlignment = Alignment.Center
                     ) {
                         Text(text = "应用", color = KUROMI_PINK, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
@@ -201,11 +208,17 @@ fun MasterFilterItem(
                 .size(60.dp)
                 .clip(CircleShape)
                 .background(filter.previewColor)
-                .border(
-                    width = if (isSelected) 2.5.dp else 1.dp,
-                    color = if (isSelected) KUROMI_PINK else Color.White.copy(alpha = 0.3f),
+                .then(
+                if (isSelected) Modifier.border(
+                    width = 2.5.dp,
+                    brush = Brush.linearGradient(listOf(KUROMI_PINK, Color(0xFF9D4EDD))),
+                    shape = CircleShape
+                ) else Modifier.border(
+                    width = 1.dp,
+                    color = Color.White.copy(alpha = 0.3f),
                     shape = CircleShape
                 )
+            )
                 .clickable { onClick() }
         )
         Spacer(modifier = Modifier.height(4.dp))
