@@ -114,7 +114,7 @@ fun MemorySelectScreen(
                 ) {
                     // 左侧库洛米图标
                     Icon(
-                        painter = painterResource(R.drawable.ic_kuromi_mascot),
+                        painter = painterResource(R.drawable.ic_kuromi_small),
                         contentDescription = null,
                         tint = Color.White,
                         modifier = Modifier.size(28.dp)
@@ -129,7 +129,7 @@ fun MemorySelectScreen(
                     Spacer(modifier = Modifier.width(8.dp))
                     // 右侧库洛米图标
                     Icon(
-                        painter = painterResource(R.drawable.ic_kuromi_mascot),
+                        painter = painterResource(R.drawable.ic_kuromi_small),
                         contentDescription = null,
                         tint = Color.White,
                         modifier = Modifier.size(28.dp)
@@ -155,7 +155,7 @@ fun MemoryTopBar(
     ) {
         // 顶部库洛米图标
         Icon(
-            painter = painterResource(R.drawable.ic_kuromi_mascot),
+            painter = painterResource(R.drawable.ic_kuromi_small),
             contentDescription = null,
             tint = KUROMI_PINK,
             modifier = Modifier

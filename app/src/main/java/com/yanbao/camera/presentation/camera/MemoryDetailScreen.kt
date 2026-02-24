@@ -188,12 +188,12 @@ fun MemoryDetailScreen(
                     .padding(16.dp)
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    MemoryInfoRow(icon = R.drawable.ic_album_kuromi, label = "名称", value = memory.name)
-                    MemoryInfoRow(icon = R.drawable.ic_timer_kuromi, label = "日期", value = memory.date)
-                    MemoryInfoRow(icon = R.drawable.ic_location_kuromi, label = "地点", value = memory.location)
-                    MemoryInfoRow(icon = R.drawable.ic_mood_kuromi, label = "心情", value = memory.mood)
-                    MemoryInfoRow(icon = R.drawable.ic_virtue_kuromi, label = "美德", value = memory.virtue)
-                    MemoryInfoRow(icon = R.drawable.ic_appearance_kuromi, label = "外观", value = memory.appearance)
+                    MemoryInfoRow(iconRes = R.drawable.ic_album_kuromi, label = "名称", value = memory.name)
+                    MemoryInfoRow(iconRes = R.drawable.ic_timer_kuromi, label = "日期", value = memory.date)
+                    MemoryInfoRow(iconRes = R.drawable.ic_location_kuromi, label = "地点", value = memory.location)
+                    MemoryInfoRow(iconRes = R.drawable.ic_kuromi_small, label = "心情", value = memory.mood)
+                    MemoryInfoRow(iconRes = R.drawable.ic_kuromi_mark, label = "美德", value = memory.virtue)
+                    MemoryInfoRow(iconRes = R.drawable.ic_kuromi_small, label = "外观", value = memory.appearance)
                 }
             }
 

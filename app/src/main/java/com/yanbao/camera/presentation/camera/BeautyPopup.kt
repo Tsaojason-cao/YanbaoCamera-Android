@@ -46,12 +46,12 @@ fun BeautyPopup(
     onApply: (String) -> Unit = {}
 ) {
     val presets = listOf(
-        BeautyPreset("natural", "Natural", R.drawable.ic_beauty_natural, Color(0xFF4CAF50)),
-        BeautyPreset("light", "Light", R.drawable.ic_beauty_light, Color(0xFFFFC107)),
-        BeautyPreset("medium", "Medium", R.drawable.ic_beauty_medium, Color(0xFFFF9800)),
-        BeautyPreset("strong", "Strong", R.drawable.ic_beauty_strong, KUROMI_PINK),
-        BeautyPreset("custom", "Custom", R.drawable.ic_beauty_custom, Color(0xFF9E9E9E)),
-        BeautyPreset("reset", "Reset", R.drawable.ic_beauty_reset, Color(0xFF9E9E9E))
+        BeautyPreset("natural", "Natural", R.drawable.ic_mode_beauty, Color(0xFF4CAF50)),
+        BeautyPreset("light", "Light", R.drawable.ic_mode_basic, Color(0xFFFFC107)),
+        BeautyPreset("medium", "Medium", R.drawable.ic_mode_master, Color(0xFFFF9800)),
+        BeautyPreset("strong", "Strong", R.drawable.ic_mode_29d, KUROMI_PINK),
+        BeautyPreset("custom", "Custom", R.drawable.ic_mode_ar, Color(0xFF9E9E9E)),
+        BeautyPreset("reset", "Reset", R.drawable.ic_mode_memory, Color(0xFF9E9E9E))
     )
 
     var selectedPreset by remember { mutableStateOf("natural") }

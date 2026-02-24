@@ -46,12 +46,12 @@ fun CategoryDialog(
     onCategorySelected: (String) -> Unit = {}
 ) {
     val categories = listOf(
-        CameraCategory("landscape", "风景", R.drawable.ic_category_landscape),
-        CameraCategory("night", "夜景", R.drawable.ic_category_night),
-        CameraCategory("portrait", "人像", R.drawable.ic_category_portrait),
-        CameraCategory("vintage", "复古", R.drawable.ic_category_vintage),
-        CameraCategory("food", "美食", R.drawable.ic_category_food),
-        CameraCategory("other", "其他", R.drawable.ic_category_other)
+        CameraCategory("landscape", "风景", R.drawable.ic_mode_basic),
+        CameraCategory("night", "夜景", R.drawable.ic_mode_29d),
+        CameraCategory("portrait", "人像", R.drawable.ic_mode_beauty),
+        CameraCategory("vintage", "复古", R.drawable.ic_mode_master),
+        CameraCategory("food", "美食", R.drawable.ic_mode_memory),
+        CameraCategory("other", "其他", R.drawable.ic_mode_ar)
     )
 
     Dialog(onDismissRequest = onDismiss) {

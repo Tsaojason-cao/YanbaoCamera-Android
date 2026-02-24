@@ -220,7 +220,7 @@ fun CameraScreen(
                             }
                             ShutterButton(
                                 onClick = { viewModel.triggerCapture() },
-                                isRecording = viewModel.isRecordingState,
+                                isVideoMode = viewModel.isRecordingState,
                                 modifier = Modifier.size(72.dp)
                             )
                             IconButton(
@@ -228,7 +228,7 @@ fun CameraScreen(
                                 modifier = Modifier.size(52.dp)
                             ) {
                                 Icon(
-                                    painter = painterResource(R.drawable.ic_settings_kuromi),
+                                    painter = painterResource(R.drawable.ic_settings),
                                     contentDescription = "设定",
                                     tint = Color.White,
                                     modifier = Modifier.size(28.dp)
@@ -272,7 +272,7 @@ fun CameraScreen(
                                     viewModel.triggerCapture()
                                 }
                             },
-                            isRecording = selectedMode == CameraMode.VIDEO && viewModel.isRecordingState,
+                            isVideoMode = selectedMode == CameraMode.VIDEO && viewModel.isRecordingState,
                             modifier = Modifier.size(72.dp)
                         )
                         Box(
