@@ -39,6 +39,8 @@ val KuromiPink = Color(0xFFEC4899)
 val KUROMI_PINK = KuromiPink
 /** 次色：深紫 */
 val KuromiPurple = Color(0xFF9D4EDD)
+/** 全大写别名 */
+val KUROMI_PURPLE = KuromiPurple
 /** 背景：曜石黑 */
 val ObsidianBlack = Color(0xFF0A0A0A)
 /** 全大写别名（供 pasted_content_27 代码引用） */
