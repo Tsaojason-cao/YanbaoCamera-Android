@@ -91,7 +91,7 @@ fun BeautyPopup(
                 ) {
                     // 左箭头
                     Icon(
-                        painter = painterResource(R.drawable.ic_arrow_left_kuromi),
+                        painter = painterResource(R.drawable.ic_back_kuromi),
                         contentDescription = "上一页",
                         tint = KUROMI_PINK,
                         modifier = Modifier

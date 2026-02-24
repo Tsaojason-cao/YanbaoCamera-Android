@@ -97,12 +97,12 @@ fun ModeSelectionDialog(
 
                 // 2列×3行 模式卡片
                 val modes = listOf(
-                    Triple(R.drawable.ic_mode_photo_kuromi, "照片", "Capture high-quality still\nimages with advanced YanBao\nAI enhancements and\noptimized settings."),
+                    Triple(R.drawable.ic_camera_kuromi, "照片", "Capture high-quality still\nimages with advanced YanBao\nAI enhancements and\noptimized settings."),
                     Triple(R.drawable.ic_mode_video_kuromi, "视频", "Record smooth videos in\nvarious resolutions and frame\nrates, with AI stabilization."),
-                    Triple(R.drawable.ic_mode_portrait_kuromi, "人像", "Create professional-looking\nportraits with artistic bokeh\nand studio lighting effects."),
-                    Triple(R.drawable.ic_mode_panorama_kuromi, "全景", "Capture sweeping, wide-angle\nlandscape photos by moving\nthe camera across the scene."),
-                    Triple(R.drawable.ic_mode_cinematic_kuromi, "电影效果", "Record cinematic videos with\nshallow depth of field and\nautomatic focus racking."),
-                    Triple(R.drawable.ic_mode_slowmo_kuromi, "慢动作", "Capture fast-moving action in\nstunning, detailed slow motion.")
+                    Triple(R.drawable.ic_mode_beauty, "人像", "Create professional-looking\nportraits with artistic bokeh\nand studio lighting effects."),
+                    Triple(R.drawable.ic_mode_basic, "全景", "Capture sweeping, wide-angle\nlandscape photos by moving\nthe camera across the scene."),
+                    Triple(R.drawable.ic_mode_master, "电影效果", "Record cinematic videos with\nshallow depth of field and\nautomatic focus racking."),
+                    Triple(R.drawable.ic_mode_video, "慢动作", "Capture fast-moving action in\nstunning, detailed slow motion.")
                 )
 
                 var selectedMode by remember { mutableStateOf("照片") }

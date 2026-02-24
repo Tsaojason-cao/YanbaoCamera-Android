@@ -55,7 +55,7 @@ fun SettingsPopupButton(
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                painter = painterResource(R.drawable.ic_settings_kuromi),
+                painter = painterResource(R.drawable.ic_camera_preset_kuromi),
                 contentDescription = "设定",
                 tint = KUROMI_PINK,
                 modifier = Modifier.size(22.dp)
