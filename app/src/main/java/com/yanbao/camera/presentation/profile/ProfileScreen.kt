@@ -307,9 +307,8 @@ fun ProfileScreen(
                         color = Color.White.copy(alpha = 0.1f)
                     )
                     StatItem(
-                        value = stats.memoriesCount.toString(),
-                        label = "记忆",
-                        valueColor = KUROMI_PINK
+                        value = "256",
+                        label = "关注"
                     )
                     Divider(
                         modifier = Modifier
@@ -318,8 +317,9 @@ fun ProfileScreen(
                         color = Color.White.copy(alpha = 0.1f)
                     )
                     StatItem(
-                        value = stats.likesCount,
-                        label = "获赞"
+                        value = "1.2k",
+                        label = "粉丝",
+                        valueColor = KUROMI_PINK
                     )
                 }
             }
@@ -704,74 +704,56 @@ fun YanbaoGardenEntryCard(
     onEnterGarden: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    // 呼吸光晕动画
+    // 呼吸光晕动画（粉色霓虹边框）
     val infiniteTransition = rememberInfiniteTransition(label = "garden_entry")
     val glowAlpha by infiniteTransition.animateFloat(
         initialValue = 0.6f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
-            animation = tween(1500, easing = FastOutSlowInEasing),
+            animation = tween(1800, easing = FastOutSlowInEasing),
             repeatMode = RepeatMode.Reverse
         ),
         label = "glow"
     )
 
+    // M7_01 设计：绿色草地场景卡片
+    // 粉色霓虹边框 + 绿色草地背景 + 雁宝站在草地上 + 胡萝卜×12 + 「喂雁宝」橙色按钮
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(20.dp))
-            .background(
-                Brush.horizontalGradient(
-                    colors = listOf(Color(0xFF1A0A00), Color(0xFF2A1200))
-                )
-            )
             .border(
-                width = 1.dp,
-                brush = Brush.horizontalGradient(
+                width = 2.dp,
+                brush = Brush.linearGradient(
                     colors = listOf(
-                        Color(0xFFF97316).copy(alpha = glowAlpha),
-                        Color(0xFFEC4899).copy(alpha = glowAlpha * 0.7f)
+                        Color(0xFFEC4899).copy(alpha = glowAlpha),
+                        Color(0xFFEC4899).copy(alpha = glowAlpha * 0.5f),
+                        Color(0xFFEC4899).copy(alpha = glowAlpha)
                     )
                 ),
                 shape = RoundedCornerShape(20.dp)
             )
-            .clickable { onEnterGarden() }
-            .padding(20.dp)
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(Color(0xFF0D1A0D), Color(0xFF0A1A0A))
+                ),
+                shape = RoundedCornerShape(20.dp)
+            )
+            .padding(16.dp)
     ) {
-        Row(
+        Column(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // 雁宝图标
-            Box(
-                modifier = Modifier
-                    .size(64.dp)
-                    .clip(CircleShape)
-                    .background(
-                        Brush.radialGradient(
-                            colors = listOf(
-                                Color(0xFFF97316).copy(alpha = 0.25f),
-                                Color.Transparent
-                            )
-                        )
-                    ),
-                contentAlignment = Alignment.Center
+            // 标题行
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Image(
-                    painter = painterResource(R.drawable.yanbao_caring),
-                    contentDescription = "雁宝",
-                    modifier = Modifier.size(56.dp),
-                    contentScale = ContentScale.Fit
-                )
-            }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            // 文案区域
-            Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = "雁宝园地",
-                        fontSize = 18.sp,
+                        text = "🌿 雁宝花园",
+                        fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White
                     )
@@ -780,61 +762,115 @@ fun YanbaoGardenEntryCard(
                         modifier = Modifier
                             .clip(RoundedCornerShape(6.dp))
                             .background(Color(0xFFF97316).copy(alpha = 0.2f))
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                            .padding(horizontal = 8.dp, vertical = 3.dp)
                     ) {
                         Text(
-                            text = "互动",
-                            fontSize = 10.sp,
+                            text = "450 积分",
+                            fontSize = 11.sp,
                             color = Color(0xFFF97316),
                             fontWeight = FontWeight.Bold
                         )
                     }
                 }
-                Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "喂食胡萝卜，解锁专属特权",
-                    fontSize = 13.sp,
-                    color = Color.White.copy(alpha = 0.65f)
+                    text = "今日可喂 3 次",
+                    fontSize = 11.sp,
+                    color = Color.White.copy(alpha = 0.5f)
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-                // 今日次数提示
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    repeat(3) { index ->
-                        Box(
-                            modifier = Modifier
-                                .size(8.dp)
-                                .clip(CircleShape)
-                                .background(Color(0xFFF97316).copy(alpha = if (index == 0) 1f else 0.3f))
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = "今日可喂 3 次",
-                        fontSize = 11.sp,
-                        color = Color(0xFFF97316).copy(alpha = 0.8f)
-                    )
-                }
             }
 
-            // 进入箭头
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // 草地场景区域
             Box(
                 modifier = Modifier
-                    .size(32.dp)
-                    .clip(CircleShape)
-                    .background(Color(0xFFF97316).copy(alpha = 0.15f)),
+                    .fillMaxWidth()
+                    .height(120.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(Color(0xFF0D2B0D), Color(0xFF1A4A1A))
+                        )
+                    ),
+                contentAlignment = Alignment.BottomCenter
+            ) {
+                // 草地底部条
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(28.dp)
+                        .align(Alignment.BottomCenter)
+                        .background(Color(0xFF2D6A2D))
+                )
+
+                // 胡萝卜行（12个，分两行）
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.Center)
+                        .padding(horizontal = 12.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        repeat(6) {
+                            Text(text = "🥕", fontSize = 16.sp)
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        repeat(6) {
+                            Text(text = "🥕", fontSize = 16.sp)
+                        }
+                    }
+                }
+
+                // 雁宝站在草地上（右侧）
+                Image(
+                    painter = painterResource(R.drawable.yanbao_jk_uniform),
+                    contentDescription = "雁宝",
+                    modifier = Modifier
+                        .size(72.dp)
+                        .align(Alignment.BottomEnd)
+                        .padding(end = 12.dp, bottom = 4.dp),
+                    contentScale = ContentScale.Fit
+                )
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // 「喂雁宝」橙色大按钮
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(44.dp)
+                    .clip(RoundedCornerShape(22.dp))
+                    .background(
+                        Brush.horizontalGradient(
+                            colors = listOf(Color(0xFFF97316), Color(0xFFEA580C))
+                        )
+                    )
+                    .clickable { onEnterGarden() },
                 contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.ic_yanbao_back),
-                    contentDescription = "进入园地",
-                    tint = Color(0xFFF97316),
-                    modifier = Modifier
-                        .size(16.dp)
-                        .graphicsLayer { rotationY = 180f }
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(text = "🥕", fontSize = 16.sp)
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = "喂雁宝",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                }
             }
         }
     }

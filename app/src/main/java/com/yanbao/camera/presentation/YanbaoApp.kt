@@ -65,7 +65,7 @@ fun YanbaoApp() {
     val currentRoute = navBackStackEntry?.destination?.route
 
     // 主 Tab 路由集合
-    val topLevelRoutes = setOf("home", "camera", "editor", "gallery", "lbs", "profile")
+    val topLevelRoutes = setOf("home", "camera", "gallery", "recommend", "profile")
     val showBottomBar = currentRoute in topLevelRoutes
 
     // 是否可以返回（子页面才启用手势返回）
@@ -141,7 +141,7 @@ fun YanbaoApp() {
                         onCameraClick = { navController.navigate("camera") },
                         onEditorClick = { navController.navigate("editor") },
                         onGalleryClick = { navController.navigate("gallery") },
-                        onRecommendClick = { navController.navigate("lbs") },
+                        onRecommendClick = { navController.navigate("recommend") },
                         onProfileClick = { navController.navigate("profile") },
                         avatarUri = profile.avatarUri?.toString()
                     )
@@ -202,6 +202,21 @@ fun YanbaoApp() {
                     LbsScreen(
                         onBackClick = { navController.popBackStack() },
                         navController = navController
+                    )
+                }
+
+                // M6 推荐模块：TikTok式全屏照片Feed（底部Tab主页面）
+                composable(
+                    route = "recommend",
+                    enterTransition = {
+                        fadeIn(animationSpec = tween(220, easing = LinearOutSlowInEasing))
+                    },
+                    exitTransition = {
+                        fadeOut(animationSpec = tween(180, easing = FastOutLinearInEasing))
+                    }
+                ) {
+                    RecommendScreen(
+                        onBackClick = { navController.popBackStack() }
                     )
                 }
 
@@ -431,59 +446,124 @@ fun YanbaoBottomNavigation(
     currentRoute: String?,
     onTabSelected: (String) -> Unit
 ) {
-    val tabs = listOf(
-        BottomNavItem(label = "首页",  iconRes = R.drawable.ic_yanbao_home,      route = "home"),
-        BottomNavItem(label = "相机",  iconRes = R.drawable.ic_yanbao_camera,    route = "camera"),
-        BottomNavItem(label = "编辑",  iconRes = R.drawable.ic_yanbao_edit,      route = "editor"),
-        BottomNavItem(label = "相册",  iconRes = R.drawable.ic_yanbao_gallery,   route = "gallery"),
-        BottomNavItem(label = "推荐",  iconRes = R.drawable.ic_yanbao_recommend, route = "lbs"),
-        BottomNavItem(label = "我的",  iconRes = R.drawable.ic_yanbao_profile,   route = "profile")
+    // 设计规范：5个tab，中间为胡萝卜橙大圆按钮（相机入口），无编辑tab
+    // 布局：首页 | 相机 | [🥕胡萝卜橙大按钮] | 相册 | 推荐 | 我的
+    val leftTabs = listOf(
+        BottomNavItem(label = "首页", iconRes = R.drawable.ic_yanbao_home,   route = "home"),
+        BottomNavItem(label = "相机", iconRes = R.drawable.ic_yanbao_camera, route = "camera")
+    )
+    val rightTabs = listOf(
+        BottomNavItem(label = "相册", iconRes = R.drawable.ic_yanbao_gallery,   route = "gallery"),
+        BottomNavItem(label = "推荐", iconRes = R.drawable.ic_yanbao_recommend, route = "recommend"),
+        BottomNavItem(label = "我的", iconRes = R.drawable.ic_yanbao_profile,   route = "profile")
     )
 
-    NavigationBar(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0x26FFFFFF),
-                        Color(0x40FFFFFF)
-                    )
-                )
-            ),
-        containerColor = OBSIDIAN_BLACK,
-        contentColor = Color.White,
-        tonalElevation = 0.dp
+            .background(OBSIDIAN_BLACK)
     ) {
-        tabs.forEach { item ->
-            val isSelected = currentRoute == item.route
-            NavigationBarItem(
-                icon = {
+        // 顶部分割线
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(0.5.dp)
+                .background(Color.White.copy(alpha = 0.12f))
+                .align(androidx.compose.ui.Alignment.TopCenter)
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 4.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+        ) {
+            // 左侧两个 tab
+            leftTabs.forEach { item ->
+                val isSelected = currentRoute == item.route
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                        ) { onTabSelected(item.route) },
+                    horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
                     Icon(
                         painter = painterResource(id = item.iconRes),
                         contentDescription = item.label,
                         tint = if (isSelected) PRIMARY_PINK else Color.White.copy(alpha = 0.5f),
                         modifier = Modifier.size(24.dp)
                     )
-                },
-                label = {
+                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = item.label,
                         color = if (isSelected) PRIMARY_PINK else Color.White.copy(alpha = 0.5f),
                         style = MaterialTheme.typography.labelSmall
                     )
-                },
-                selected = isSelected,
-                onClick = { onTabSelected(item.route) },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = PRIMARY_PINK,
-                    selectedTextColor = PRIMARY_PINK,
-                    indicatorColor = Color.Transparent,
-                    unselectedIconColor = Color.White.copy(alpha = 0.5f),
-                    unselectedTextColor = Color.White.copy(alpha = 0.5f)
-                )
-            )
+                }
+            }
+
+            // 中间胡萝卜橙大圆按钮（相机入口）
+            Box(
+                modifier = Modifier.weight(1f),
+                contentAlignment = androidx.compose.ui.Alignment.Center
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(56.dp)
+                        .background(
+                            brush = Brush.radialGradient(
+                                colors = listOf(Color(0xFFF97316), Color(0xFFE85D04))
+                            ),
+                            shape = androidx.compose.foundation.shape.CircleShape
+                        )
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                        ) { onTabSelected("camera") },
+                    contentAlignment = androidx.compose.ui.Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_yanbao_camera),
+                        contentDescription = "拍照",
+                        tint = Color.White,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+            }
+
+            // 右侧三个 tab
+            rightTabs.forEach { item ->
+                val isSelected = currentRoute == item.route
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+                        ) { onTabSelected(item.route) },
+                    horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        painter = painterResource(id = item.iconRes),
+                        contentDescription = item.label,
+                        tint = if (isSelected) PRIMARY_PINK else Color.White.copy(alpha = 0.5f),
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = item.label,
+                        color = if (isSelected) PRIMARY_PINK else Color.White.copy(alpha = 0.5f),
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                }
+            }
         }
     }
 }
