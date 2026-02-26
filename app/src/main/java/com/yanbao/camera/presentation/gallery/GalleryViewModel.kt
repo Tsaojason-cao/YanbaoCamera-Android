@@ -19,6 +19,14 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import javax.inject.Inject
 
+/** Git 备份状态密封类 */
+sealed class GitBackupStatus {
+    object Idle : GitBackupStatus()
+    data class Running(val message: String) : GitBackupStatus()
+    data class Success(val message: String) : GitBackupStatus()
+    data class Failed(val error: String) : GitBackupStatus()
+}
+
 /**
  * GalleryViewModel（满血版）
  *
@@ -337,6 +345,58 @@ class GalleryViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "loadMemories failed", e)
+            }
+        }
+    }
+
+    // ─── Git 自动备份 ───────────────────────────────────────────────────────────
+    private val _gitBackupStatus = MutableStateFlow<GitBackupStatus>(GitBackupStatus.Idle)
+    val gitBackupStatus: StateFlow<GitBackupStatus> = _gitBackupStatus
+
+    /**
+     * 触发 Git 自动备份
+     *
+     * 规范：保存照片后，后台自动执行 Git Sync，确保数据在更换账号后仍可找回。
+     * 备份内容：SharedPreferences 配置、雁宝记忆数据库、照片元数据。
+     */
+    fun triggerGitBackup() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                _gitBackupStatus.value = GitBackupStatus.Running("正在备份照片数据...")
+                val manager = com.yanbao.camera.core.util.GitBackupManager(context)
+
+                // 步骤 1：确保 Git 仓库已初始化
+                manager.initGitRepo().onFailure { e ->
+                    Log.e(TAG, "Git init failed: ${e.message}")
+                    _gitBackupStatus.value = GitBackupStatus.Failed("Git 初始化失败")
+                    return@launch
+                }
+
+                // 步骤 2：备份配置文件
+                manager.backupConfigs().onFailure { e ->
+                    Log.w(TAG, "Config backup warning: ${e.message}")
+                }
+
+                // 步骤 3：备份数据库
+                manager.backupDatabase().onFailure { e ->
+                    Log.w(TAG, "DB backup warning: ${e.message}")
+                }
+
+                // 步骤 4：提交
+                val commitResult = manager.commitChanges("[AutoBackup] 相册同步 - ${System.currentTimeMillis()}")
+                commitResult.fold(
+                    onSuccess = { msg ->
+                        Log.d(TAG, "Git backup success: $msg")
+                        _gitBackupStatus.value = GitBackupStatus.Success(msg)
+                    },
+                    onFailure = { e ->
+                        Log.e(TAG, "Git commit failed: ${e.message}")
+                        _gitBackupStatus.value = GitBackupStatus.Failed(e.message ?: "提交失败")
+                    }
+                )
+            } catch (e: Exception) {
+                Log.e(TAG, "Git backup exception", e)
+                _gitBackupStatus.value = GitBackupStatus.Failed(e.message ?: "未知错误")
             }
         }
     }

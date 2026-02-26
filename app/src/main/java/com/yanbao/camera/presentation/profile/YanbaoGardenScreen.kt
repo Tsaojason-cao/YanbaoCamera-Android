@@ -478,7 +478,7 @@ private fun TodayFeedProgressCard(
                         color = Color.White
                     )
                     Text(
-                        text = "每次分享额外获得 1 次喂食机会（今日剩余 ${todayStatus.shareBonusLimit - todayStatus.shareBonusUsed} 次）",
+                        text = "分享可额外获得最多 2 次（今日剩余 ${todayStatus.shareBonusLimit - todayStatus.shareBonusUsed} 次）",
                         fontSize = 11.sp,
                         color = Color.White.copy(alpha = 0.55f)
                     )

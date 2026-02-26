@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    胡萝卜形状点赞图标
+    规范：推荐社区(Discovery) 点赞 icon 为粉色胡萝卜
+    颜色：品牌粉 #EC4899（胡萝卜体）+ 深绿 #2D6A4F（叶子）
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- 胡萝卜主体（倒三角锥形，品牌粉色） -->
+    <path
+        android:fillColor="#EC4899"
+        android:pathData="M12,20 C11.2,20 10.5,19.5 10.2,18.8 L7.5,10 C7.2,9.2 7.8,8.4 8.6,8.4 L15.4,8.4 C16.2,8.4 16.8,9.2 16.5,10 L13.8,18.8 C13.5,19.5 12.8,20 12,20 Z" />
+
+    <!-- 胡萝卜纹路（白色半透明横线） -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="0.8"
+        android:strokeAlpha="0.5"
+        android:pathData="M9.5,11.5 L14.5,11.5" />
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="0.8"
+        android:strokeAlpha="0.5"
+        android:pathData="M9,13.5 L15,13.5" />
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="0.8"
+        android:strokeAlpha="0.5"
+        android:pathData="M9.5,15.5 L14.5,15.5" />
+
+    <!-- 胡萝卜叶子（深绿色，三片） -->
+    <path
+        android:fillColor="#2D6A4F"
+        android:pathData="M12,8.4 C12,8.4 11.5,5.5 9.5,4.5 C9.5,4.5 10.5,7.5 12,8.4 Z" />
+    <path
+        android:fillColor="#2D6A4F"
+        android:pathData="M12,8.4 C12,8.4 12.5,5.5 14.5,4.5 C14.5,4.5 13.5,7.5 12,8.4 Z" />
+    <path
+        android:fillColor="#40916C"
+        android:pathData="M12,8.4 C12,8.4 12,5 12,3.5 C12,3.5 12,6.5 12,8.4 Z" />
+
+</vector>

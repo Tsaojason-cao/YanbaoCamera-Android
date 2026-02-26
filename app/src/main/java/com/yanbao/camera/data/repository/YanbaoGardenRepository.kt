@@ -15,10 +15,18 @@ import javax.inject.Singleton
 /**
  * 雁宝园地数据仓库
  *
- * 封装所有与园地相关的业务数据操作，包括：
- *  - 每日喂食次数限制（普通 3 次 + 分享奖励）
- *  - 特权等级计算与解锁
- *  - 喂食历史记录管理
+ * 封装所有与园地相关的业务数据操作，严格遵循以下规则：
+ *
+ * ## 喂食规则（规格 v2）
+ * - 每日固定普通喂食次数：**1 次**
+ * - 通过分享可额外获得次数：**最多 2 次**
+ * - 每日总上限：**3 次**（1 普通 + 2 分享）
+ *
+ * ## 特权等级
+ * - 普通雁宝（0 次起）
+ * - 银爪雁宝（累计 10 次）
+ * - 金爪雁宝（累计 30 次）
+ * - 钻石爪雁宝（累计 100 次）
  */
 @Singleton
 class YanbaoGardenRepository @Inject constructor(
@@ -27,11 +35,14 @@ class YanbaoGardenRepository @Inject constructor(
     companion object {
         private const val TAG = "YanbaoGardenRepo"
 
-        /** 每日普通喂食上限 */
-        const val DAILY_NORMAL_FEED_LIMIT = 3
+        /** 每日普通喂食上限（固定 1 次） */
+        const val DAILY_NORMAL_FEED_LIMIT = 1
 
-        /** 每日分享奖励上限 */
-        const val DAILY_SHARE_BONUS_LIMIT = 5
+        /** 每日分享奖励上限（最多额外 2 次） */
+        const val DAILY_SHARE_BONUS_LIMIT = 2
+
+        /** 每日总喂食上限 = 1 + 2 = 3 次 */
+        const val DAILY_TOTAL_LIMIT = DAILY_NORMAL_FEED_LIMIT + DAILY_SHARE_BONUS_LIMIT
 
         /** 特权等级阈值（累计喂食次数） */
         val PRIVILEGE_THRESHOLDS = listOf(
@@ -80,8 +91,8 @@ class YanbaoGardenRepository @Inject constructor(
             YanbaoGardenFeedEntity.FeedSource.NORMAL -> {
                 if (todayNormal >= DAILY_NORMAL_FEED_LIMIT) {
                     return FeedResult.LimitReached(
-                        message = "雁宝今天已经吃了 $DAILY_NORMAL_FEED_LIMIT 根胡萝卜啦！分享给朋友可以多喂一次哦~",
-                        remainingShareBonus = DAILY_SHARE_BONUS_LIMIT - todayShare
+                        message = "雁宝今天已经吃过胡萝卜啦！分享给朋友可以再喂 ${(DAILY_SHARE_BONUS_LIMIT - todayShare).coerceAtLeast(0)} 次哦~",
+                        remainingShareBonus = (DAILY_SHARE_BONUS_LIMIT - todayShare).coerceAtLeast(0)
                     )
                 }
             }

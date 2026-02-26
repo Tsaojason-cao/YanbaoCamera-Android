@@ -30,6 +30,10 @@ import coil.compose.AsyncImage
 import com.yanbao.camera.R
 import com.yanbao.camera.ui.theme.YanbaoBrandTitle
 
+// 品牌配色常量
+private val BrandPink  = Color(0xFFEC4899)
+private val ObsidianBk = Color(0xFF0A0A0A)
+
 /**
  * 推荐模块 - AI 推荐列表
  * 
@@ -53,15 +57,7 @@ fun RecommendScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(
-                        Color(0xFF9C7FD8), // 深紫
-                        Color(0xFFD4A5E8), // 紫粉
-                        Color(0xFFF5C8E4)  // 亮粉
-                    )
-                )
-            )
+            .background(ObsidianBk)   // 曜石黑 #0A0A0A
     ) {
         // --- 顶部标题（含返回按钮） ---
         Box(
@@ -222,19 +218,19 @@ fun PhotoSpotCard(spot: PhotoSpot) {
                             .size(40.dp)
                     )
                     
-                    // 右上角收藏按钮
+                    // 右上角收藏按钮（品牌粉色）
                     IconButton(
                         onClick = { isBookmarked = !isBookmarked },
                         modifier = Modifier
                             .align(Alignment.TopEnd)
                             .padding(8.dp)
                             .size(32.dp)
-                            .background(Color.White.copy(alpha = 0.8f), CircleShape)
+                            .background(Color.Black.copy(alpha = 0.45f), CircleShape)
                     ) {
                         Icon(
                             imageVector = if (isBookmarked) Icons.Default.Bookmark else Icons.Default.BookmarkBorder,
                             contentDescription = "收藏",
-                            tint = Color(0xFFAA66FF)
+                            tint = BrandPink   // 品牌粉
                         )
                     }
                 }
@@ -250,17 +246,20 @@ fun PhotoSpotCard(spot: PhotoSpot) {
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        // 评分
+                        // 评分（粉色胡萝卜图标）
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = "[*]",
-                                fontSize = 14.sp
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_carrot_like),
+                                contentDescription = "点赞",
+                                tint = Color.Unspecified,
+                                modifier = Modifier.size(16.dp)
                             )
+                            Spacer(modifier = Modifier.width(2.dp))
                             Text(
                                 text = spot.rating.toString(),
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF333333)
+                                color = BrandPink
                             )
                         }
                         
