@@ -61,25 +61,35 @@ private data class EditorTool(
     val sliderLabel: String = ""
 )
 
+// 工具列表严格对标 M4_01 设计图（3行×8个）
+// 第1行：曝光/对比度/饱和度/亮度/高光/阴影/色温/色调
+// 第2行：色调/锐化/颗粒/暗角/裁剪/透视/消除/螺旋
+// 第3行：消除笔/局部调色/贴纸/水印/AI超分
 private val editorTools = listOf(
-    EditorTool("裁剪",   R.drawable.ic_tool_crop_kuromi,       hasSlider = false),
-    EditorTool("旋转",   R.drawable.ic_tool_rotate_kuromi,     hasSlider = true,  sliderMin = -180f, sliderMax = 180f, sliderDefault = 0f, sliderLabel = "旋转角度"),
-    EditorTool("翻转",   R.drawable.ic_tool_flip_kuromi,       hasSlider = false),
-    EditorTool("亮度",   R.drawable.ic_tool_brightness_kuromi, hasSlider = true,  sliderMin = -1f,   sliderMax = 1f,   sliderDefault = 0f, sliderLabel = "亮度"),
-    EditorTool("对比度", R.drawable.ic_tool_contrast_kuromi,   hasSlider = true,  sliderMin = -1f,   sliderMax = 1f,   sliderDefault = 0f, sliderLabel = "对比度"),
-    EditorTool("饱和度", R.drawable.ic_tool_saturation_kuromi, hasSlider = true,  sliderMin = -1f,   sliderMax = 1f,   sliderDefault = 0f, sliderLabel = "饱和度"),
-    EditorTool("曲线",   R.drawable.ic_tool_curve_kuromi,      hasSlider = true,  sliderMin = -1f,   sliderMax = 1f,   sliderDefault = 0f, sliderLabel = "曲线"),
-    EditorTool("HSL",    R.drawable.ic_tool_hsl_kuromi,        hasSlider = true,  sliderMin = -1f,   sliderMax = 1f,   sliderDefault = 0f, sliderLabel = "色相"),
-    EditorTool("锐化",   R.drawable.ic_tool_sharpness_kuromi,  hasSlider = true,  sliderMin = 0f,    sliderMax = 1f,   sliderDefault = 0f, sliderLabel = "锐化"),
-    EditorTool("降噪",   R.drawable.ic_tool_denoise_kuromi,    hasSlider = true,  sliderMin = 0f,    sliderMax = 1f,   sliderDefault = 0f, sliderLabel = "降噪"),
-    EditorTool("暗角",   R.drawable.ic_tool_vignette_kuromi,   hasSlider = true,  sliderMin = 0f,    sliderMax = 1f,   sliderDefault = 0f, sliderLabel = "暗角"),
-    EditorTool("色温",   R.drawable.ic_tool_temp_kuromi,       hasSlider = true,  sliderMin = -1f,   sliderMax = 1f,   sliderDefault = 0f, sliderLabel = "色温"),
-    EditorTool("色调",   R.drawable.ic_tool_tint_kuromi,       hasSlider = true,  sliderMin = -1f,   sliderMax = 1f,   sliderDefault = 0f, sliderLabel = "色调"),
-    EditorTool("滤镜",   R.drawable.ic_apply_filter_kuromi,    hasSlider = false),
-    EditorTool("美颜",   R.drawable.ic_tool_beauty_kuromi,     hasSlider = true,  sliderMin = 0f,    sliderMax = 1f,   sliderDefault = 0f, sliderLabel = "美颜强度"),
-    EditorTool("文字",   R.drawable.ic_tool_text_kuromi,       hasSlider = false),
-    EditorTool("贴纸",   R.drawable.ic_tool_sticker_kuromi,    hasSlider = false),
-    EditorTool("29D同步",R.drawable.ic_tool_29d_kuromi,        hasSlider = false)
+    // 第1行
+    EditorTool("曝光",    R.drawable.ic_tool_brightness_kuromi, hasSlider = true,  sliderMin = -1f,   sliderMax = 1f,   sliderDefault = 0f, sliderLabel = "曝光"),
+    EditorTool("对比度",  R.drawable.ic_tool_contrast_kuromi,   hasSlider = true,  sliderMin = -1f,   sliderMax = 1f,   sliderDefault = 0f, sliderLabel = "对比度"),
+    EditorTool("饱和度",  R.drawable.ic_tool_saturation_kuromi, hasSlider = true,  sliderMin = -1f,   sliderMax = 1f,   sliderDefault = 0f, sliderLabel = "饱和度"),
+    EditorTool("亮度",    R.drawable.ic_tool_brightness_kuromi, hasSlider = true,  sliderMin = -1f,   sliderMax = 1f,   sliderDefault = 0f, sliderLabel = "亮度"),
+    EditorTool("高光",    R.drawable.ic_tool_eye_kuromi,         hasSlider = true,  sliderMin = -1f,   sliderMax = 1f,   sliderDefault = 0f, sliderLabel = "高光"),
+    EditorTool("阴影",    R.drawable.ic_tool_denoise_kuromi,    hasSlider = true,  sliderMin = -1f,   sliderMax = 1f,   sliderDefault = 0f, sliderLabel = "阴影"),
+    EditorTool("色温",    R.drawable.ic_tool_temp_kuromi,       hasSlider = true,  sliderMin = -1f,   sliderMax = 1f,   sliderDefault = 0f, sliderLabel = "色温"),
+    EditorTool("色调",    R.drawable.ic_tool_tint_kuromi,       hasSlider = true,  sliderMin = -1f,   sliderMax = 1f,   sliderDefault = 0f, sliderLabel = "色调"),
+    // 第2行
+    EditorTool("色调2",   R.drawable.ic_tool_hsl_kuromi,        hasSlider = true,  sliderMin = -1f,   sliderMax = 1f,   sliderDefault = 0f, sliderLabel = "色调"),
+    EditorTool("锐化",    R.drawable.ic_tool_sharpness_kuromi,  hasSlider = true,  sliderMin = 0f,    sliderMax = 1f,   sliderDefault = 0f, sliderLabel = "锐化"),
+    EditorTool("颗粒",    R.drawable.ic_tool_grain_kuromi,      hasSlider = true,  sliderMin = 0f,    sliderMax = 1f,   sliderDefault = 0f, sliderLabel = "颗粒"),
+    EditorTool("暗角",    R.drawable.ic_tool_vignette_kuromi,   hasSlider = true,  sliderMin = 0f,    sliderMax = 1f,   sliderDefault = 0f, sliderLabel = "暗角"),
+    EditorTool("裁剪",    R.drawable.ic_tool_crop_kuromi,       hasSlider = false),
+    EditorTool("透视",    R.drawable.ic_tool_perspective_kuromi,hasSlider = false),
+    EditorTool("消除",    R.drawable.ic_tool_mosaic_kuromi,     hasSlider = false),
+    EditorTool("螺旋",    R.drawable.ic_tool_curve_kuromi,      hasSlider = false),
+    // 第3行
+    EditorTool("消除笔",  R.drawable.ic_tool_draw_kuromi,       hasSlider = false),
+    EditorTool("局部调色",R.drawable.ic_tool_local_kuromi,      hasSlider = false),
+    EditorTool("贴纸",    R.drawable.ic_tool_sticker_kuromi,    hasSlider = false),
+    EditorTool("水印",    R.drawable.ic_watermark_kuromi,       hasSlider = false),
+    EditorTool("AI超分",  R.drawable.ic_tool_ai_kuromi,         hasSlider = false)
 )
 
 // ─── 编辑历史（撤销/重做）─────────────────────────────────────────────────────

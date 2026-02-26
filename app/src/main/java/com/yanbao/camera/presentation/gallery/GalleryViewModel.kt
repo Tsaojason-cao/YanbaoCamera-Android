@@ -47,7 +47,7 @@ class GalleryViewModel @Inject constructor(
         private const val TAG = "GalleryViewModel"
     }
 
-    private val _selectedTab = MutableStateFlow(GalleryTab.ALL)
+    private val _selectedTab = MutableStateFlow(GalleryTab.MEMORY)  // 默认选中雁宝记忆，对标 M5_01 设计图
     val selectedTab: StateFlow<GalleryTab> = _selectedTab
 
     private val _filteredPhotos = MutableStateFlow<List<Photo>>(emptyList())
@@ -154,14 +154,14 @@ class GalleryViewModel @Inject constructor(
     private fun applyFilter(tab: GalleryTab) {
         val query = _searchQuery.value.lowercase()
         var result = when (tab) {
-            GalleryTab.ALL -> allPhotosCache
+            GalleryTab.NORMAL -> allPhotosCache  // 一般：全部照片
             GalleryTab.MEMORY -> allPhotosCache.filter { photo ->
                 // 雁宝记忆：在 Room 数据库中有记录，或 Exif 模式包含 MEMORY
                 memoryImagePaths.any { path ->
                     photo.path.contains(path) || path.contains(photo.path)
                 } || photo.mode?.contains("MEMORY", ignoreCase = true) == true
             }
-            GalleryTab.LBS -> allPhotosCache.filter {
+            GalleryTab.RECOMMEND -> allPhotosCache.filter {
                 it.mode?.contains("LBS", ignoreCase = true) == true ||
                 it.mode?.contains("RECOMMEND", ignoreCase = true) == true
             }

@@ -76,9 +76,20 @@ fun GalleryScreen(
                 IconButton(onClick = onBackClick, modifier = Modifier.align(Alignment.CenterStart)) {
                     Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "返回", tint = Color.White)
                 }
-                YanbaoBrandTitle(modifier = Modifier.align(Alignment.Center))
-                IconButton(onClick = { Log.d("GalleryScreen", "搜索") }, modifier = Modifier.align(Alignment.CenterEnd)) {
-                    Icon(imageVector = Icons.Default.Search, contentDescription = "搜索", tint = Color.White)
+                Text(
+                    text = "摄颜相册",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+                Row(modifier = Modifier.align(Alignment.CenterEnd)) {
+                    IconButton(onClick = { Log.d("GalleryScreen", "搜索") }) {
+                        Icon(imageVector = Icons.Default.Search, contentDescription = "搜索", tint = Color.White)
+                    }
+                    IconButton(onClick = { Log.d("GalleryScreen", "筛选") }) {
+                        Icon(painter = painterResource(id = R.drawable.ic_filter), contentDescription = "筛选", tint = Color.White)
+                    }
                 }
             }
         }
@@ -244,10 +255,11 @@ private fun PhotoGridItem(
     }
 }
 
+// Tab 对标 M5_01 设计图：雁宝记忆（激活）/ 推荐 / 一般
 enum class GalleryTab(val index: Int, val displayName: String) {
-    ALL(0, "全部"),
-    MEMORY(1, "雁宝记忆"),
-    LBS(2, "推荐LBS")
+    MEMORY(0, "雁宝记忆"),
+    RECOMMEND(1, "推荐"),
+    NORMAL(2, "一般")
 }
 
 data class Photo(
