@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 雁宝风格「大师模式」图标：兔耳+星冠 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <!-- 左兔耳 -->
+    <path android:fillColor="#EC4899"
+        android:pathData="M7,1 C6.2,1 5.5,1.8 5.5,3 L5.5,7 C5.5,7.8 6.2,8.5 7,8.5 C7.8,8.5 8.5,7.8 8.5,7 L8.5,3 C8.5,1.8 7.8,1 7,1 Z"/>
+    <!-- 右兔耳 -->
+    <path android:fillColor="#EC4899"
+        android:pathData="M17,1 C16.2,1 15.5,1.8 15.5,3 L15.5,7 C15.5,7.8 16.2,8.5 17,8.5 C17.8,8.5 18.5,7.8 18.5,7 L18.5,3 C18.5,1.8 17.8,1 17,1 Z"/>
+    <!-- 王冠 -->
+    <path android:fillColor="#F97316"
+        android:pathData="M2,18 L5,10 L9,14 L12,8 L15,14 L19,10 L22,18 Z"/>
+    <!-- 王冠底座 -->
+    <path android:fillColor="#EA580C"
+        android:pathData="M2,18 L22,18 L22,21 L2,21 Z"/>
+    <!-- 王冠宝石 -->
+    <path android:fillColor="#EC4899"
+        android:pathData="M12,8 m-1.5,0 a1.5,1.5 0 1,0 3,0 a1.5,1.5 0 1,0 -3,0"/>
+    <path android:fillColor="#EC4899"
+        android:pathData="M5,10 m-1,0 a1,1 0 1,0 2,0 a1,1 0 1,0 -2,0"/>
+    <path android:fillColor="#EC4899"
+        android:pathData="M19,10 m-1,0 a1,1 0 1,0 2,0 a1,1 0 1,0 -2,0"/>
+</vector>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 雁宝风格「分享」图标：兔耳+分享箭头 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <!-- 左兔耳 -->
+    <path android:fillColor="#EC4899"
+        android:pathData="M7,1 C6.2,1 5.5,1.8 5.5,3 L5.5,7 C5.5,7.8 6.2,8.5 7,8.5 C7.8,8.5 8.5,7.8 8.5,7 L8.5,3 C8.5,1.8 7.8,1 7,1 Z"/>
+    <!-- 右兔耳 -->
+    <path android:fillColor="#EC4899"
+        android:pathData="M17,1 C16.2,1 15.5,1.8 15.5,3 L15.5,7 C15.5,7.8 16.2,8.5 17,8.5 C17.8,8.5 18.5,7.8 18.5,7 L18.5,3 C18.5,1.8 17.8,1 17,1 Z"/>
+    <!-- 分享节点（右上） -->
+    <path android:fillColor="#F97316"
+        android:pathData="M19,7 m-2.5,0 a2.5,2.5 0 1,0 5,0 a2.5,2.5 0 1,0 -5,0"/>
+    <!-- 分享节点（左中） -->
+    <path android:fillColor="#EC4899"
+        android:pathData="M5,13 m-2.5,0 a2.5,2.5 0 1,0 5,0 a2.5,2.5 0 1,0 -5,0"/>
+    <!-- 分享节点（右下） -->
+    <path android:fillColor="#F97316"
+        android:pathData="M19,19 m-2.5,0 a2.5,2.5 0 1,0 5,0 a2.5,2.5 0 1,0 -5,0"/>
+    <!-- 连接线上 -->
+    <path android:strokeColor="#EC4899" android:strokeWidth="1.5"
+        android:pathData="M7,12 L17,9" android:fillColor="@android:color/transparent"/>
+    <!-- 连接线下 -->
+    <path android:strokeColor="#EC4899" android:strokeWidth="1.5"
+        android:pathData="M7,14 L17,17" android:fillColor="@android:color/transparent"/>
+</vector>

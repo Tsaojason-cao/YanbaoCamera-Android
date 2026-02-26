@@ -209,7 +209,7 @@ fun PhotoDetailScreen(
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_album_kuromi),
+                            painter = painterResource(id = R.drawable.ic_yanbao_gallery),
                             contentDescription = null,
                             tint = Color.White.copy(alpha = 0.3f),
                             modifier = Modifier.size(64.dp)
@@ -253,7 +253,7 @@ fun PhotoDetailScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_back_kuromi),
+                    painter = painterResource(id = R.drawable.ic_yanbao_back),
                     contentDescription = "返回",
                     tint = Color.White,
                     modifier = Modifier.size(20.dp)
@@ -276,7 +276,7 @@ fun PhotoDetailScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_memory_kuromi),
+                            painter = painterResource(id = R.drawable.ic_yanbao_memory),
                             contentDescription = null,
                             tint = Color.White,
                             modifier = Modifier.size(12.dp)
@@ -361,7 +361,7 @@ fun PhotoDetailScreen(
                 ) {
                     // 编辑
                     ActionButton(
-                        icon = R.drawable.ic_edit_kuromi,
+                        icon = R.drawable.ic_yanbao_edit,
                         label = "编辑",
                         onClick = {
                             photo?.contentUri?.let { uri ->
@@ -372,7 +372,7 @@ fun PhotoDetailScreen(
 
                     // 分享
                     ActionButton(
-                        icon = R.drawable.ic_share_kuromi,
+                        icon = R.drawable.ic_yanbao_share,
                         label = "分享",
                         onClick = {
                             photo?.contentUri?.let { uriStr ->

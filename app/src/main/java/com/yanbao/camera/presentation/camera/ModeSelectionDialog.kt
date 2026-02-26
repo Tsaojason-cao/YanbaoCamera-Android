@@ -72,7 +72,7 @@ fun ModeSelectionDialog(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_back_kuromi),
+                        painter = painterResource(R.drawable.ic_yanbao_back),
                         contentDescription = "返回",
                         tint = KUROMI_PINK,
                         modifier = Modifier
@@ -86,7 +86,7 @@ fun ModeSelectionDialog(
                         fontWeight = FontWeight.Bold
                     )
                     Icon(
-                        painter = painterResource(R.drawable.ic_home_kuromi),
+                        painter = painterResource(R.drawable.ic_yanbao_home),
                         contentDescription = "主页",
                         tint = KUROMI_PINK,
                         modifier = Modifier.size(28.dp)
@@ -97,8 +97,8 @@ fun ModeSelectionDialog(
 
                 // 2列×3行 模式卡片
                 val modes = listOf(
-                    Triple(R.drawable.ic_camera_kuromi, "照片", "Capture high-quality still\nimages with advanced YanBao\nAI enhancements and\noptimized settings."),
-                    Triple(R.drawable.ic_mode_video_kuromi, "视频", "Record smooth videos in\nvarious resolutions and frame\nrates, with AI stabilization."),
+                    Triple(R.drawable.ic_yanbao_camera, "照片", "Capture high-quality still\nimages with advanced YanBao\nAI enhancements and\noptimized settings."),
+                    Triple(R.drawable.ic_yanbao_video, "视频", "Record smooth videos in\nvarious resolutions and frame\nrates, with AI stabilization."),
                     Triple(R.drawable.ic_mode_beauty, "人像", "Create professional-looking\nportraits with artistic bokeh\nand studio lighting effects."),
                     Triple(R.drawable.ic_mode_basic, "全景", "Capture sweeping, wide-angle\nlandscape photos by moving\nthe camera across the scene."),
                     Triple(R.drawable.ic_mode_master, "电影效果", "Record cinematic videos with\nshallow depth of field and\nautomatic focus racking."),

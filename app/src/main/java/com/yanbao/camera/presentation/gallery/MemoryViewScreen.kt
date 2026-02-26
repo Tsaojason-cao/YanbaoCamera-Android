@@ -86,7 +86,7 @@ fun MemoryViewScreen(
                 .size(40.dp)
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_back_kuromi),
+                painter = painterResource(id = R.drawable.ic_yanbao_back),
                 contentDescription = "返回",
                 tint = Color.White
             )
@@ -228,7 +228,7 @@ private fun RelatedMemoryCard(item: MemoryItem, navController: NavController) {
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_album_kuromi),
+                painter = painterResource(id = R.drawable.ic_yanbao_gallery),
                 contentDescription = null,
                 tint = Color.White.copy(alpha = 0.5f),
                 modifier = Modifier.size(28.dp)

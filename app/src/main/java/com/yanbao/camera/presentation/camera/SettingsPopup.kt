@@ -84,7 +84,7 @@ fun SettingsPopupButton(
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     SettingsPopupItem(
-                        iconRes = R.drawable.ic_mode_master_kuromi,
+                        iconRes = R.drawable.ic_yanbao_master,
                         label = "大师模式",
                         isFirst = true,
                         onClick = {
@@ -93,7 +93,7 @@ fun SettingsPopupButton(
                         }
                     )
                     SettingsPopupItem(
-                        iconRes = R.drawable.ic_mode_beauty_kuromi,
+                        iconRes = R.drawable.ic_yanbao_beauty,
                         label = "一键美颜",
                         onClick = {
                             expanded = false
@@ -101,7 +101,7 @@ fun SettingsPopupButton(
                         }
                     )
                     SettingsPopupItem(
-                        iconRes = R.drawable.ic_mode_29d_kuromi,
+                        iconRes = R.drawable.ic_yanbao_29d,
                         label = "29D参数",
                         onClick = {
                             expanded = false
@@ -109,7 +109,7 @@ fun SettingsPopupButton(
                         }
                     )
                     SettingsPopupItem(
-                        iconRes = R.drawable.ic_share_kuromi,
+                        iconRes = R.drawable.ic_yanbao_share,
                         label = "分享",
                         onClick = {
                             expanded = false

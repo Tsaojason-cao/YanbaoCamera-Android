@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    雁宝风格「首页」图标
+    设计语言：兔耳轮廓 + 房屋形状，品牌粉 #EC4899
+    严禁 Emoji，纯矢量路径
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="28dp"
+    android:height="28dp"
+    android:viewportWidth="28"
+    android:viewportHeight="28">
+
+    <!-- 左兔耳 -->
+    <path
+        android:fillColor="#EC4899"
+        android:pathData="M6,2 C5,2 4,3 4,5 L4,10 C4,11 5,12 6,12 C7,12 8,11 8,10 L8,5 C8,3 7,2 6,2 Z" />
+    <!-- 左兔耳内粉 -->
+    <path
+        android:fillColor="#F9A8D4"
+        android:pathData="M6,3.5 C5.5,3.5 5,4 5,5 L5,9.5 C5,10 5.5,10.5 6,10.5 C6.5,10.5 7,10 7,9.5 L7,5 C7,4 6.5,3.5 6,3.5 Z" />
+
+    <!-- 右兔耳 -->
+    <path
+        android:fillColor="#EC4899"
+        android:pathData="M22,2 C21,2 20,3 20,5 L20,10 C20,11 21,12 22,12 C23,12 24,11 24,10 L24,5 C24,3 23,2 22,2 Z" />
+    <!-- 右兔耳内粉 -->
+    <path
+        android:fillColor="#F9A8D4"
+        android:pathData="M22,3.5 C21.5,3.5 21,4 21,5 L21,9.5 C21,10 21.5,10.5 22,10.5 C22.5,10.5 23,10 23,9.5 L23,5 C23,4 22.5,3.5 22,3.5 Z" />
+
+    <!-- 房屋主体（圆角矩形） -->
+    <path
+        android:fillColor="#EC4899"
+        android:pathData="M14,8 L4,15 L4,26 C4,26.5 4.5,27 5,27 L11,27 L11,21 C11,19.5 12.5,18 14,18 C15.5,18 17,19.5 17,21 L17,27 L23,27 C23.5,27 24,26.5 24,26 L24,15 Z" />
+
+    <!-- 屋顶三角 -->
+    <path
+        android:fillColor="#BE185D"
+        android:pathData="M14,7 L2,16 L4,16 L14,9 L24,16 L26,16 Z" />
+
+    <!-- 门 -->
+    <path
+        android:fillColor="#0A0A0A"
+        android:pathData="M11,21 C11,19.5 12.5,18 14,18 C15.5,18 17,19.5 17,21 L17,27 L11,27 Z" />
+</vector>

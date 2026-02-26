@@ -101,7 +101,7 @@ fun LbsScreen(
                     .background(OBSIDIAN_BLACK.copy(alpha = 0.7f), CircleShape)
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_back_kuromi),
+                    painter = painterResource(id = R.drawable.ic_yanbao_back),
                     contentDescription = "返回",
                     tint = Color.White,
                     modifier = Modifier.size(20.dp)

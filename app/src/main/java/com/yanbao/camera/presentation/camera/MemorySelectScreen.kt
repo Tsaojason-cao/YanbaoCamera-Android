@@ -181,7 +181,7 @@ fun MemoryTopBar(
                     .padding(horizontal = 12.dp, vertical = 8.dp)
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_back_kuromi),
+                    painter = painterResource(R.drawable.ic_yanbao_back),
                     contentDescription = "返回",
                     tint = Color.White,
                     modifier = Modifier.size(20.dp)
@@ -222,7 +222,7 @@ fun MemoryTopBar(
                     .padding(horizontal = 12.dp, vertical = 8.dp)
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_home_kuromi),
+                    painter = painterResource(R.drawable.ic_yanbao_home),
                     contentDescription = "主页",
                     tint = Color.White,
                     modifier = Modifier.size(20.dp)
@@ -272,7 +272,7 @@ fun MemoryListItem(
                 )
             } else {
                 Icon(
-                    painter = painterResource(R.drawable.ic_album_kuromi),
+                    painter = painterResource(R.drawable.ic_yanbao_gallery),
                     contentDescription = null,
                     tint = KUROMI_PINK,
                     modifier = Modifier

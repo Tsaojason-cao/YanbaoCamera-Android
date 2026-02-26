@@ -219,7 +219,7 @@ fun MemoryPreview(
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_memory_kuromi),
+                        painter = painterResource(id = R.drawable.ic_yanbao_memory),
                         contentDescription = null,
                         tint = KUROMI_PINK.copy(alpha = 0.5f),
                         modifier = Modifier.size(28.dp)
@@ -267,8 +267,8 @@ private fun MemoryCard(memory: MemoryItem) {
                 contentDescription = memory.locationName,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize(),
-                error = painterResource(id = R.drawable.ic_memory_kuromi),
-                placeholder = painterResource(id = R.drawable.ic_memory_kuromi)
+                error = painterResource(id = R.drawable.ic_yanbao_memory),
+                placeholder = painterResource(id = R.drawable.ic_yanbao_memory)
             )
             // 记忆标签
             Box(
@@ -341,7 +341,7 @@ fun GalleryPreview(
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_album_kuromi),
+                        painter = painterResource(id = R.drawable.ic_yanbao_gallery),
                         contentDescription = null,
                         tint = KUROMI_PINK.copy(alpha = 0.5f),
                         modifier = Modifier.size(28.dp)
@@ -370,7 +370,7 @@ fun GalleryPreview(
                             contentDescription = "照片 ${index + 1}",
                             contentScale = ContentScale.Crop,
                             modifier = Modifier.fillMaxSize(),
-                            error = painterResource(id = R.drawable.ic_album_kuromi)
+                            error = painterResource(id = R.drawable.ic_yanbao_gallery)
                         )
                     }
                 }
@@ -413,11 +413,11 @@ fun MainShutterSection(
                     contentDescription = "最近照片",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.fillMaxSize(),
-                    error = painterResource(id = R.drawable.ic_album_kuromi)
+                    error = painterResource(id = R.drawable.ic_yanbao_gallery)
                 )
             } else {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_album_kuromi),
+                    painter = painterResource(id = R.drawable.ic_yanbao_gallery),
                     contentDescription = "相册",
                     tint = Color.White.copy(alpha = 0.6f),
                     modifier = Modifier.size(24.dp)

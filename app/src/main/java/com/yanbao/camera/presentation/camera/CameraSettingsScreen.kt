@@ -71,28 +71,28 @@ fun CameraSettingsScreen(
 
             // 4个功能按钮
             SettingsMenuButton(
-                iconRes = R.drawable.ic_mode_master_kuromi,
+                iconRes = R.drawable.ic_yanbao_master,
                 label = "大师模式",
                 onClick = onMasterModeClick
             )
             Spacer(modifier = Modifier.height(16.dp))
 
             SettingsMenuButton(
-                iconRes = R.drawable.ic_mode_beauty_kuromi,
+                iconRes = R.drawable.ic_yanbao_beauty,
                 label = "一键美颜",
                 onClick = onBeautyClick
             )
             Spacer(modifier = Modifier.height(16.dp))
 
             SettingsMenuButton(
-                iconRes = R.drawable.ic_mode_29d_kuromi,
+                iconRes = R.drawable.ic_yanbao_29d,
                 label = "29D参数",
                 onClick = on29DClick
             )
             Spacer(modifier = Modifier.height(16.dp))
 
             SettingsMenuButton(
-                iconRes = R.drawable.ic_share_kuromi,
+                iconRes = R.drawable.ic_yanbao_share,
                 label = "分享",
                 onClick = onShareClick
             )
@@ -127,7 +127,7 @@ fun SettingsTopBar(
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                painter = painterResource(R.drawable.ic_back_kuromi),
+                painter = painterResource(R.drawable.ic_yanbao_back),
                 contentDescription = "返回",
                 tint = Color.White,
                 modifier = Modifier.size(20.dp)
@@ -153,7 +153,7 @@ fun SettingsTopBar(
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                painter = painterResource(R.drawable.ic_home_kuromi),
+                painter = painterResource(R.drawable.ic_yanbao_home),
                 contentDescription = "主页",
                 tint = Color.White,
                 modifier = Modifier.size(20.dp)

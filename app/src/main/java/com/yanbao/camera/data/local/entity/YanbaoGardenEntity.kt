@@ -56,5 +56,7 @@ data class YanbaoGardenPrivilegeEntity(
     /** 是否已解锁去水印特权 */
     val isWatermarkRemoved: Boolean = false,
     /** 是否已解锁独家贴纸包 */
-    val isExclusiveStickerUnlocked: Boolean = false
+    val isExclusiveStickerUnlocked: Boolean = false,
+    /** 今日已使用大师滤镜次数（用于特权消耗计数） */
+    val masterFilterUsedToday: Int = 0
 )

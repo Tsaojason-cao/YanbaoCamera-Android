@@ -189,7 +189,7 @@ private fun GardenTopBar(onBack: () -> Unit) {
             contentAlignment = Alignment.Center
         ) {
             Icon(
-                painter = painterResource(R.drawable.ic_back_kuromi),
+                painter = painterResource(R.drawable.ic_yanbao_back),
                 contentDescription = "返回",
                 tint = Color.White,
                 modifier = Modifier.size(18.dp)
@@ -652,14 +652,14 @@ private fun UnlockedPrivilegesCard(
     modifier: Modifier = Modifier
 ) {
     val allPrivileges = listOf(
-        PrivilegeItem("专属粉色主题", currentLevel >= 1, R.drawable.ic_profile_kuromi, "银爪解锁"),
+        PrivilegeItem("专属粉色主题", currentLevel >= 1, R.drawable.ic_yanbao_profile, "银爪解锁"),
         PrivilegeItem("雁宝贴纸包 Vol.1", isExclusiveStickerUnlocked, R.drawable.ic_tool_sticker_kuromi, "银爪解锁"),
         PrivilegeItem("去水印导出", isWatermarkRemoved, R.drawable.ic_watermark_kuromi, "金爪解锁"),
         PrivilegeItem("独家滤镜 x5", currentLevel >= 2, R.drawable.ic_filter, "金爪解锁"),
         PrivilegeItem("雁宝贴纸包 Vol.2", currentLevel >= 2, R.drawable.ic_tool_sticker_kuromi, "金爪解锁"),
         PrivilegeItem("VIP 功能解锁", isVipUnlocked, R.drawable.ic_member_badge, "钻石爪解锁"),
         PrivilegeItem("所有独家滤镜", currentLevel >= 3, R.drawable.ic_filter, "钻石爪解锁"),
-        PrivilegeItem("优先推荐展示", currentLevel >= 3, R.drawable.ic_recommend_kuromi, "钻石爪解锁")
+        PrivilegeItem("优先推荐展示", currentLevel >= 3, R.drawable.ic_yanbao_recommend, "钻石爪解锁")
     )
 
     Card(
@@ -954,7 +954,7 @@ private fun LimitReachedDialog(
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_info_kuromi),
+                    painter = painterResource(R.drawable.ic_yanbao_info),
                     contentDescription = null,
                     tint = CarrotOrange,
                     modifier = Modifier.size(40.dp)

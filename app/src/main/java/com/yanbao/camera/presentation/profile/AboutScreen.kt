@@ -35,7 +35,7 @@ fun AboutScreen(onBackClick: () -> Unit = {}) {
         Column(modifier = Modifier.fillMaxWidth().padding(24.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(24.dp)) {
             Spacer(modifier = Modifier.height(24.dp))
             Box(modifier = Modifier.size(100.dp).clip(CircleShape).background(Brush.radialGradient(listOf(KUROMI_PURPLE_A, KUROMI_PINK_A))), contentAlignment = Alignment.Center) {
-                Icon(painter = painterResource(id = R.drawable.ic_camera_kuromi), contentDescription = "Logo", tint = Color.White, modifier = Modifier.size(52.dp))
+                Icon(painter = painterResource(id = R.drawable.ic_yanbao_camera), contentDescription = "Logo", tint = Color.White, modifier = Modifier.size(52.dp))
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text("yanbao AI", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color.White)

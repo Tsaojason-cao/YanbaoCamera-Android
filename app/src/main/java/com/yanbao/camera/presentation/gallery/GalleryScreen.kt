@@ -137,7 +137,7 @@ fun GalleryScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Icon(painter = painterResource(id = R.drawable.ic_album_kuromi), contentDescription = null, tint = Color.White.copy(alpha = 0.3f), modifier = Modifier.size(64.dp))
+                    Icon(painter = painterResource(id = R.drawable.ic_yanbao_gallery), contentDescription = null, tint = Color.White.copy(alpha = 0.3f), modifier = Modifier.size(64.dp))
                     Text(text = "暂无照片", color = Color.White.copy(alpha = 0.4f), fontSize = 15.sp)
                 }
             }
@@ -170,7 +170,7 @@ fun GalleryScreen(
                         context.startActivity(Intent.createChooser(intent, "分享照片"))
                     }
                 }) {
-                    Icon(painter = painterResource(id = R.drawable.ic_share_kuromi), contentDescription = "分享", tint = KUROMI_PINK, modifier = Modifier.size(24.dp))
+                    Icon(painter = painterResource(id = R.drawable.ic_yanbao_share), contentDescription = "分享", tint = KUROMI_PINK, modifier = Modifier.size(24.dp))
                     Spacer(modifier = Modifier.height(4.dp))
                     Text("分享", color = KUROMI_PINK, fontSize = 12.sp)
                 }

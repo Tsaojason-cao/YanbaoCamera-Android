@@ -117,7 +117,7 @@ fun EditScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_album_kuromi),
+                        painter = painterResource(id = R.drawable.ic_yanbao_gallery),
                         contentDescription = null,
                         tint = Color.White.copy(alpha = 0.3f),
                         modifier = Modifier.size(56.dp)
@@ -281,7 +281,7 @@ private fun TopToolbar(
     ) {
         IconButton(onClick = onBackClick) {
             Icon(
-                painter = painterResource(id = R.drawable.ic_back_kuromi),
+                painter = painterResource(id = R.drawable.ic_yanbao_back),
                 contentDescription = "返回",
                 tint = Color.White
             )
@@ -295,14 +295,14 @@ private fun TopToolbar(
         Row {
             IconButton(onClick = onPickPhoto) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_album_kuromi),
+                    painter = painterResource(id = R.drawable.ic_yanbao_gallery),
                     contentDescription = "选择照片",
                     tint = Color.White
                 )
             }
             IconButton(onClick = onMemoryClick) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_memory_kuromi),
+                    painter = painterResource(id = R.drawable.ic_yanbao_memory),
                     contentDescription = "雁宝记忆",
                     tint = KUROMI_PINK
                 )
@@ -601,7 +601,7 @@ private fun MemoryPanel(
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Icon(
-                                painter = painterResource(id = R.drawable.ic_memory_kuromi),
+                                painter = painterResource(id = R.drawable.ic_yanbao_memory),
                                 contentDescription = null,
                                 tint = Color.White.copy(alpha = 0.3f),
                                 modifier = Modifier.size(48.dp)

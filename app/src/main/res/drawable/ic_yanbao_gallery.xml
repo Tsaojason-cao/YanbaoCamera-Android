@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    雁宝风格「相册」图标
+    设计语言：相框 + 顶部兔耳，品牌粉 #EC4899
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="28dp"
+    android:height="28dp"
+    android:viewportWidth="28"
+    android:viewportHeight="28">
+
+    <!-- 左兔耳 -->
+    <path
+        android:fillColor="#EC4899"
+        android:pathData="M8,1 C7,1 6,2 6,3.5 L6,8 C6,9 7,10 8,10 C9,10 10,9 10,8 L10,3.5 C10,2 9,1 8,1 Z" />
+    <path
+        android:fillColor="#F9A8D4"
+        android:pathData="M8,2.5 C7.5,2.5 7,3 7,3.5 L7,7.5 C7,8 7.5,8.5 8,8.5 C8.5,8.5 9,8 9,7.5 L9,3.5 C9,3 8.5,2.5 8,2.5 Z" />
+
+    <!-- 右兔耳 -->
+    <path
+        android:fillColor="#EC4899"
+        android:pathData="M20,1 C19,1 18,2 18,3.5 L18,8 C18,9 19,10 20,10 C21,10 22,9 22,8 L22,3.5 C22,2 21,1 20,1 Z" />
+    <path
+        android:fillColor="#F9A8D4"
+        android:pathData="M20,2.5 C19.5,2.5 19,3 19,3.5 L19,7.5 C19,8 19.5,8.5 20,8.5 C20.5,8.5 21,8 21,7.5 L21,3.5 C21,3 20.5,2.5 20,2.5 Z" />
+
+    <!-- 相框外框 -->
+    <path
+        android:fillColor="#EC4899"
+        android:pathData="M4,10 C4,9 5,8 6,8 L22,8 C23,8 24,9 24,10 L24,24 C24,25 23,26 22,26 L6,26 C5,26 4,25 4,24 Z" />
+
+    <!-- 相框内白 -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M6,11 L22,11 L22,22 L6,22 Z" />
+
+    <!-- 山景（风景照片示意） -->
+    <path
+        android:fillColor="#F9A8D4"
+        android:pathData="M6,22 L11,16 L15,19 L18,15 L22,22 Z" />
+
+    <!-- 太阳（小圆点） -->
+    <path
+        android:fillColor="#F97316"
+        android:pathData="M19,13 m-1.5,0 a1.5,1.5 0 1,0 3,0 a1.5,1.5 0 1,0 -3,0" />
+
+    <!-- 底部页码点 -->
+    <path
+        android:fillColor="#0A0A0A"
+        android:pathData="M12,24 m-1,0 a1,1 0 1,0 2,0 a1,1 0 1,0 -2,0" />
+    <path
+        android:fillColor="#BE185D"
+        android:pathData="M14,24 m-1,0 a1,1 0 1,0 2,0 a1,1 0 1,0 -2,0" />
+    <path
+        android:fillColor="#0A0A0A"
+        android:pathData="M16,24 m-1,0 a1,1 0 1,0 2,0 a1,1 0 1,0 -2,0" />
+</vector>

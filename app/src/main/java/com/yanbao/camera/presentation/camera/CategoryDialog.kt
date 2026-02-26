@@ -91,7 +91,7 @@ fun CategoryDialog(
                         fontWeight = FontWeight.Bold
                     )
                     Icon(
-                        painter = painterResource(R.drawable.ic_camera_kuromi),
+                        painter = painterResource(R.drawable.ic_yanbao_camera),
                         contentDescription = "相机",
                         tint = Color.White,
                         modifier = Modifier.size(28.dp)

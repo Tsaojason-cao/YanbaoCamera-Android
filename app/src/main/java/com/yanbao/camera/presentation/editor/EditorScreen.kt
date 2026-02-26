@@ -147,7 +147,7 @@ fun EditorScreen(
         ) {
             IconButton(onClick = onNavigateBack) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_back_kuromi),
+                    painter = painterResource(id = R.drawable.ic_yanbao_back),
                     contentDescription = "返回",
                     tint = Color.White,
                     modifier = Modifier.size(22.dp)
@@ -213,7 +213,7 @@ fun EditorScreen(
                 )
             } else {
                 Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Icon(painter = painterResource(id = R.drawable.ic_album_kuromi), contentDescription = null, tint = Color.White.copy(alpha = 0.3f), modifier = Modifier.size(56.dp))
+                    Icon(painter = painterResource(id = R.drawable.ic_yanbao_gallery), contentDescription = null, tint = Color.White.copy(alpha = 0.3f), modifier = Modifier.size(56.dp))
                     Text(text = "从相册选择照片开始编辑", color = Color.White.copy(alpha = 0.5f), fontSize = 14.sp)
                     Box(
                         modifier = Modifier

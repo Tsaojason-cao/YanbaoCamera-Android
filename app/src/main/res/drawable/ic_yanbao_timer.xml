@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 雁宝风格「定时」图标：品牌粉时钟 -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp" android:height="24dp"
+    android:viewportWidth="24" android:viewportHeight="24">
+    <!-- 左兔耳 -->
+    <path android:fillColor="#EC4899"
+        android:pathData="M8,1 C7.2,1 6.5,1.8 6.5,3 L6.5,7 C6.5,7.8 7.2,8.5 8,8.5 C8.8,8.5 9.5,7.8 9.5,7 L9.5,3 C9.5,1.8 8.8,1 8,1 Z"/>
+    <!-- 右兔耳 -->
+    <path android:fillColor="#EC4899"
+        android:pathData="M16,1 C15.2,1 14.5,1.8 14.5,3 L14.5,7 C14.5,7.8 15.2,8.5 16,8.5 C16.8,8.5 17.5,7.8 17.5,7 L17.5,3 C17.5,1.8 16.8,1 16,1 Z"/>
+    <!-- 时钟外圈 -->
+    <path android:fillColor="#EC4899"
+        android:pathData="M12,8 m-7,0 a7,7 0 1,0 14,0 a7,7 0 1,0 -14,0"/>
+    <!-- 时钟内圈 -->
+    <path android:fillColor="#0A0A0A"
+        android:pathData="M12,8 m-5.5,0 a5.5,5.5 0 1,0 11,0 a5.5,5.5 0 1,0 -11,0"/>
+    <!-- 时针 -->
+    <path android:strokeColor="#EC4899" android:strokeWidth="1.5"
+        android:pathData="M12,8 L12,4.5" android:fillColor="@android:color/transparent"/>
+    <!-- 分针 -->
+    <path android:strokeColor="#F97316" android:strokeWidth="1.5"
+        android:pathData="M12,8 L15,10" android:fillColor="@android:color/transparent"/>
+    <!-- 中心点 -->
+    <path android:fillColor="#EC4899"
+        android:pathData="M12,8 m-1,0 a1,1 0 1,0 2,0 a1,1 0 1,0 -2,0"/>
+</vector>

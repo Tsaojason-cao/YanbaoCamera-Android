@@ -127,7 +127,7 @@ fun ProfileScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_back_kuromi),
+                        painter = painterResource(R.drawable.ic_yanbao_back),
                         contentDescription = "返回",
                         tint = Color.White,
                         modifier = Modifier.size(18.dp)
@@ -154,7 +154,7 @@ fun ProfileScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_edit_kuromi),
+                        painter = painterResource(R.drawable.ic_yanbao_edit),
                         contentDescription = "编辑资料",
                         tint = Color.White,
                         modifier = Modifier.size(18.dp)
@@ -197,7 +197,7 @@ fun ProfileScreen(
                             )
                         } else {
                             Icon(
-                                painter = painterResource(R.drawable.ic_camera_kuromi),
+                                painter = painterResource(R.drawable.ic_yanbao_camera),
                                 contentDescription = "头像",
                                 tint = Color.White.copy(alpha = 0.5f),
                                 modifier = Modifier.size(36.dp)
@@ -234,7 +234,7 @@ fun ProfileScreen(
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Icon(
-                        painter = painterResource(R.drawable.ic_edit_kuromi),
+                        painter = painterResource(R.drawable.ic_yanbao_edit),
                         contentDescription = "编辑ID",
                         tint = Color.White.copy(alpha = 0.4f),
                         modifier = Modifier.size(12.dp)
@@ -381,7 +381,7 @@ fun ProfileScreen(
                     SettingDivider()
                     // 5. 我的雁宝记忆
                     SettingItem(
-                        iconRes = R.drawable.ic_memory_kuromi,
+                        iconRes = R.drawable.ic_yanbao_memory,
                         title = "我的雁宝记忆",
                         subtitle = "${stats.memoriesCount}个",
                         onClick = { android.util.Log.d("ProfileScreen", "雁宝记忆页") }
@@ -619,7 +619,7 @@ private fun SettingItem(
         }
         if (showArrow) {
             Icon(
-                painter = painterResource(R.drawable.ic_back_kuromi),
+                painter = painterResource(R.drawable.ic_yanbao_back),
                 contentDescription = null,
                 tint = Color.White.copy(alpha = 0.3f),
                 modifier = Modifier
@@ -828,7 +828,7 @@ fun YanbaoGardenEntryCard(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_back_kuromi),
+                    painter = painterResource(R.drawable.ic_yanbao_back),
                     contentDescription = "进入园地",
                     tint = Color(0xFFF97316),
                     modifier = Modifier

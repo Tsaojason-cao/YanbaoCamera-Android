@@ -70,4 +70,21 @@ interface YanbaoGardenDao {
 
     @Query("UPDATE yanbao_garden_privilege SET isExclusiveStickerUnlocked = :unlocked WHERE id = 1")
     suspend fun setExclusiveStickerUnlocked(unlocked: Boolean)
+
+    /**
+     * 大师滤镜特权消耗：增加今日使用次数
+     *
+     * @param todayStr 今日日期字符串（yyyy-MM-dd），用于跨日重置
+     */
+    @Query("""
+        UPDATE yanbao_garden_privilege 
+        SET masterFilterUsedToday = CASE 
+            WHEN todayDateStr = :todayStr THEN masterFilterUsedToday + 1
+            ELSE 1
+        END,
+        todayDateStr = :todayStr
+        WHERE id = 1
+    """)
+    suspend fun incrementMasterFilterUsed(todayStr: String)
+
 }

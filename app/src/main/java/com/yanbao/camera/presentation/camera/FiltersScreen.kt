@@ -104,7 +104,7 @@ fun FiltersScreen(
                             horizontalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
                             Icon(
-                                painter = painterResource(R.drawable.ic_camera_kuromi),
+                                painter = painterResource(R.drawable.ic_yanbao_camera),
                                 contentDescription = null,
                                 tint = Color.White,
                                 modifier = Modifier.size(16.dp)
@@ -119,7 +119,7 @@ fun FiltersScreen(
                     }
 
                     Icon(
-                        painter = painterResource(R.drawable.ic_camera_kuromi),
+                        painter = painterResource(R.drawable.ic_yanbao_camera),
                         contentDescription = "相机",
                         tint = Color.White,
                         modifier = Modifier.size(28.dp)
@@ -134,7 +134,7 @@ fun FiltersScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_back_kuromi),
+                        painter = painterResource(R.drawable.ic_yanbao_back),
                         contentDescription = "上一页",
                         tint = KUROMI_PINK,
                         modifier = Modifier

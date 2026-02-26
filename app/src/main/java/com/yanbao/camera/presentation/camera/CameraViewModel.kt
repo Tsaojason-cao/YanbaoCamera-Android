@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.yanbao.camera.camera.Camera2Manager
 import com.yanbao.camera.core.util.CameraPreferencesManager
+import com.yanbao.camera.core.util.GitBackupManager
 import com.yanbao.camera.data.database.AppDatabase
 import com.yanbao.camera.data.database.MemoryEntity
 import com.yanbao.camera.filter.MasterFilterManager
@@ -39,6 +40,8 @@ class CameraViewModel @Inject constructor(
 
     // SharedPreferences 状态持久化管理器
     private val prefsManager = CameraPreferencesManager(application)
+    // Git 增量备份管理器（拍照即备份）
+    private val gitBackupManager = GitBackupManager(application)
 
     // ── 当前模式（从持久化恢复） ──────────────────────────────────────────────
     private val _currentMode = MutableStateFlow<CameraMode>(
@@ -366,6 +369,27 @@ class CameraViewModel @Inject constructor(
             )
             db.memoryDao().insert(memory)
             Log.d("CameraViewModel", "Memory saved: $photoPath, isVideo=$isVideo")
+
+            // ── Git 增量备份 Hook（拍照即备份，确保换号后数据不丢失）──────────
+            try {
+                // 初始化 Git 仓库（首次调用时创建，后续幂等）
+                gitBackupManager.initGitRepo()
+                // 备份数据库和配置文件
+                gitBackupManager.backupDatabase()
+                gitBackupManager.backupSharedPreferences()
+                // 提交到本地 Git 仓库
+                val commitMsg = if (isVideo) {
+                    "video_saved: ${java.io.File(photoPath).name} [mode=${currentMode.value.name}]"
+                } else {
+                    "photo_saved: ${java.io.File(photoPath).name} [mode=${currentMode.value.name}]"
+                }
+                val result = gitBackupManager.commitToGit(commitMsg)
+                result.onSuccess { Log.i("GIT_BACKUP", "备份成功: $it") }
+                result.onFailure { Log.w("GIT_BACKUP", "备份失败（非阻塞）: ${it.message}") }
+            } catch (e: Exception) {
+                // Git 备份失败不影响拍照主流程
+                Log.w("GIT_BACKUP", "Git 备份异常（非阻塞）: ${e.message}")
+            }
         }
     }
 

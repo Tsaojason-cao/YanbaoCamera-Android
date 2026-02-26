@@ -89,7 +89,7 @@ fun MemoryDetailScreen(
                         .padding(horizontal = 12.dp, vertical = 8.dp)
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_back_kuromi),
+                        painter = painterResource(R.drawable.ic_yanbao_back),
                         contentDescription = "返回",
                         tint = Color.White,
                         modifier = Modifier.size(20.dp)
@@ -114,7 +114,7 @@ fun MemoryDetailScreen(
                         .padding(horizontal = 12.dp, vertical = 8.dp)
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_home_kuromi),
+                        painter = painterResource(R.drawable.ic_yanbao_home),
                         contentDescription = "主页",
                         tint = Color.White,
                         modifier = Modifier.size(20.dp)
@@ -156,7 +156,7 @@ fun MemoryDetailScreen(
                         )
                     } else {
                         Icon(
-                            painter = painterResource(R.drawable.ic_album_kuromi),
+                            painter = painterResource(R.drawable.ic_yanbao_gallery),
                             contentDescription = null,
                             tint = KUROMI_PINK.copy(alpha = 0.5f),
                             modifier = Modifier
@@ -188,8 +188,8 @@ fun MemoryDetailScreen(
                     .padding(16.dp)
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    MemoryInfoRow(iconRes = R.drawable.ic_album_kuromi, label = "名称", value = memory.name)
-                    MemoryInfoRow(iconRes = R.drawable.ic_timer_kuromi, label = "日期", value = memory.date)
+                    MemoryInfoRow(iconRes = R.drawable.ic_yanbao_gallery, label = "名称", value = memory.name)
+                    MemoryInfoRow(iconRes = R.drawable.ic_yanbao_timer, label = "日期", value = memory.date)
                     MemoryInfoRow(iconRes = R.drawable.ic_location_kuromi, label = "地点", value = memory.location)
                     MemoryInfoRow(iconRes = R.drawable.ic_kuromi_small, label = "心情", value = memory.mood)
                     MemoryInfoRow(iconRes = R.drawable.ic_kuromi_mark, label = "美德", value = memory.virtue)

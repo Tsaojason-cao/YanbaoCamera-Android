@@ -259,3 +259,111 @@ data class TodayFeedStatus(
     val canFeedNormal: Boolean,
     val canFeedByShare: Boolean
 )
+
+// ─── 大师特权消耗接口（补全会员特权闭环）────────────────────────────────────
+
+/**
+ * 检查是否有大师滤镜特权
+ *
+ * 规则：特权等级 >= 1（银爪雁宝，累计喂食 10 次）即可使用大师滤镜。
+ * VIP 等级（等级 3）无限次使用；其余等级每日消耗 1 次特权次数。
+ *
+ * @return MasterPrivilegeStatus 特权状态
+ */
+suspend fun checkMasterPrivilege(): MasterPrivilegeStatus {
+    val privilege = gardenDao.getPrivilege()
+    return when {
+        privilege == null -> MasterPrivilegeStatus.NoPrivilege(
+            message = "喂食雁宝 10 次即可解锁大师滤镜特权",
+            totalFeedRequired = 10
+        )
+        privilege.isVipUnlocked -> MasterPrivilegeStatus.VipUnlimited(
+            level = privilege.privilegeLevel,
+            levelName = PRIVILEGE_THRESHOLDS.getOrNull(privilege.privilegeLevel)?.second ?: "钻石爪雁宝"
+        )
+        privilege.privilegeLevel >= 1 -> {
+            val today = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(java.util.Date())
+            val usedToday = if (privilege.todayDateStr == today) privilege.masterFilterUsedToday else 0
+            val dailyLimit = when (privilege.privilegeLevel) {
+                1 -> 3   // 银爪：每日 3 次
+                2 -> 10  // 金爪：每日 10 次
+                else -> Int.MAX_VALUE
+            }
+            if (usedToday < dailyLimit) {
+                MasterPrivilegeStatus.HasPrivilege(
+                    level = privilege.privilegeLevel,
+                    levelName = PRIVILEGE_THRESHOLDS.getOrNull(privilege.privilegeLevel)?.second ?: "银爪雁宝",
+                    remainingToday = dailyLimit - usedToday,
+                    dailyLimit = dailyLimit
+                )
+            } else {
+                MasterPrivilegeStatus.DailyLimitReached(
+                    message = "今日大师滤镜次数已用完，明天再来或喂食雁宝升级",
+                    level = privilege.privilegeLevel
+                )
+            }
+        }
+        else -> MasterPrivilegeStatus.NoPrivilege(
+            message = "累计喂食 ${10 - privilege.totalFeedCount} 次即可解锁大师滤镜",
+            totalFeedRequired = 10 - privilege.totalFeedCount
+        )
+    }
+}
+
+/**
+ * 消耗一次大师滤镜特权
+ *
+ * 调用前必须先调用 checkMasterPrivilege() 确认有权限。
+ * VIP 用户无需消耗（isVipUnlocked = true 时直接返回成功）。
+ *
+ * @return true 消耗成功，false 消耗失败（无权限或已达上限）
+ */
+suspend fun consumeMasterPrivilege(): Boolean {
+    val privilege = gardenDao.getPrivilege() ?: return false
+    if (privilege.isVipUnlocked) return true  // VIP 无限次，不消耗
+    if (privilege.privilegeLevel < 1) return false
+
+    val today = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()).format(java.util.Date())
+    val usedToday = if (privilege.todayDateStr == today) privilege.masterFilterUsedToday else 0
+    val dailyLimit = when (privilege.privilegeLevel) {
+        1 -> 3
+        2 -> 10
+        else -> Int.MAX_VALUE
+    }
+    if (usedToday >= dailyLimit) return false
+
+    // 扣减次数
+    gardenDao.incrementMasterFilterUsed(today)
+    Log.d(TAG, "大师滤镜特权已消耗，今日已用 ${usedToday + 1}/$dailyLimit 次")
+    return true
+}
+
+// ─── 大师特权状态密封类 ──────────────────────────────────────────────────────
+
+sealed class MasterPrivilegeStatus {
+    /** 有特权，可以使用大师滤镜 */
+    data class HasPrivilege(
+        val level: Int,
+        val levelName: String,
+        val remainingToday: Int,
+        val dailyLimit: Int
+    ) : MasterPrivilegeStatus()
+
+    /** VIP 无限次使用 */
+    data class VipUnlimited(
+        val level: Int,
+        val levelName: String
+    ) : MasterPrivilegeStatus()
+
+    /** 无特权（未达到银爪等级） */
+    data class NoPrivilege(
+        val message: String,
+        val totalFeedRequired: Int
+    ) : MasterPrivilegeStatus()
+
+    /** 今日次数已达上限 */
+    data class DailyLimitReached(
+        val message: String,
+        val level: Int
+    ) : MasterPrivilegeStatus()
+}

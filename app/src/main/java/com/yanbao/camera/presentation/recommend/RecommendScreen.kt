@@ -73,7 +73,7 @@ fun RecommendScreen(
                     .padding(start = 8.dp)
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.ic_back_kuromi),
+                    painter = painterResource(id = R.drawable.ic_yanbao_back),
                     contentDescription = "返回",
                     tint = Color.White,
                     modifier = Modifier.size(24.dp)

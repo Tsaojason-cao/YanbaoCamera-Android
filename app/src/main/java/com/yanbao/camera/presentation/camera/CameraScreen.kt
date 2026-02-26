@@ -372,22 +372,22 @@ fun CameraTopBar(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             IconButton(onClick = onBackClick, modifier = Modifier.size(36.dp)) {
-                Icon(painterResource(R.drawable.ic_back_kuromi), "返回", tint = Color.White, modifier = Modifier.size(18.dp))
+                Icon(painterResource(R.drawable.ic_yanbao_back), "返回", tint = Color.White, modifier = Modifier.size(18.dp))
             }
             IconButton(onClick = onHomeClick, modifier = Modifier.size(36.dp)) {
-                Icon(painterResource(R.drawable.ic_home_kuromi), "主页", tint = Color.White, modifier = Modifier.size(18.dp))
+                Icon(painterResource(R.drawable.ic_yanbao_home), "主页", tint = Color.White, modifier = Modifier.size(18.dp))
             }
             IconButton(onClick = onFlashClick, modifier = Modifier.size(36.dp)) {
-                Icon(painterResource(R.drawable.ic_flash_kuromi), "闪光灯", tint = Color.White, modifier = Modifier.size(18.dp))
+                Icon(painterResource(R.drawable.ic_yanbao_flash), "闪光灯", tint = Color.White, modifier = Modifier.size(18.dp))
             }
             IconButton(onClick = onTimerClick, modifier = Modifier.size(36.dp)) {
-                Icon(painterResource(R.drawable.ic_timer_kuromi), "定时", tint = Color.White, modifier = Modifier.size(18.dp))
+                Icon(painterResource(R.drawable.ic_yanbao_timer), "定时", tint = Color.White, modifier = Modifier.size(18.dp))
             }
             IconButton(onClick = onPhotoModeClick, modifier = Modifier.size(36.dp)) {
-                Icon(painterResource(R.drawable.ic_camera_kuromi), "拍照", tint = Color.White, modifier = Modifier.size(18.dp))
+                Icon(painterResource(R.drawable.ic_yanbao_camera), "拍照", tint = Color.White, modifier = Modifier.size(18.dp))
             }
             IconButton(onClick = onVideoModeClick, modifier = Modifier.size(36.dp)) {
-                Icon(painterResource(R.drawable.ic_mode_video_kuromi), "录像", tint = Color.White, modifier = Modifier.size(18.dp))
+                Icon(painterResource(R.drawable.ic_yanbao_video), "录像", tint = Color.White, modifier = Modifier.size(18.dp))
             }
             // 延宝记忆（库洛米图标 + 文字）
             Column(
@@ -397,7 +397,7 @@ fun CameraTopBar(
                     .padding(horizontal = 4.dp)
             ) {
                 Icon(
-                    painterResource(R.drawable.ic_memory_kuromi),
+                    painterResource(R.drawable.ic_yanbao_memory),
                     "延宝记忆",
                     tint = KUROMI_PINK,
                     modifier = Modifier.size(18.dp)
