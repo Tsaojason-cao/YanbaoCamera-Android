@@ -41,6 +41,7 @@ import com.yanbao.camera.presentation.theme.PRIMARY_PINK
 import com.yanbao.camera.presentation.profile.PrivacyScreen
 import com.yanbao.camera.presentation.profile.HelpScreen
 import com.yanbao.camera.presentation.profile.AboutScreen
+import com.yanbao.camera.presentation.profile.YanbaoGardenScreen
 
 /**
  * 雁寶AI相机主应用框架（NavController + 手势返回 + 页面切换动画）
@@ -218,7 +219,8 @@ fun YanbaoApp() {
                         onEditProfile = { navController.navigate("profile_edit") },
                         onPrivacy = { navController.navigate("privacy") },
                         onHelp = { navController.navigate("help") },
-                        onAbout = { navController.navigate("about") }
+                        onAbout = { navController.navigate("about") },
+                        onYanbaoGarden = { navController.navigate("yanbao_garden") }
                     )
                 }
 
@@ -365,6 +367,42 @@ fun YanbaoApp() {
                         onSave = { navController.popBackStack() }
                     )
                 }
+                composable(
+                    route = "yanbao_garden",
+                    enterTransition = {
+                        slideInHorizontally(
+                            initialOffsetX = { it },
+                            animationSpec = tween(300, easing = FastOutSlowInEasing)
+                        ) + fadeIn(animationSpec = tween(200), initialAlpha = 0.8f)
+                    },
+                    exitTransition = {
+                        slideOutHorizontally(
+                            targetOffsetX = { -it / 4 },
+                            animationSpec = tween(300, easing = FastOutSlowInEasing)
+                        ) + fadeOut(animationSpec = tween(200), targetAlpha = 0.7f)
+                    },
+                    popEnterTransition = {
+                        slideInHorizontally(
+                            initialOffsetX = { -it / 4 },
+                            animationSpec = tween(300, easing = FastOutSlowInEasing)
+                        ) + fadeIn(animationSpec = tween(200), initialAlpha = 0.7f)
+                    },
+                    popExitTransition = {
+                        slideOutHorizontally(
+                            targetOffsetX = { it },
+                            animationSpec = tween(280, easing = FastOutLinearInEasing)
+                        ) + fadeOut(animationSpec = tween(200), targetAlpha = 0.8f)
+                    }
+                ) {
+                    YanbaoGardenScreen(
+                        onBack = { navController.popBackStack() },
+                        onShare = {
+                            // TODO: 接入系统分享 Intent
+                            android.util.Log.d("YanbaoApp", "触发分享")
+                        }
+                    )
+                }
+
                 composable(route = "privacy") {
                     PrivacyScreen(onBackClick = { navController.popBackStack() })
                 }

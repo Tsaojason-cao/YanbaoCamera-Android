@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.yanbao.camera.camera.Camera2Manager
+import com.yanbao.camera.core.util.CameraPreferencesManager
 import com.yanbao.camera.data.database.AppDatabase
 import com.yanbao.camera.data.database.MemoryEntity
 import com.yanbao.camera.filter.MasterFilterManager
@@ -20,6 +21,15 @@ import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
 
+/**
+ * 相机核心 ViewModel
+ *
+ * 职责：
+ * 1. 管理 9 大拍摄模式的状态（BASIC / PARALLAX / VIDEO_MASTER / AR / NATIVE / MEMORY / BEAUTY / TIMELAPSE / SLOW_MOTION）
+ * 2. 持久化用户偏好设置（通过 CameraPreferencesManager → SharedPreferences）
+ * 3. 协调 Camera2Manager / Param29DRenderer / ParallaxSensor / MasterFilterManager
+ * 4. 将拍摄结果写入 Room 数据库（MemoryEntity）
+ */
 @HiltViewModel
 class CameraViewModel @Inject constructor(
     application: Application
@@ -27,8 +37,13 @@ class CameraViewModel @Inject constructor(
 
     private val db = AppDatabase.getInstance(application)
 
-    // 当前模式
-    private val _currentMode = MutableStateFlow<CameraMode>(CameraMode.BASIC)
+    // SharedPreferences 状态持久化管理器
+    private val prefsManager = CameraPreferencesManager(application)
+
+    // ── 当前模式（从持久化恢复） ──────────────────────────────────────────────
+    private val _currentMode = MutableStateFlow<CameraMode>(
+        try { CameraMode.valueOf(prefsManager.getLastMode()) } catch (e: Exception) { CameraMode.BASIC }
+    )
     val currentMode: StateFlow<CameraMode> = _currentMode.asStateFlow()
 
     // 29D参数
@@ -39,35 +54,38 @@ class CameraViewModel @Inject constructor(
     private val _isRecordingMemory = MutableStateFlow(false)
     val isRecordingMemory: StateFlow<Boolean> = _isRecordingMemory.asStateFlow()
 
-    // 快捷工具栏状态
-    private val _flashMode = MutableStateFlow(0) // 0自动 1开 2关
+    // ── 快捷工具栏状态（从持久化恢复） ───────────────────────────────────────
+    private val _flashMode = MutableStateFlow(prefsManager.getFlashMode()) // 0自动 1开 2关
     val flashMode: StateFlow<Int> = _flashMode.asStateFlow()
-    private val _aspectRatio = MutableStateFlow(0) // 0 4:3, 1 16:9, 2 1:1
+
+    private val _aspectRatio = MutableStateFlow(prefsManager.getAspectRatio()) // 0 4:3, 1 16:9, 2 1:1
     val aspectRatio: StateFlow<Int> = _aspectRatio.asStateFlow()
-    private val _timer = MutableStateFlow(0) // 0关 3s 10s
+
+    private val _timer = MutableStateFlow(prefsManager.getTimer()) // 0关 3s 10s
     val timer: StateFlow<Int> = _timer.asStateFlow()
-    private val _lensFacing = MutableStateFlow(0) // 0后置 1前置
+
+    private val _lensFacing = MutableStateFlow(prefsManager.getLensFacing()) // 0后置 1前置
     val lensFacing: StateFlow<Int> = _lensFacing.asStateFlow()
 
-    // ── 2.9D 视差控制状态 ─────────────────────────────────────────────────────
-    private val _parallaxStrength = MutableStateFlow(0.65f)
+    // ── 2.9D 视差控制状态（从持久化恢复） ────────────────────────────────────
+    private val _parallaxStrength = MutableStateFlow(prefsManager.getParallaxStrength())
     val parallaxStrength: StateFlow<Float> = _parallaxStrength.asStateFlow()
 
-    private val _parallaxPreset = MutableStateFlow(0) // 0人像 1风景 2艺术
+    private val _parallaxPreset = MutableStateFlow(prefsManager.getParallaxPreset()) // 0人像 1风景 2艺术
     val parallaxPreset: StateFlow<Int> = _parallaxPreset.asStateFlow()
 
-    // ── 视频大师状态 ──────────────────────────────────────────────────────────
-    private val _selectedFps = MutableStateFlow(60) // 30 / 60 / 120
+    // ── 视频大师状态（从持久化恢复） ──────────────────────────────────────────
+    private val _selectedFps = MutableStateFlow(prefsManager.getSelectedFps()) // 30 / 60 / 120
     val selectedFps: StateFlow<Int> = _selectedFps.asStateFlow()
 
-    private val _timelapseInterval = MutableStateFlow(2.0f) // 0.5s ~ 10s
+    private val _timelapseInterval = MutableStateFlow(prefsManager.getTimelapseInterval()) // 0.5s ~ 10s
     val timelapseInterval: StateFlow<Float> = _timelapseInterval.asStateFlow()
 
-    private val _totalDuration = MutableStateFlow(5.0f) // 1min ~ 30min
+    private val _totalDuration = MutableStateFlow(prefsManager.getTotalDuration()) // 1min ~ 30min
     val totalDuration: StateFlow<Float> = _totalDuration.asStateFlow()
 
-    // ── AR 空间状态 ───────────────────────────────────────────────────────────
-    private val _arCategory = MutableStateFlow(0) // 0全部 1库洛米 2表情 3场景 4节日
+    // ── AR 空间状态（从持久化恢复） ───────────────────────────────────────────
+    private val _arCategory = MutableStateFlow(prefsManager.getArCategory()) // 0全部 1库洛米 2表情 3场景 4节日
     val arCategory: StateFlow<Int> = _arCategory.asStateFlow()
 
     private val _arSticker = MutableStateFlow(0) // 贴纸 ID
@@ -76,17 +94,17 @@ class CameraViewModel @Inject constructor(
     private val _lbsLabel = MutableStateFlow("") // LBS 位置标签
     val lbsLabel: StateFlow<String> = _lbsLabel.asStateFlow()
 
-    // ── 原相机手动控制状态 ────────────────────────────────────────────────────
-    private val _nativeIso = MutableStateFlow(400)
+    // ── 原相机手动控制状态（从持久化恢复） ────────────────────────────────────
+    private val _nativeIso = MutableStateFlow(prefsManager.getNativeIso())
     val nativeIso: StateFlow<Int> = _nativeIso.asStateFlow()
 
     private val _nativeShutterNs = MutableStateFlow(8_000_000L) // 1/125s = 8ms = 8,000,000 ns
     val nativeShutterNs: StateFlow<Long> = _nativeShutterNs.asStateFlow()
 
-    private val _nativeEv = MutableStateFlow(0.3f)
+    private val _nativeEv = MutableStateFlow(prefsManager.getNativeEv())
     val nativeEv: StateFlow<Float> = _nativeEv.asStateFlow()
 
-    private val _nativeWhiteBalance = MutableStateFlow(5500)
+    private val _nativeWhiteBalance = MutableStateFlow(prefsManager.getNativeWb())
     val nativeWhiteBalance: StateFlow<Int> = _nativeWhiteBalance.asStateFlow()
 
     // 相机硬件管理器
@@ -149,6 +167,7 @@ class CameraViewModel @Inject constructor(
 
     fun setMode(mode: CameraMode) {
         _currentMode.value = mode
+        prefsManager.saveLastMode(mode.name)
         Log.i("AUDIT_MODE", "mode_changed=${mode.name}")
         // 根据模式切换传感器等
         if (mode == CameraMode.PARALLAX) {
@@ -183,23 +202,40 @@ class CameraViewModel @Inject constructor(
         _isRecordingMemory.value = !_isRecordingMemory.value
     }
 
-    fun setFlashMode(mode: Int) { _flashMode.value = mode }
-    fun setAspectRatio(ratio: Int) { _aspectRatio.value = ratio }
-    fun setTimer(seconds: Int) { _timer.value = seconds }
+    fun setFlashMode(mode: Int) {
+        _flashMode.value = mode
+        prefsManager.saveFlashMode(mode)
+    }
+
+    fun setAspectRatio(ratio: Int) {
+        _aspectRatio.value = ratio
+        prefsManager.saveAspectRatio(ratio)
+    }
+
+    fun setTimer(seconds: Int) {
+        _timer.value = seconds
+        prefsManager.saveTimer(seconds)
+    }
+
     fun flipLens() {
-        _lensFacing.value = if (_lensFacing.value == 0) 1 else 0
+        val newFacing = if (_lensFacing.value == 0) 1 else 0
+        _lensFacing.value = newFacing
+        prefsManager.saveLensFacing(newFacing)
         if (::cameraManager.isInitialized) cameraManager.flipLens()
     }
 
     // ── 2.9D 视差控制 ─────────────────────────────────────────────────────────
     fun setParallaxStrength(strength: Float) {
-        _parallaxStrength.value = strength.coerceIn(0f, 1f)
-        renderer?.setParallaxOffset(strength, 0f)
-        Log.i("AUDIT_2.9D", "parallax_strength=${String.format("%.2f", strength)}")
+        val clamped = strength.coerceIn(0f, 1f)
+        _parallaxStrength.value = clamped
+        prefsManager.saveParallaxStrength(clamped)
+        renderer?.setParallaxOffset(clamped, 0f)
+        Log.i("AUDIT_2.9D", "parallax_strength=${String.format("%.2f", clamped)}")
     }
 
     fun setParallaxPreset(preset: Int) {
         _parallaxPreset.value = preset
+        prefsManager.saveParallaxPreset(preset)
         val presetName = listOf("人像", "风景", "艺术").getOrNull(preset) ?: "未知"
         Log.i("AUDIT_2.9D", "preset_selected=$presetName")
     }
@@ -207,22 +243,28 @@ class CameraViewModel @Inject constructor(
     // ── 视频大师 ──────────────────────────────────────────────────────────────
     fun setFps(fps: Int) {
         _selectedFps.value = fps
+        prefsManager.saveSelectedFps(fps)
         Log.i("AUDIT_VIDEO", "fps=$fps")
     }
 
     fun setTimelapseInterval(interval: Float) {
-        _timelapseInterval.value = interval.coerceIn(0.5f, 10f)
-        Log.i("AUDIT_VIDEO", "timelapse_interval=${String.format("%.1f", interval)}s")
+        val clamped = interval.coerceIn(0.5f, 10f)
+        _timelapseInterval.value = clamped
+        prefsManager.saveTimelapseInterval(clamped)
+        Log.i("AUDIT_VIDEO", "timelapse_interval=${String.format("%.1f", clamped)}s")
     }
 
     fun setTotalDuration(duration: Float) {
-        _totalDuration.value = duration.coerceIn(1f, 30f)
-        Log.i("AUDIT_VIDEO", "duration=${duration.toInt()}min")
+        val clamped = duration.coerceIn(1f, 30f)
+        _totalDuration.value = clamped
+        prefsManager.saveTotalDuration(clamped)
+        Log.i("AUDIT_VIDEO", "duration=${clamped.toInt()}min")
     }
 
     // ── AR 空间 ───────────────────────────────────────────────────────────────
     fun setArCategory(category: Int) {
         _arCategory.value = category
+        prefsManager.saveArCategory(category)
         Log.i("AUDIT_AR", "category_selected=$category")
     }
 
@@ -237,9 +279,11 @@ class CameraViewModel @Inject constructor(
 
     // ── 原相机手动控制 ────────────────────────────────────────────────────────
     fun setNativeIso(iso: Int) {
-        _nativeIso.value = iso.coerceIn(100, 6400)
-        if (::cameraManager.isInitialized) cameraManager.setIso(iso)
-        Log.i("AUDIT_NATIVE", "iso=$iso")
+        val clamped = iso.coerceIn(100, 6400)
+        _nativeIso.value = clamped
+        prefsManager.saveNativeIso(clamped)
+        if (::cameraManager.isInitialized) cameraManager.setIso(clamped)
+        Log.i("AUDIT_NATIVE", "iso=$clamped")
     }
 
     fun setNativeShutter(shutterNs: Long) {
@@ -249,15 +293,19 @@ class CameraViewModel @Inject constructor(
     }
 
     fun setNativeEv(ev: Float) {
-        _nativeEv.value = ev.coerceIn(-3f, 3f)
-        if (::cameraManager.isInitialized) cameraManager.setEv(ev.toInt())
-        val evStr = if (ev >= 0) "+${String.format("%.1f", ev)}" else String.format("%.1f", ev)
+        val clamped = ev.coerceIn(-3f, 3f)
+        _nativeEv.value = clamped
+        prefsManager.saveNativeEv(clamped)
+        if (::cameraManager.isInitialized) cameraManager.setEv(clamped.toInt())
+        val evStr = if (clamped >= 0) "+${String.format("%.1f", clamped)}" else String.format("%.1f", clamped)
         Log.i("AUDIT_NATIVE", "ev=$evStr")
     }
 
     fun setNativeWhiteBalance(wb: Int) {
-        _nativeWhiteBalance.value = wb.coerceIn(2000, 8000)
-        Log.i("AUDIT_NATIVE", "wb=${wb}K")
+        val clamped = wb.coerceIn(2000, 8000)
+        _nativeWhiteBalance.value = clamped
+        prefsManager.saveNativeWb(clamped)
+        Log.i("AUDIT_NATIVE", "wb=${clamped}K")
     }
 
     // 29D参数更新
@@ -289,11 +337,13 @@ class CameraViewModel @Inject constructor(
         if (::cameraManager.isInitialized) cameraManager.setIso(iso)
         update29DParam { this.iso = iso }
     }
+
     fun setHardwareExposure(value: Float) {
         val exp = (value * (30_000_000_000 - 1_000_000) + 1_000_000).toLong()
         if (::cameraManager.isInitialized) cameraManager.setExposureTime(exp)
         update29DParam { shutterSpeed = (1_000_000_000 / exp).toString() }
     }
+
     fun setHardwareEv(value: Float) {
         val ev = (value * 6 - 3).toInt()
         if (::cameraManager.isInitialized) cameraManager.setEv(ev)
@@ -321,13 +371,32 @@ class CameraViewModel @Inject constructor(
 
     private fun createVideoFile(): File {
         val time = System.currentTimeMillis()
-        val dir = getApplication<Application>().getExternalFilesDir(null) ?: getApplication<Application>().filesDir
+        val dir = getApplication<Application>().getExternalFilesDir(null)
+            ?: getApplication<Application>().filesDir
         return File(dir, "VID_$time.mp4")
     }
 
     override fun onCleared() {
         super.onCleared()
+        // 保存所有相机状态到 SharedPreferences（App 后台被杀时也能恢复）
+        prefsManager.saveAllCameraState(
+            mode = _currentMode.value.name,
+            flashMode = _flashMode.value,
+            aspectRatio = _aspectRatio.value,
+            lensFacing = _lensFacing.value,
+            timer = _timer.value,
+            fps = _selectedFps.value,
+            parallaxStrength = _parallaxStrength.value,
+            parallaxPreset = _parallaxPreset.value,
+            timelapseInterval = _timelapseInterval.value,
+            totalDuration = _totalDuration.value,
+            arCategory = _arCategory.value,
+            nativeIso = _nativeIso.value,
+            nativeEv = _nativeEv.value,
+            nativeWb = _nativeWhiteBalance.value
+        )
         stopCamera()
         parallaxSensor?.stop()
+        Log.d("CameraViewModel", "onCleared: 相机状态已持久化")
     }
 }
