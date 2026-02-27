@@ -446,13 +446,14 @@ fun YanbaoBottomNavigation(
     currentRoute: String?,
     onTabSelected: (String) -> Unit
 ) {
-    // 设计规范：5个tab，中间为胡萝卜橙大圆按钮（相机入口），无编辑tab
+    // 设计规范：5个tab，中间为胡萝卜橙大圆按钮（相机FAB入口）
     // 布局：首页 | 相机 | [🥕胡萝卜橙大按钮] | 相册 | 推荐 | 我的
     val leftTabs = listOf(
         BottomNavItem(label = "首页", iconRes = R.drawable.ic_yanbao_home,   route = "home"),
-        BottomNavItem(label = "编辑", iconRes = R.drawable.ic_yanbao_edit, route = "edit")
+        BottomNavItem(label = "相机", iconRes = R.drawable.ic_yanbao_camera, route = "camera")
     )
     val rightTabs = listOf(
+        BottomNavItem(label = "相册", iconRes = R.drawable.ic_yanbao_gallery, route = "gallery"),
         BottomNavItem(label = "推荐", iconRes = R.drawable.ic_yanbao_recommend, route = "recommend"),
         BottomNavItem(label = "我的", iconRes = R.drawable.ic_yanbao_profile,   route = "profile")
     )

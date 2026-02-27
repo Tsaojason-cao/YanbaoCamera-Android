@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>摄颜 SheYan AI 相机 — 完整UI原型</title>
+<style>
+  :root {
+    --obsidian: #0A0A0A;
+    --pink: #EC4899;
+    --orange: #F97316;
+    --glass: rgba(255,255,255,0.06);
+    --glass-border: rgba(255,255,255,0.12);
+    --text: #FFFFFF;
+    --text-sub: rgba(255,255,255,0.6);
+    --panel: rgba(10,10,10,0.85);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: #111;
+    font-family: 'PingFang SC', 'Noto Sans SC', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ===== TOP NAV ===== */
+  .top-nav {
+    position: fixed; top:0; left:0; right:0; z-index:100;
+    background: rgba(10,10,10,0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--glass-border);
+    display: flex; align-items: center; gap: 8px;
+    padding: 12px 20px; overflow-x: auto;
+  }
+  .top-nav::-webkit-scrollbar { display:none; }
+  .nav-btn {
+    padding: 6px 14px; border-radius: 20px; border: 1px solid var(--glass-border);
+    background: var(--glass); color: var(--text-sub); font-size: 13px;
+    cursor: pointer; white-space: nowrap; transition: all 0.2s;
+  }
+  .nav-btn.active, .nav-btn:hover {
+    background: var(--pink); color: #fff; border-color: var(--pink);
+  }
+  .nav-logo { font-size: 18px; font-weight: 700; color: var(--pink);
+    text-shadow: 0 0 20px rgba(236,72,153,0.8); margin-right: 8px; white-space: nowrap; }
+
+  /* ===== AUDIT BADGE ===== */
+  .audit-badge {
+    position: fixed; bottom: 20px; right: 20px; z-index: 200;
+    background: var(--orange); color: #fff; border-radius: 50%;
+    width: 52px; height: 52px; display: flex; align-items: center; justify-content: center;
+    font-size: 20px; cursor: pointer; box-shadow: 0 4px 20px rgba(249,115,22,0.5);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{box-shadow:0 4px 20px rgba(249,115,22,0.5)} 50%{box-shadow:0 4px 40px rgba(249,115,22,0.9)} }
+
+  /* ===== SCREENS CONTAINER ===== */
+  .screens { padding-top: 60px; }
+  .screen { display: none; min-height: calc(100vh - 60px); }
+  .screen.active { display: block; }
+
+  /* ===== PHONE FRAME ===== */
+  .phone-wrap {
+    display: flex; justify-content: center; align-items: flex-start;
+    padding: 30px 20px; gap: 30px; flex-wrap: wrap;
+  }
+  .phone-frame {
+    width: 375px; min-height: 812px;
+    background: var(--obsidian);
+    border-radius: 44px;
+    border: 2px solid rgba(255,255,255,0.15);
+    overflow: hidden; position: relative;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.05);
+    flex-shrink: 0;
+  }
+  .phone-notch {
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 120px; height: 30px; background: #000;
+    border-radius: 0 0 20px 20px; z-index: 10;
+  }
+  .phone-screen { width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden; }
+  .phone-screen::-webkit-scrollbar { display: none; }
+
+  /* ===== GLASSMORPHISM CARD ===== */
+  .glass-card {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(40px);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 20px;
+  }
+
+  /* ===== BOTTOM NAV ===== */
+  .bottom-nav {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: rgba(10,10,10,0.9);
+    backdrop-filter: blur(40px);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    display: flex; align-items: center; justify-content: space-around;
+    padding: 8px 0 20px; z-index: 10;
+  }
+  .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+  .nav-item span { font-size: 10px; color: var(--text-sub); }
+  .nav-item.active span { color: var(--pink); }
+  .nav-icon { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .nav-center-btn {
+    width: 60px; height: 60px; border-radius: 50%;
+    background: var(--pink);
+    box-shadow: 0 0 30px rgba(236,72,153,0.7), 0 0 60px rgba(236,72,153,0.3);
+    display: flex; align-items: center; justify-content: center;
+    margin-top: -20px; cursor: pointer; font-size: 24px;
+    animation: glow 2s ease-in-out infinite;
+  }
+  @keyframes glow { 0%,100%{box-shadow:0 0 30px rgba(236,72,153,0.7)} 50%{box-shadow:0 0 50px rgba(236,72,153,1)} }
+
+  /* ===== STATUS BAR ===== */
+  .status-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 40px 20px 8px; font-size: 12px; color: var(--text-sub);
+  }
+
+  /* ===== M1 SPLASH ===== */
+  #splash .phone-screen {
+    background: var(--obsidian);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: 812px;
+  }
+  .splash-glow {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(236,72,153,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .splash-yanbao { width: 200px; height: 200px; object-fit: contain; z-index: 1; animation: float 3s ease-in-out infinite; }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }
+  .splash-title {
+    font-size: 48px; font-weight: 900; letter-spacing: 8px;
+    color: var(--pink);
+    text-shadow: 0 0 30px rgba(236,72,153,0.9), 0 0 60px rgba(236,72,153,0.5);
+    z-index: 1; margin: 20px 0 8px;
+  }
+  .splash-sub { font-size: 14px; color: var(--text-sub); letter-spacing: 4px; z-index: 1; margin-bottom: 60px; }
+  .splash-progress-wrap { width: 260px; z-index: 1; }
+  .splash-progress-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-sub); margin-bottom: 8px; }
+  .splash-progress-bar {
+    height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; position: relative;
+  }
+  .splash-progress-fill {
+    height: 100%; width: 0%; background: linear-gradient(90deg, var(--orange), var(--pink));
+    border-radius: 2px; animation: loading 3s ease-in-out forwards;
+    position: relative;
+  }
+  @keyframes loading { 0%{width:0%} 100%{width:100%} }
+  .splash-progress-fill::after {
+    content: ''; position: absolute; right: -10px; top: 50%; transform: translateY(-50%);
+    width: 16px; height: 16px;
+    background: url('assets/icons/ic_shutter_paw.png') center/contain no-repeat;
+  }
+
+  /* ===== M2 HOME ===== */
+  #home .phone-screen { background: var(--obsidian); min-height: 812px; padding-bottom: 90px; }
+  .home-greeting {
+    padding: 20px 20px 0;
+    display: flex; justify-content: space-between; align-items: flex-start;
+  }
+  .greeting-left h2 { font-size: 28px; font-weight: 700; }
+  .greeting-left p { font-size: 13px; color: var(--text-sub); margin-top: 4px; }
+  .weather-chip {
+    background: var(--glass); border: 1px solid var(--glass-border);
+    border-radius: 20px; padding: 6px 12px; font-size: 12px; color: var(--text-sub);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .avatar-wrap {
+    width: 48px; height: 48px; position: relative;
+  }
+  .avatar-ear {
+    position: absolute; top: -8px; left: 50%; transform: translateX(-50%);
+    width: 40px; height: 20px;
+    background: var(--pink); border-radius: 50% 50% 0 0;
+    opacity: 0.8;
+  }
+  .avatar-img {
+    width: 48px; height: 48px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--pink), #a855f7);
+    display: flex; align-items: center; justify-content: center; font-size: 20px;
+    position: relative; z-index: 1;
+  }
+  .section-title { font-size: 16px; font-weight: 600; padding: 16px 20px 10px; }
+  .func-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 0 20px; }
+  .func-card {
+    background: var(--glass); border: 1px solid var(--glass-border);
+    border-radius: 20px; padding: 16px; cursor: pointer;
+    transition: all 0.2s; overflow: hidden; position: relative; min-height: 100px;
+  }
+  .func-card:hover { border-color: var(--pink); transform: scale(1.02); }
+  .func-card h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+  .func-card p { font-size: 11px; color: var(--text-sub); }
+  .func-card-icon { position: absolute; right: -10px; bottom: -10px; font-size: 50px; opacity: 0.3; }
+  .func-card-yanbao { position: absolute; right: 8px; bottom: 8px; width: 50px; height: 50px; object-fit: contain; }
+  .recent-scroll { display: flex; gap: 10px; padding: 0 20px; overflow-x: auto; }
+  .recent-scroll::-webkit-scrollbar { display: none; }
+  .recent-thumb {
+    width: 80px; height: 80px; border-radius: 12px; flex-shrink: 0;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    display: flex; align-items: center; justify-content: center; font-size: 24px;
+    border: 1px solid var(--glass-border); cursor: pointer;
+    transition: transform 0.2s;
+  }
+  .recent-thumb:hover { transform: scale(1.05); }
+  .location-scroll { display: flex; gap: 12px; padding: 0 20px; overflow-x: auto; }
+  .location-scroll::-webkit-scrollbar { display: none; }
+  .location-card {
+    width: 140px; height: 90px; border-radius: 16px; flex-shrink: 0;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    border: 1px solid var(--glass-border); padding: 10px; cursor: pointer;
+    position: relative; overflow: hidden;
+  }
+  .location-card h5 { font-size: 13px; font-weight: 600; }
+  .location-card p { font-size: 11px; color: var(--text-sub); margin-top: 2px; }
+  .location-sticker { position: absolute; right: 6px; bottom: 6px; width: 36px; height: 36px; object-fit: contain; }
+
+  /* ===== M3 CAMERA ===== */
+  #camera .phone-screen { background: #000; min-height: 812px; position: relative; }
+  .camera-viewfinder {
+    height: 72%; background: linear-gradient(180deg, #0d0d1a 0%, #1a0d2e 50%, #0d1a0d 100%);
+    position: relative; overflow: hidden;
+  }
+  .camera-grid-overlay {
+    position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 33.33% 33.33%;
+  }
+  .camera-ai-tag {
+    position: absolute; top: 20px; left: 50%; transform: translateX(-50%);
+    background: rgba(236,72,153,0.2); border: 1px solid var(--pink);
+    border-radius: 20px; padding: 4px 14px; font-size: 12px; color: var(--pink);
+    backdrop-filter: blur(10px);
+  }
+  .camera-top-bar {
+    position: absolute; top: 50px; left: 0; right: 0;
+    display: flex; justify-content: space-around; align-items: center; padding: 0 20px;
+  }
+  .cam-icon-btn {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(0,0,0,0.5); backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px;
+  }
+  .camera-panel {
+    height: 28%; background: rgba(10,10,10,0.85);
+    backdrop-filter: blur(40px);
+    display: flex; flex-direction: column; align-items: center; justify-content: space-around;
+    padding: 12px 20px 20px;
+  }
+  .mode-dial { display: flex; gap: 0; overflow-x: auto; width: 100%; justify-content: center; }
+  .mode-dial::-webkit-scrollbar { display: none; }
+  .mode-item {
+    padding: 6px 14px; font-size: 12px; color: var(--text-sub);
+    cursor: pointer; white-space: nowrap; transition: all 0.2s; position: relative;
+  }
+  .mode-item.active { color: var(--pink); font-weight: 600; }
+  .mode-item.active::before, .mode-item.active::after {
+    content: '🐰'; position: absolute; top: 50%; transform: translateY(-50%);
+    font-size: 10px;
+  }
+  .mode-item.active::before { left: 0; }
+  .mode-item.active::after { right: 0; }
+  .camera-controls { display: flex; align-items: center; justify-content: space-around; width: 100%; }
+  .thumb-btn { width: 50px; height: 50px; border-radius: 12px; overflow: hidden; border: 2px solid rgba(255,255,255,0.2); cursor: pointer; }
+  .thumb-btn img { width: 100%; height: 100%; object-fit: cover; }
+  .shutter-btn {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: var(--pink);
+    box-shadow: 0 0 0 4px rgba(236,72,153,0.3), 0 0 30px rgba(236,72,153,0.6);
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+    font-size: 28px; animation: shutter-glow 2s ease-in-out infinite;
+  }
+  @keyframes shutter-glow { 0%,100%{box-shadow:0 0 0 4px rgba(236,72,153,0.3),0 0 30px rgba(236,72,153,0.6)} 50%{box-shadow:0 0 0 8px rgba(236,72,153,0.2),0 0 50px rgba(236,72,153,0.9)} }
+  .flip-btn {
+    width: 50px; height: 50px; border-radius: 50%;
+    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 20px;
+  }
+  .carrot-slider { width: 100%; display: flex; align-items: center; gap: 10px; }
+  .carrot-slider input[type=range] {
+    flex: 1; -webkit-appearance: none; height: 4px;
+    background: linear-gradient(90deg, var(--orange) 60%, rgba(255,255,255,0.2) 60%);
+    border-radius: 2px; outline: none;
+  }
+  .carrot-slider input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 20px; height: 20px;
+    background: var(--orange); border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg); cursor: pointer;
+    box-shadow: 0 2px 8px rgba(249,115,22,0.5);
+  }
+
+  /* ===== M4 EDITOR ===== */
+  #editor .phone-screen { background: var(--obsidian); min-height: 812px; padding-bottom: 90px; }
+  .editor-preview {
+    height: 72%; background: linear-gradient(180deg, #1a0d2e, #0d1a1a);
+    position: relative; display: flex; align-items: center; justify-content: center;
+  }
+  .editor-preview-img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
+  .editor-top-bar {
+    position: absolute; top: 50px; left: 0; right: 0;
+    display: flex; justify-content: space-between; padding: 0 20px;
+  }
+  .editor-panel {
+    height: 28%; background: rgba(10,10,10,0.9);
+    backdrop-filter: blur(40px);
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding: 12px 0;
+  }
+  .tool-tabs { display: flex; gap: 0; padding: 0 20px; margin-bottom: 12px; }
+  .tool-tab {
+    padding: 6px 16px; font-size: 13px; color: var(--text-sub);
+    cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s;
+  }
+  .tool-tab.active { color: var(--pink); border-bottom-color: var(--pink); }
+  .filter-row { display: flex; gap: 10px; padding: 0 20px; overflow-x: auto; }
+  .filter-row::-webkit-scrollbar { display: none; }
+  .filter-chip {
+    width: 60px; flex-shrink: 0; text-align: center; cursor: pointer;
+  }
+  .filter-thumb {
+    width: 60px; height: 60px; border-radius: 12px;
+    background: linear-gradient(135deg, #1a1a2e, #2d1b69);
+    border: 2px solid transparent; transition: all 0.2s;
+    display: flex; align-items: center; justify-content: center; font-size: 20px;
+  }
+  .filter-chip.active .filter-thumb { border-color: var(--pink); box-shadow: 0 0 12px rgba(236,72,153,0.5); }
+  .filter-chip p { font-size: 10px; color: var(--text-sub); margin-top: 4px; }
+  .filter-chip.active p { color: var(--pink); }
+
+  /* ===== M5 GALLERY ===== */
+  #gallery .phone-screen { background: var(--obsidian); min-height: 812px; padding-bottom: 90px; }
+  .gallery-header { padding: 50px 20px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .gallery-header h2 { font-size: 24px; font-weight: 700; }
+  .smart-tags { display: flex; gap: 8px; padding: 0 20px 16px; overflow-x: auto; }
+  .smart-tags::-webkit-scrollbar { display: none; }
+  .smart-tag {
+    padding: 6px 14px; border-radius: 20px; font-size: 12px;
+    background: var(--glass); border: 1px solid var(--glass-border); color: var(--text-sub);
+    cursor: pointer; white-space: nowrap; transition: all 0.2s;
+  }
+  .smart-tag.active { background: var(--pink); border-color: var(--pink); color: #fff; }
+  .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 0 2px; }
+  .photo-cell {
+    aspect-ratio: 1; background: linear-gradient(135deg, #1a1a2e, #16213e);
+    display: flex; align-items: center; justify-content: center; font-size: 24px;
+    cursor: pointer; transition: opacity 0.2s; position: relative; overflow: hidden;
+  }
+  .photo-cell:hover { opacity: 0.8; }
+  .photo-cell .photo-badge {
+    position: absolute; top: 4px; right: 4px;
+    background: var(--pink); border-radius: 4px; padding: 2px 5px; font-size: 9px;
+  }
+
+  /* ===== M6 DISCOVERY ===== */
+  #discovery .phone-screen { background: #000; min-height: 812px; position: relative; overflow: hidden; }
+  .disc-video {
+    width: 100%; height: 100%; min-height: 812px;
+    background: linear-gradient(180deg, #0d0d1a 0%, #1a0d2e 40%, #0d1a0d 100%);
+    position: relative; display: flex; align-items: flex-end;
+  }
+  .disc-video-content { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+  .disc-video-content img { width: 60%; object-fit: contain; opacity: 0.6; }
+  .disc-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 20px; }
+  .disc-user { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .disc-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--pink), #a855f7); display: flex; align-items: center; justify-content: center; font-size: 18px; border: 2px solid var(--pink); }
+  .disc-user-info h4 { font-size: 14px; font-weight: 600; }
+  .disc-user-info p { font-size: 12px; color: var(--text-sub); }
+  .disc-desc { font-size: 13px; color: rgba(255,255,255,0.85); margin-bottom: 80px; line-height: 1.5; }
+  .disc-actions {
+    position: absolute; right: 16px; bottom: 100px;
+    display: flex; flex-direction: column; gap: 20px; align-items: center;
+  }
+  .disc-action { display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; }
+  .disc-action-icon { width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .disc-action span { font-size: 11px; color: var(--text-sub); }
+  .disc-like .disc-action-icon { background: rgba(249,115,22,0.2); border: 1px solid var(--orange); }
+
+  /* ===== M7 PROFILE ===== */
+  #profile .phone-screen { background: var(--obsidian); min-height: 812px; padding-bottom: 90px; }
+  .profile-header {
+    height: 200px; position: relative;
+    background: linear-gradient(180deg, rgba(236,72,153,0.3) 0%, var(--obsidian) 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 16px;
+  }
+  .profile-avatar-wrap { position: relative; margin-bottom: 10px; }
+  .profile-avatar {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--pink), #a855f7);
+    display: flex; align-items: center; justify-content: center; font-size: 36px;
+    border: 3px solid var(--pink); box-shadow: 0 0 20px rgba(236,72,153,0.5);
+  }
+  .profile-ear {
+    position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+    width: 60px; height: 24px; background: var(--pink); border-radius: 50% 50% 0 0; opacity: 0.7;
+  }
+  .profile-name { font-size: 18px; font-weight: 700; }
+  .profile-id { font-size: 12px; color: var(--text-sub); margin-top: 2px; }
+  .member-badge {
+    background: linear-gradient(135deg, var(--orange), #f59e0b);
+    border-radius: 20px; padding: 4px 12px; font-size: 11px; font-weight: 600; margin-top: 6px;
+  }
+  .profile-stats { display: flex; justify-content: space-around; padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .stat-item { text-align: center; }
+  .stat-item h3 { font-size: 20px; font-weight: 700; }
+  .stat-item p { font-size: 11px; color: var(--text-sub); margin-top: 2px; }
+  .garden-section { margin: 16px 20px; }
+  .garden-card {
+    background: linear-gradient(135deg, rgba(249,115,22,0.15), rgba(236,72,153,0.1));
+    border: 1px solid rgba(249,115,22,0.3);
+    border-radius: 20px; padding: 16px; display: flex; align-items: center; gap: 16px;
+  }
+  .garden-yanbao { width: 80px; height: 80px; object-fit: contain; animation: float 3s ease-in-out infinite; }
+  .garden-info { flex: 1; }
+  .garden-info h4 { font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+  .garden-info p { font-size: 12px; color: var(--text-sub); margin-bottom: 10px; }
+  .feed-btn {
+    background: var(--orange); color: #fff; border: none; border-radius: 20px;
+    padding: 8px 20px; font-size: 13px; font-weight: 600; cursor: pointer;
+    box-shadow: 0 4px 15px rgba(249,115,22,0.4); transition: all 0.2s;
+  }
+  .feed-btn:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(249,115,22,0.6); }
+  .privilege-bar { margin-top: 10px; }
+  .privilege-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-sub); margin-bottom: 4px; }
+  .privilege-progress { height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; }
+  .privilege-fill { height: 100%; width: 65%; background: linear-gradient(90deg, var(--orange), var(--pink)); border-radius: 2px; }
+  .works-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; padding: 0 2px; margin-top: 16px; }
+  .work-cell { aspect-ratio: 1; background: linear-gradient(135deg, #1a1a2e, #16213e); display: flex; align-items: center; justify-content: center; font-size: 24px; cursor: pointer; }
+
+  /* ===== AUDIT PANEL ===== */
+  .audit-panel {
+    display: none; position: fixed; inset: 0; z-index: 300;
+    background: rgba(0,0,0,0.95); overflow-y: auto; padding: 20px;
+  }
+  .audit-panel.open { display: block; }
+  .audit-close { position: fixed; top: 20px; right: 20px; background: var(--pink); border: none; color: #fff; width: 40px; height: 40px; border-radius: 50%; font-size: 18px; cursor: pointer; z-index: 301; }
+  .audit-content { max-width: 900px; margin: 0 auto; padding-top: 50px; }
+  .audit-content h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+  .audit-content .subtitle { color: var(--text-sub); margin-bottom: 30px; }
+  .audit-section { margin-bottom: 30px; }
+  .audit-section h2 { font-size: 18px; font-weight: 600; margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .audit-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .audit-table th { background: rgba(255,255,255,0.05); padding: 10px 14px; text-align: left; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.1); }
+  .audit-table td { padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: top; }
+  .audit-table tr:hover td { background: rgba(255,255,255,0.03); }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; }
+  .tag-ok { background: rgba(34,197,94,0.2); color: #4ade80; }
+  .tag-partial { background: rgba(249,115,22,0.2); color: var(--orange); }
+  .tag-missing { background: rgba(239,68,68,0.2); color: #f87171; }
+  .tag-third { background: rgba(168,85,247,0.2); color: #c084fc; }
+  .icon-audit { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px; }
+  .icon-item { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 12px; padding: 10px; text-align: center; }
+  .icon-item img { width: 40px; height: 40px; object-fit: contain; margin-bottom: 6px; }
+  .icon-item p { font-size: 10px; color: var(--text-sub); }
+  .icon-item.ok { border-color: rgba(34,197,94,0.3); }
+  .icon-item.warn { border-color: rgba(249,115,22,0.3); }
+  .third-party-card {
+    background: var(--glass); border: 1px solid var(--glass-border);
+    border-radius: 16px; padding: 16px; margin-bottom: 12px;
+  }
+  .third-party-card h4 { font-size: 14px; font-weight: 600; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+  .third-party-card p { font-size: 12px; color: var(--text-sub); line-height: 1.6; }
+  .third-party-card .urgency { font-size: 11px; margin-top: 8px; }
+  .urgency-high { color: #f87171; }
+  .urgency-med { color: var(--orange); }
+  .urgency-low { color: #4ade80; }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 600px) {
+    .phone-frame { width: 100%; border-radius: 0; }
+    .phone-wrap { padding: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<nav class="top-nav">
+  <span class="nav-logo">摄颜</span>
+  <button class="nav-btn active" onclick="showScreen('splash')">M1 启动页</button>
+  <button class="nav-btn" onclick="showScreen('home')">M2 首页</button>
+  <button class="nav-btn" onclick="showScreen('camera')">M3 相机</button>
+  <button class="nav-btn" onclick="showScreen('editor')">M4 编辑</button>
+  <button class="nav-btn" onclick="showScreen('gallery')">M5 相册</button>
+  <button class="nav-btn" onclick="showScreen('discovery')">M6 推荐</button>
+  <button class="nav-btn" onclick="showScreen('profile')">M7 我的</button>
+</nav>
+
+<!-- AUDIT BADGE -->
+<div class="audit-badge" onclick="toggleAudit()" title="功能审核报告">📋</div>
+
+<!-- SCREENS -->
+<div class="screens">
+
+  <!-- M1 SPLASH -->
+  <div id="splash" class="screen active">
+    <div class="phone-wrap">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:812px;position:relative;">
+          <div class="splash-glow"></div>
+          <img src="assets/yanbao/yanbao_main.png" class="splash-yanbao" alt="雁宝" onerror="this.src='assets/yanbao/yanbao_ip_normal.png'">
+          <div class="splash-title">摄颜</div>
+          <div class="splash-sub">SheYan AI Camera</div>
+          <div class="splash-progress-wrap">
+            <div class="splash-progress-label">
+              <span>初始化中...</span>
+              <span id="splash-pct">0%</span>
+            </div>
+            <div class="splash-progress-bar">
+              <div class="splash-progress-fill" id="splash-fill"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="max-width:320px;padding:20px 0;">
+        <h3 style="color:var(--pink);margin-bottom:12px;">M1 启动页规范</h3>
+        <ul style="color:var(--text-sub);font-size:13px;line-height:2;list-style:none;">
+          <li>✅ 曜石黑背景 #0A0A0A</li>
+          <li>✅ 雁宝IP居中，手持相机</li>
+          <li>✅ 品牌粉霓虹发光字"摄颜"</li>
+          <li>✅ 胡萝卜橙进度条 #F97316</li>
+          <li>✅ 熊掌印进度头部图标</li>
+          <li>✅ 3秒后自动跳转首页</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- M2 HOME -->
+  <div id="home" class="screen">
+    <div class="phone-wrap">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="status-bar">
+            <span>9:41</span>
+            <span>●●●●  100%</span>
+          </div>
+          <!-- Greeting -->
+          <div class="home-greeting">
+            <div class="greeting-left">
+              <h2>早安！</h2>
+              <p>今天适合拍人像，光线极佳</p>
+            </div>
+            <div>
+              <div class="weather-chip">24° 晴 穿薄外套</div>
+              <div style="margin-top:10px;display:flex;justify-content:flex-end;">
+                <div class="avatar-wrap">
+                  <div class="avatar-ear"></div>
+                  <img src="assets/yanbao/yanbao_ip_wink.png" class="avatar-img" style="object-fit:contain;background:transparent;" alt="">
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Core Functions -->
+          <div class="section-title">核心功能</div>
+          <div class="func-grid">
+            <div class="func-card" onclick="showScreen('camera')">
+              <h4>拍照</h4>
+              <p>9种专业模式</p>
+              <img src="assets/icons/ic_btn_camera.png" class="func-card-yanbao" style="width:50px;height:50px;object-fit:contain;" alt="">
+            </div>
+            <div class="func-card" onclick="showScreen('editor')">
+              <h4>编辑</h4>
+              <p>91个大师滤镜</p>
+              <img src="assets/icons/ic_btn_edit.png" class="func-card-yanbao" style="width:50px;height:50px;object-fit:contain;" alt="">
+            </div>
+            <div class="func-card">
+              <h4>AI推荐</h4>
+              <p>智能场景识别</p>
+              <img src="assets/icons/ic_btn_ai.png" class="func-card-yanbao" style="width:50px;height:50px;object-fit:contain;" alt="">
+            </div>
+            <div class="func-card" onclick="showScreen('gallery')">
+              <h4>相册</h4>
+              <p>智能分类管理</p>
+              <img src="assets/icons/ic_btn_album.png" class="func-card-yanbao" style="width:50px;height:50px;object-fit:contain;" alt="">
+            </div>
+          </div>
+          <!-- Recent -->
+          <div class="section-title">最近拍摄</div>
+          <div class="recent-scroll">
+            <div class="recent-thumb" style="background:linear-gradient(135deg,#1a0d2e,#0d1a1a);"></div>
+            <div class="recent-thumb" style="background:linear-gradient(135deg,#0d1a2e,#1a0d1a);"></div>
+            <div class="recent-thumb" style="background:linear-gradient(135deg,#2e0d1a,#1a0d2e);"></div>
+            <div class="recent-thumb" style="background:linear-gradient(135deg,#1a1a0d,#2e1a0d);"></div>
+            <div class="recent-thumb" style="background:linear-gradient(135deg,#0d1a2e,#0d2e2e);"></div>
+            <div class="recent-thumb" style="background:linear-gradient(135deg,#0d0d1a,#1a0d0d);"></div>
+          </div>
+          <!-- Hot Locations -->
+          <div class="section-title">热门地点</div>
+          <div class="location-scroll">
+            <div class="location-card">
+              <h5>📍 外滩</h5>
+              <p>上海 · 2.3km</p>
+              <img src="assets/stickers/yanbao_milktea.png" class="location-sticker" alt="" onerror="this.style.display='none'">
+            </div>
+            <div class="location-card">
+              <h5>📍 西湖</h5>
+              <p>杭州 · 热门</p>
+            </div>
+            <div class="location-card">
+              <h5>📍 故宫</h5>
+              <p>北京 · 推荐</p>
+            </div>
+          </div>
+          <div style="height:20px;"></div>
+        </div>
+        <!-- Bottom Nav -->
+        <div class="bottom-nav">
+          <div class="nav-item active">
+            <img src="assets/icons/ic_yanbao_home.png" style="width:24px;height:24px;" onerror="this.src='assets/icons/ic_nav_home.png'" alt="">
+            <span>首页</span>
+          </div>
+          <div class="nav-item" onclick="showScreen('editor')">
+            <img src="assets/icons/ic_yanbao_edit.png" style="width:24px;height:24px;" onerror="this.src='assets/icons/ic_yanbao_edit.png'" alt="">
+            <span>编辑</span>
+          </div>
+          <div class="nav-item" onclick="showScreen('camera')">
+            <div class="nav-center-btn"><img src="assets/icons/ic_shutter_paw.png" style="width:32px;height:32px;object-fit:contain;" alt=""></div>
+            <span style="margin-top:8px;">拍照</span>
+          </div>
+          <div class="nav-item" onclick="showScreen('discovery')">
+            <img src="assets/icons/ic_yanbao_recommend.png" style="width:24px;height:24px;" onerror="this.src='assets/icons/ic_yanbao_recommend.png'" alt="">
+            <span>推荐</span>
+          </div>
+          <div class="nav-item" onclick="showScreen('profile')">
+            <img src="assets/icons/ic_yanbao_profile.png" style="width:24px;height:24px;" onerror="this.src='assets/icons/ic_nav_user.png'" alt="">
+            <span>我的</span>
+          </div>
+        </div>
+      </div>
+      <div style="max-width:320px;padding:20px 0;">
+        <h3 style="color:var(--pink);margin-bottom:12px;">M2 首页规范</h3>
+        <ul style="color:var(--text-sub);font-size:13px;line-height:2;list-style:none;">
+          <li>✅ 个性化问候 + 天气卡片</li>
+          <li>✅ 兔耳形状用户头像容器</li>
+          <li>✅ 4个玻璃质感功能卡片</li>
+          <li>✅ 最近拍摄横向滚动列表</li>
+          <li>✅ 热门地点 LBS 推荐</li>
+          <li>✅ 底部导航栏（5项）</li>
+          <li>✅ 中心熊掌印超大按钮</li>
+          <li>⚠️ 天气API需第三方接入</li>
+          <li>⚠️ LBS需Google Maps/高德</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- M3 CAMERA -->
+  <div id="camera" class="screen">
+    <div class="phone-wrap">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen" style="position:relative;">
+          <!-- Viewfinder 72% -->
+          <div class="camera-viewfinder">
+            <div class="camera-grid-overlay"></div>
+            <div class="camera-ai-tag">AI识别: 人像模式</div>
+            <!-- Top controls -->
+            <div class="camera-top-bar">
+              <div class="cam-icon-btn"><img src="assets/icons/ic_yanbao_flash.png" style="width:18px;height:18px;object-fit:contain;" alt=""></div>
+              <div class="cam-icon-btn"><img src="assets/icons/ic_yanbao_timer.png" style="width:18px;height:18px;object-fit:contain;" alt=""></div>
+              <div class="cam-icon-btn" style="font-size:11px;width:auto;padding:0 10px;border-radius:12px;">4:3</div>
+              <div class="cam-icon-btn">HDR</div>
+              <div class="cam-icon-btn">
+                <img src="assets/icons/ic_yanbao_settings.png" style="width:18px;height:18px;" onerror="this.src='assets/icons/ic_yanbao_settings.png'" alt="">
+              </div>
+            </div>
+            <!-- Focus ring -->
+            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:80px;height:80px;border:2px solid var(--pink);border-radius:50%;box-shadow:0 0 20px rgba(236,72,153,0.4);"></div>
+          </div>
+          <!-- Control Panel 28% -->
+          <div class="camera-panel">
+            <!-- Carrot Slider -->
+            <div class="carrot-slider">
+              <span style="font-size:11px;color:var(--text-sub);">滤镜</span>
+              <input type="range" min="0" max="100" value="60">
+              <span style="font-size:11px;color:var(--orange);">60</span>
+            </div>
+            <!-- Mode Dial -->
+            <div class="mode-dial">
+              <div class="mode-item">视频</div>
+              <div class="mode-item">夜景</div>
+              <div class="mode-item active">基础</div>
+              <div class="mode-item">人像</div>
+              <div class="mode-item">专业</div>
+              <div class="mode-item">大师</div>
+              <div class="mode-item">29D</div>
+              <div class="mode-item">AR</div>
+            </div>
+            <!-- Controls -->
+            <div class="camera-controls">
+              <div class="thumb-btn"><img src="assets/icons/ic_btn_album.png" style="width:28px;height:28px;object-fit:contain;" alt=""></div>
+              <div class="shutter-btn"><img src="assets/icons/ic_shutter_paw.png" style="width:36px;height:36px;object-fit:contain;" alt=""></div>
+              <div class="flip-btn"><img src="assets/icons/ic_flip_camera.png" style="width:24px;height:24px;object-fit:contain;" alt=""></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="max-width:320px;padding:20px 0;">
+        <h3 style="color:var(--pink);margin-bottom:12px;">M3 相机规范</h3>
+        <ul style="color:var(--text-sub);font-size:13px;line-height:2;list-style:none;">
+          <li>✅ 72:28黄金比例布局</li>
+          <li>✅ 构图网格线覆盖层</li>
+          <li>✅ AI场景识别标签</li>
+          <li>✅ 兔耳风格顶部图标栏</li>
+          <li>✅ 模式拨盘（9种模式）</li>
+          <li>✅ 兔耳包围选中项动画</li>
+          <li>✅ 72dp熊掌印快门按钮</li>
+          <li>✅ 霓虹呼吸灯效果</li>
+          <li>✅ 胡萝卜形滑块Thumb</li>
+          <li>⚠️ 29D渲染需AI引擎</li>
+          <li>⚠️ AR空间需ARCore</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- M4 EDITOR -->
+  <div id="editor" class="screen">
+    <div class="phone-wrap">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen" style="position:relative;">
+          <!-- Preview 72% -->
+          <div class="editor-preview">
+            <div style="width:100%;height:100%;background:linear-gradient(135deg,#1a0d2e,#0d1a1a,#1a1a0d);display:flex;align-items:center;justify-content:center;">
+              <img src="assets/yanbao/yanbao_wink.png" style="width:50%;opacity:0.5;" onerror="this.style.display='none'" alt="">
+            </div>
+            <div class="editor-top-bar">
+              <div style="display:flex;gap:8px;">
+                <div class="cam-icon-btn" style="font-size:12px;width:auto;padding:0 12px;border-radius:12px;">← 返回</div>
+              </div>
+              <div style="display:flex;gap:8px;">
+                <div class="cam-icon-btn" style="font-size:12px;width:auto;padding:0 12px;border-radius:12px;">对比</div>
+                <div class="cam-icon-btn" style="background:var(--pink);border-color:var(--pink);font-size:12px;width:auto;padding:0 12px;border-radius:12px;">保存</div>
+              </div>
+            </div>
+          </div>
+          <!-- Editor Panel 28% -->
+          <div class="editor-panel">
+            <div class="tool-tabs">
+              <div class="tool-tab active">滤镜</div>
+              <div class="tool-tab">2.9D视差</div>
+              <div class="tool-tab">美颜塑形</div>
+              <div class="tool-tab">基础调整</div>
+            </div>
+            <div class="filter-row">
+              <div class="filter-chip active">
+                <div class="filter-thumb" style="background:linear-gradient(135deg,#2e0d1a,#1a0d2e);"></div>
+                <p>日本</p>
+              </div>
+              <div class="filter-chip">
+                <div class="filter-thumb" style="background:linear-gradient(135deg,#0d1a2e,#0d2e2e);"></div>
+                <p>韩国</p>
+              </div>
+              <div class="filter-chip">
+                <div class="filter-thumb" style="background:linear-gradient(135deg,#2e0d0d,#1a0d0d);"></div>
+                <p>中国</p>
+              </div>
+              <div class="filter-chip">
+                <div class="filter-thumb" style="background:linear-gradient(135deg,#0d2e0d,#1a2e1a);"></div>
+                <p>泰国</p>
+              </div>
+              <div class="filter-chip">
+                <div class="filter-thumb" style="background:linear-gradient(135deg,#1a1a2e,#2e1a0d);"></div>
+                <p>法国</p>
+              </div>
+              <div class="filter-chip">
+                <div class="filter-thumb" style="background:linear-gradient(135deg,#2e1a0d,#1a0d0d);"></div>
+                <p>迪拜</p>
+              </div>
+            </div>
+            <div style="padding:10px 20px 0;">
+              <div class="carrot-slider">
+                <span style="font-size:11px;color:var(--text-sub);">强度</span>
+                <input type="range" min="0" max="100" value="75">
+                <span style="font-size:11px;color:var(--orange);">75</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="max-width:320px;padding:20px 0;">
+        <h3 style="color:var(--pink);margin-bottom:12px;">M4 编辑规范</h3>
+        <ul style="color:var(--text-sub);font-size:13px;line-height:2;list-style:none;">
+          <li>✅ 72:28布局（预览+工具面板）</li>
+          <li>✅ 91个大师滤镜（国家主题）</li>
+          <li>✅ 胡萝卜滑块强度调节</li>
+          <li>✅ 2.9D视差调节工具</li>
+          <li>✅ 20+美颜塑形参数</li>
+          <li>✅ 基础调整（亮度/对比度/饱和度）</li>
+          <li>✅ 实时预览对比</li>
+          <li>⚠️ 2.9D景深需ML Kit深度估计</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- M5 GALLERY -->
+  <div id="gallery" class="screen">
+    <div class="phone-wrap">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="gallery-header">
+            <h2>相册</h2>
+            <div style="display:flex;gap:8px;">
+              <div class="cam-icon-btn"><img src="assets/icons/ic_yanbao_settings.png" style="width:16px;height:16px;object-fit:contain;" alt="搜索"></div>
+              <div class="cam-icon-btn"><img src="assets/icons/ic_yanbao_edit.png" style="width:16px;height:16px;object-fit:contain;" alt="更多"></div>
+            </div>
+          </div>
+          <div class="smart-tags">
+            <div class="smart-tag active">全部</div>
+            <div class="smart-tag">人像</div>
+            <div class="smart-tag">风景</div>
+            <div class="smart-tag">美食</div>
+            <div class="smart-tag">夜景</div>
+            <div class="smart-tag">建筑</div>
+          </div>
+          <div class="photo-grid">
+            <div class="photo-cell" style="background:linear-gradient(135deg,#1a0d2e,#0d1a1a);"><img src="assets/icons/ic_29d_render.png" style="width:30px;height:30px;opacity:0.6;"><div class="photo-badge">29D</div></div>
+            <div class="photo-cell" style="background:linear-gradient(135deg,#0d1a2e,#1a0d1a);"></div>
+            <div class="photo-cell" style="background:linear-gradient(135deg,#2e0d1a,#1a0d2e);"><div class="photo-badge">AI</div></div>
+            <div class="photo-cell" style="background:linear-gradient(135deg,#1a1a0d,#2e1a0d);"></div>
+            <div class="photo-cell" style="background:linear-gradient(135deg,#0d1a2e,#0d2e2e);"></div>
+            <div class="photo-cell" style="background:linear-gradient(135deg,#0d0d1a,#1a0d0d);"><div class="photo-badge">夜景</div></div>
+            <div class="photo-cell" style="background:linear-gradient(135deg,#2e0d2e,#1a0d1a);"></div>
+            <div class="photo-cell" style="background:linear-gradient(135deg,#0d1a0d,#1a2e1a);"></div>
+            <div class="photo-cell" style="background:linear-gradient(135deg,#1a0d2e,#2e0d1a);"></div>
+            <div class="photo-cell" style="background:linear-gradient(135deg,#0d0d2e,#0d1a2e);"></div>
+            <div class="photo-cell" style="background:linear-gradient(135deg,#0d2e0d,#1a2e1a);"></div>
+            <div class="photo-cell" style="background:linear-gradient(135deg,#2e2e0d,#1a1a0d);"></div>
+          </div>
+        </div>
+        <div class="bottom-nav">
+          <div class="nav-item" onclick="showScreen('home')">
+            <img src="assets/icons/ic_yanbao_home.png" style="width:24px;height:24px;" onerror="this.src='assets/icons/ic_nav_home.png'" alt="">
+            <span>首页</span>
+          </div>
+          <div class="nav-item" onclick="showScreen('editor')">
+            <img src="assets/icons/ic_yanbao_edit.png" style="width:24px;height:24px;" onerror="this.src='assets/icons/ic_yanbao_edit.png'" alt="">
+            <span>编辑</span>
+          </div>
+          <div class="nav-item" onclick="showScreen('camera')">
+            <div class="nav-center-btn"><img src="assets/icons/ic_shutter_paw.png" style="width:32px;height:32px;object-fit:contain;" alt=""></div>
+            <span style="margin-top:8px;">拍照</span>
+          </div>
+          <div class="nav-item" onclick="showScreen('discovery')">
+            <img src="assets/icons/ic_yanbao_recommend.png" style="width:24px;height:24px;" onerror="this.src='assets/icons/ic_yanbao_recommend.png'" alt="">
+            <span>推荐</span>
+          </div>
+          <div class="nav-item active" onclick="showScreen('gallery')">
+            <img src="assets/icons/ic_nav_gallery.png" style="width:24px;height:24px;" onerror="this.src='assets/icons/ic_nav_gallery.png'" alt="">
+            <span>相册</span>
+          </div>
+        </div>
+      </div>
+      <div style="max-width:320px;padding:20px 0;">
+        <h3 style="color:var(--pink);margin-bottom:12px;">M5 相册规范</h3>
+        <ul style="color:var(--text-sub);font-size:13px;line-height:2;list-style:none;">
+          <li>✅ 3列网格展示</li>
+          <li>✅ 智能分类标签（AI识别）</li>
+          <li>✅ 29D/AI/夜景角标</li>
+          <li>✅ 批量选择/删除/分享</li>
+          <li>✅ LBS地理标记</li>
+          <li>⚠️ AI分类需ML Kit图像标注</li>
+          <li>⚠️ LBS需Google Maps/高德</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- M6 DISCOVERY -->
+  <div id="discovery" class="screen">
+    <div class="phone-wrap">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen" style="position:relative;background:#000;min-height:812px;">
+          <div class="disc-video">
+            <div class="disc-video-content">
+              <img src="assets/yanbao/yanbao_happy.png" alt="" onerror="this.style.display='none'">
+            </div>
+            <!-- Overlay -->
+            <div class="disc-overlay">
+              <div class="disc-user">
+                <img src="assets/yanbao/yanbao_ip_wink.png" class="disc-avatar" style="object-fit:contain;background:transparent;" alt="">
+                <div class="disc-user-info">
+                  <h4>@yanbao_official</h4>
+                  <p>雁宝 · 摄影师</p>
+                </div>
+                <div style="margin-left:auto;">
+                  <div style="background:var(--pink);border-radius:20px;padding:4px 14px;font-size:12px;cursor:pointer;">关注</div>
+                </div>
+              </div>
+              <div class="disc-desc">
+                用29D渲染模式拍的外滩夜景，层次感超强！
+                #摄颜 #29D渲染 #上海夜景 #AI摄影
+              </div>
+            </div>
+          </div>
+          <!-- Actions -->
+          <div class="disc-actions">
+            <div class="disc-action disc-like">
+              <img src="assets/icons/ic_nav_pin.png" class="disc-action-icon" style="width:28px;height:28px;object-fit:contain;" alt="">
+              <span>2.4万</span>
+            </div>
+            <div class="disc-action">
+              <img src="assets/icons/ic_btn_ai.png" class="disc-action-icon" style="width:28px;height:28px;object-fit:contain;" alt="">
+              <span>1.2k</span>
+            </div>
+            <div class="disc-action">
+              <img src="assets/icons/ic_yanbao_recommend.png" class="disc-action-icon" style="width:28px;height:28px;object-fit:contain;" onerror="this.src='assets/icons/ic_nav_pin.png'" alt="分享">
+              <span>分享</span>
+            </div>
+            <div class="disc-action">
+              <img src="assets/icons/ic_yanbao_home.png" class="disc-action-icon" style="width:28px;height:28px;object-fit:contain;" onerror="this.src='assets/icons/ic_nav_pin.png'" alt="收藏">
+              <span>收藏</span>
+            </div>
+          </div>
+          <!-- Status bar -->
+          <div style="position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;padding:40px 20px 8px;font-size:12px;color:rgba(255,255,255,0.7);">
+            <span>9:41</span><span>●●●●  100%</span>
+          </div>
+        </div>
+      </div>
+      <div style="max-width:320px;padding:20px 0;">
+        <h3 style="color:var(--pink);margin-bottom:12px;">M6 推荐规范</h3>
+        <ul style="color:var(--text-sub);font-size:13px;line-height:2;list-style:none;">
+          <li>✅ 类TikTok竖屏信息流</li>
+          <li>✅ 上下滑动切换作品</li>
+          <li>✅ 胡萝卜橙点赞图标</li>
+          <li>✅ 右侧操作栏（点赞/评论/分享/收藏）</li>
+          <li>✅ 作者头像+关注按钮</li>
+          <li>✅ 评论页（底部弹出）</li>
+          <li>⚠️ 内容分发需后端CDN</li>
+          <li>⚠️ 推荐算法需服务端</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- M7 PROFILE -->
+  <div id="profile" class="screen">
+    <div class="phone-wrap">
+      <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <!-- Profile Header -->
+          <div class="profile-header">
+            <div class="profile-avatar-wrap">
+              <div class="profile-ear"></div>
+              <img src="assets/yanbao/yanbao_ip_normal.png" class="profile-avatar" style="object-fit:contain;background:transparent;" alt="">
+            </div>
+            <div class="profile-name">雁宝用户</div>
+            <div class="profile-id">ID: YB-20260227</div>
+            <div class="member-badge"><img src="assets/icons/ic_nav_pin.png" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;">大师会员 · 第 365 天</div>
+          </div>
+          <!-- Stats -->
+          <div class="profile-stats">
+            <div class="stat-item"><h3>128</h3><p>作品</p></div>
+            <div class="stat-item"><h3>2.4万</h3><p>获赞</p></div>
+            <div class="stat-item"><h3>1.2k</h3><p>关注者</p></div>
+            <div class="stat-item"><h3>365</h3><p>会员天</p></div>
+          </div>
+          <!-- Garden -->
+          <div class="garden-section">
+            <div class="garden-card">
+              <img src="assets/yanbao/yanbao_heart.png" class="garden-yanbao" onerror="this.src='assets/yanbao/yanbao_ip_heart.png'" alt="">
+              <div class="garden-info">
+                <h4>雁宝园地</h4>
+                <p>今日剩余喂食: <span style="color:var(--orange);font-weight:600;">3次</span></p>
+                <p style="font-size:11px;">喂食解锁大师模式特权</p>
+                <button class="feed-btn"><img src="assets/icons/ic_nav_pin.png" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;">喂食雁宝</button>
+                <div class="privilege-bar">
+                  <div class="privilege-label">
+                    <span>特权等级 Lv.3</span>
+                    <span style="color:var(--orange);">65%</span>
+                  </div>
+                  <div class="privilege-progress">
+                    <div class="privilege-fill"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Works Grid -->
+          <div style="padding:0 20px;font-size:14px;font-weight:600;margin-bottom:8px;">我的作品</div>
+          <div class="works-grid">
+            <div class="work-cell" style="background:linear-gradient(135deg,#1a0d2e,#0d1a1a);"></div>
+            <div class="work-cell" style="background:linear-gradient(135deg,#0d1a2e,#1a0d1a);"></div>
+            <div class="work-cell" style="background:linear-gradient(135deg,#2e0d1a,#1a0d2e);"></div>
+            <div class="work-cell" style="background:linear-gradient(135deg,#1a1a0d,#2e1a0d);"></div>
+            <div class="work-cell" style="background:linear-gradient(135deg,#0d1a2e,#0d2e2e);"></div>
+            <div class="work-cell" style="background:linear-gradient(135deg,#0d0d1a,#1a0d0d);"></div>
+          </div>
+          <div style="height:20px;"></div>
+        </div>
+        <div class="bottom-nav">
+          <div class="nav-item" onclick="showScreen('home')">
+            <img src="assets/icons/ic_yanbao_home.png" style="width:24px;height:24px;" onerror="this.src='assets/icons/ic_nav_home.png'" alt="">
+            <span>首页</span>
+          </div>
+          <div class="nav-item" onclick="showScreen('editor')">
+            <img src="assets/icons/ic_yanbao_edit.png" style="width:24px;height:24px;" onerror="this.src='assets/icons/ic_yanbao_edit.png'" alt="">
+            <span>编辑</span>
+          </div>
+          <div class="nav-item" onclick="showScreen('camera')">
+            <div class="nav-center-btn"><img src="assets/icons/ic_shutter_paw.png" style="width:32px;height:32px;object-fit:contain;" alt=""></div>
+            <span style="margin-top:8px;">拍照</span>
+          </div>
+          <div class="nav-item" onclick="showScreen('discovery')">
+            <img src="assets/icons/ic_yanbao_recommend.png" style="width:24px;height:24px;" onerror="this.src='assets/icons/ic_yanbao_recommend.png'" alt="">
+            <span>推荐</span>
+          </div>
+          <div class="nav-item active">
+            <img src="assets/icons/ic_yanbao_profile.png" style="width:24px;height:24px;" onerror="this.src='assets/icons/ic_nav_user.png'" alt="">
+            <span>我的</span>
+          </div>
+        </div>
+      </div>
+      <div style="max-width:320px;padding:20px 0;">
+        <h3 style="color:var(--pink);margin-bottom:12px;">M7 我的规范</h3>
+        <ul style="color:var(--text-sub);font-size:13px;line-height:2;list-style:none;">
+          <li>✅ 类TikTok个人主页布局</li>
+          <li>✅ 兔耳形状头像容器</li>
+          <li>✅ 会员天数/编号展示</li>
+          <li>✅ 雁宝园地喂食交互</li>
+          <li>✅ 胡萝卜橙喂食按钮</li>
+          <li>✅ 特权等级进度条</li>
+          <li>✅ 作品网格展示</li>
+          <li>⚠️ 会员系统需支付接入</li>
+          <li>⚠️ 用户数据需后端API</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end screens -->
+
+<!-- AUDIT PANEL -->
+<div class="audit-panel" id="auditPanel">
+  <button class="audit-close" onclick="toggleAudit()">✕</button>
+  <div class="audit-content">
+    <h1>📋 摄颜App 功能审核报告</h1>
+    <p class="subtitle">版本: V2 | 审核日期: 2026-02-27 | 覆盖模块: M1-M7</p>
+
+    <!-- Icon Consistency -->
+    <div class="audit-section">
+      <h2>🎨 Icon一致性审核</h2>
+      <div class="icon-audit" id="iconAudit">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+
+    <!-- Feature Audit -->
+    <div class="audit-section">
+      <h2>⚙️ 功能实现状态</h2>
+      <table class="audit-table">
+        <thead>
+          <tr><th>模块</th><th>功能</th><th>状态</th><th>备注</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>M1 启动页</td><td>雁宝IP动画 + 进度条</td><td><span class="tag tag-ok">✅ 已实现</span></td><td>SplashScreen.kt</td></tr>
+          <tr><td>M2 首页</td><td>问候卡片 + 天气</td><td><span class="tag tag-partial">⚠️ 部分</span></td><td>天气数据需第三方API</td></tr>
+          <tr><td>M2 首页</td><td>功能卡片（4个）</td><td><span class="tag tag-ok">✅ 已实现</span></td><td>HomeScreenImproved.kt</td></tr>
+          <tr><td>M2 首页</td><td>热门地点 LBS</td><td><span class="tag tag-partial">⚠️ 部分</span></td><td>需Google Maps/高德API</td></tr>
+          <tr><td>M2 首页</td><td>底部导航栏</td><td><span class="tag tag-ok">✅ 已实现</span></td><td>5项含熊掌中心按钮</td></tr>
+          <tr><td>M3 相机</td><td>CameraX实时预览</td><td><span class="tag tag-ok">✅ 已实现</span></td><td>CameraManager.kt</td></tr>
+          <tr><td>M3 相机</td><td>9种拍摄模式</td><td><span class="tag tag-partial">⚠️ 部分</span></td><td>基础5种已实现，29D/AR待接入</td></tr>
+          <tr><td>M3 相机</td><td>91个大师滤镜</td><td><span class="tag tag-ok">✅ 已实现</span></td><td>MasterFilter91Database.kt</td></tr>
+          <tr><td>M3 相机</td><td>美颜塑形（20+参数）</td><td><span class="tag tag-ok">✅ 已实现</span></td><td>PortraitBeautifier.kt + ML Kit</td></tr>
+          <tr><td>M3 相机</td><td>29D渲染模式</td><td><span class="tag tag-missing">❌ 未实现</span></td><td>需自研AI引擎或第三方</td></tr>
+          <tr><td>M3 相机</td><td>AR空间贴纸</td><td><span class="tag tag-partial">⚠️ 部分</span></td><td>ARCore已接入，内容待开发</td></tr>
+          <tr><td>M3 相机</td><td>雁宝记忆参数流转</td><td><span class="tag tag-ok">✅ 已实现</span></td><td>FilterRecommendationEngine.kt</td></tr>
+          <tr><td>M4 编辑</td><td>滤镜工具（91个）</td><td><span class="tag tag-ok">✅ 已实现</span></td><td>EditScreenImproved.kt</td></tr>
+          <tr><td>M4 编辑</td><td>2.9D视差调节</td><td><span class="tag tag-partial">⚠️ 部分</span></td><td>UI完成，景深估计需ML Kit</td></tr>
+          <tr><td>M4 编辑</td><td>美颜塑形</td><td><span class="tag tag-ok">✅ 已实现</span></td><td>与相机共用组件</td></tr>
+          <tr><td>M5 相册</td><td>3列网格展示</td><td><span class="tag tag-ok">✅ 已实现</span></td><td>GalleryScreenImproved.kt</td></tr>
+          <tr><td>M5 相册</td><td>AI智能分类</td><td><span class="tag tag-partial">⚠️ 部分</span></td><td>需ML Kit图像标注API</td></tr>
+          <tr><td>M5 相册</td><td>LBS地理标记</td><td><span class="tag tag-partial">⚠️ 部分</span></td><td>需Google Maps/高德</td></tr>
+          <tr><td>M6 推荐</td><td>竖屏信息流</td><td><span class="tag tag-ok">✅ 已实现</span></td><td>RecommendScreenImproved.kt</td></tr>
+          <tr><td>M6 推荐</td><td>点赞/评论/分享</td><td><span class="tag tag-ok">✅ 已实现</span></td><td>本地状态管理</td></tr>
+          <tr><td>M6 推荐</td><td>内容分发/推荐算法</td><td><span class="tag tag-missing">❌ 未实现</span></td><td>需后端服务 + CDN</td></tr>
+          <tr><td>M7 我的</td><td>个人主页</td><td><span class="tag tag-ok">✅ 已实现</span></td><td>ProfileScreenImproved.kt</td></tr>
+          <tr><td>M7 我的</td><td>雁宝园地喂食</td><td><span class="tag tag-ok">✅ 已实现</span></td><td>胡萝卜橙交互完整</td></tr>
+          <tr><td>M7 我的</td><td>会员体系</td><td><span class="tag tag-partial">⚠️ 部分</span></td><td>UI完成，支付接入待开发</td></tr>
+          <tr><td>M7 我的</td><td>用户数据同步</td><td><span class="tag tag-missing">❌ 未实现</span></td><td>需后端API + 数据库</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Third Party -->
+    <div class="audit-section">
+      <h2>🔌 第三方服务申请清单</h2>
+
+      <div class="third-party-card">
+        <h4>🗺️ 地图 & LBS <span class="tag tag-third">必须申请</span></h4>
+        <p><strong>用途：</strong>热门地点推荐、照片地理标记、LBS功能<br>
+        <strong>选项A（国内）：</strong>高德地图 API — amap.com/dev，免费额度充足<br>
+        <strong>选项B（海外）：</strong>Google Maps Platform — console.cloud.google.com<br>
+        <strong>费用：</strong>高德免费；Google Maps $200/月免费额度</p>
+        <p class="urgency urgency-high">🔴 优先级：高 — M2首页、M5相册依赖此服务</p>
+      </div>
+
+      <div class="third-party-card">
+        <h4>☁️ 天气 API <span class="tag tag-third">必须申请</span></h4>
+        <p><strong>用途：</strong>M2首页实时天气 + 穿衣建议<br>
+        <strong>推荐：</strong>和风天气（qweather.com）— 国内首选，免费版每天1000次<br>
+        <strong>备选：</strong>OpenWeatherMap — openweathermap.org，免费60次/分钟</p>
+        <p class="urgency urgency-high">🔴 优先级：高 — M2首页核心体验</p>
+      </div>
+
+      <div class="third-party-card">
+        <h4>🤖 ML Kit（Google） <span class="tag tag-third">已接入部分</span></h4>
+        <p><strong>用途：</strong>人脸检测（美颜）、图像标注（相册分类）、景深估计（2.9D）<br>
+        <strong>状态：</strong>face-detection:16.1.6 已在build.gradle中引入<br>
+        <strong>待补充：</strong>image-labeling、depth-estimation 模块<br>
+        <strong>申请：</strong>Firebase Console — console.firebase.google.com（免费）</p>
+        <p class="urgency urgency-med">🟠 优先级：中 — M3/M4/M5功能完整性</p>
+      </div>
+
+      <div class="third-party-card">
+        <h4>🎭 ARCore <span class="tag tag-third">已接入</span></h4>
+        <p><strong>用途：</strong>M3相机 AR空间贴纸模式<br>
+        <strong>状态：</strong>com.google.ar:core:1.42.0 已在build.gradle中引入<br>
+        <strong>待完成：</strong>AR贴纸内容开发（雁宝AR形象）<br>
+        <strong>申请：</strong>无需额外申请，ARCore免费使用</p>
+        <p class="urgency urgency-low">🟢 优先级：低 — 功能已接入，内容待制作</p>
+      </div>
+
+      <div class="third-party-card">
+        <h4>💳 支付 <span class="tag tag-third">必须申请</span></h4>
+        <p><strong>用途：</strong>M7会员体系付费订阅<br>
+        <strong>选项A（国内）：</strong>微信支付 + 支付宝 — 需企业资质<br>
+        <strong>选项B（海外）：</strong>Google Play Billing — 应用内购买<br>
+        <strong>费用：</strong>微信/支付宝需企业认证；Google Play收取30%佣金</p>
+        <p class="urgency urgency-high">🔴 优先级：高 — 商业化核心</p>
+      </div>
+
+      <div class="third-party-card">
+        <h4>☁️ 后端 & CDN <span class="tag tag-third">必须搭建</span></h4>
+        <p><strong>用途：</strong>M6推荐社区内容分发、用户数据同步、推荐算法<br>
+        <strong>推荐方案：</strong>阿里云 / 腾讯云（国内）或 AWS / Firebase（海外）<br>
+        <strong>最低配置：</strong>2核4G服务器 + CDN + 对象存储（OSS/S3）<br>
+        <strong>费用：</strong>约 ¥500-2000/月（按流量）</p>
+        <p class="urgency urgency-high">🔴 优先级：高 — M6社区功能完全依赖</p>
+      </div>
+
+      <div class="third-party-card">
+        <h4>🧠 29D渲染AI引擎 <span class="tag tag-third">核心功能</span></h4>
+        <p><strong>用途：</strong>M3相机29D渲染模式 — 29维度实时图像重构<br>
+        <strong>方案A：</strong>自研TensorFlow Lite模型（需AI团队，3-6个月）<br>
+        <strong>方案B：</strong>接入商业AI图像API（如Stability AI、Midjourney API）<br>
+        <strong>方案C：</strong>简化版：用现有滤镜+景深模拟替代（短期方案）</p>
+        <p class="urgency urgency-med">🟠 优先级：中 — 核心差异化功能，建议Phase 2实现</p>
+      </div>
+
+    </div>
+
+    <!-- Icon Consistency Summary -->
+    <div class="audit-section">
+      <h2>🔍 Icon风格一致性检查</h2>
+      <table class="audit-table">
+        <thead>
+          <tr><th>Icon</th><th>文件名</th><th>风格</th><th>状态</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>首页</td><td>ic_yanbao_home.png</td><td>雁宝兔耳风格</td><td><span class="tag tag-ok">✅ 一致</span></td></tr>
+          <tr><td>编辑</td><td>ic_yanbao_edit.png</td><td>雁宝兔耳风格</td><td><span class="tag tag-ok">✅ 一致</span></td></tr>
+          <tr><td>推荐</td><td>ic_yanbao_recommend.png</td><td>雁宝兔耳风格</td><td><span class="tag tag-ok">✅ 一致</span></td></tr>
+          <tr><td>我的</td><td>ic_yanbao_profile.png</td><td>雁宝兔耳风格</td><td><span class="tag tag-ok">✅ 一致</span></td></tr>
+          <tr><td>快门</td><td>ic_shutter_paw.png</td><td>熊掌印风格</td><td><span class="tag tag-ok">✅ 一致</span></td></tr>
+          <tr><td>闪光灯</td><td>ic_yanbao_flash.png</td><td>雁宝兔耳风格</td><td><span class="tag tag-ok">✅ 一致</span></td></tr>
+          <tr><td>定时</td><td>ic_yanbao_timer.png</td><td>雁宝兔耳风格</td><td><span class="tag tag-ok">✅ 一致</span></td></tr>
+          <tr><td>设置</td><td>ic_yanbao_settings.png</td><td>雁宝兔耳风格</td><td><span class="tag tag-ok">✅ 一致</span></td></tr>
+          <tr><td>熊耳导航</td><td>ic_yanbao_bear.png</td><td>雁宝熊耳风格</td><td><span class="tag tag-ok">✅ 一致</span></td></tr>
+          <tr><td>推荐(旧)</td><td>ic_tab_recommend_kuromi.png</td><td>⚠️ 库洛米风格</td><td><span class="tag tag-partial">⚠️ 需替换</span></td></tr>
+          <tr><td>启动页</td><td>ic_kuromi_splash_pro.png</td><td>⚠️ 库洛米风格</td><td><span class="tag tag-partial">⚠️ 需替换为雁宝</span></td></tr>
+          <tr><td>翻转相机</td><td>ic_flip_camera.png</td><td>通用图标</td><td><span class="tag tag-ok">✅ 可接受</span></td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:16px;padding:12px;background:rgba(249,115,22,0.1);border:1px solid rgba(249,115,22,0.3);border-radius:12px;font-size:13px;color:var(--text-sub);">
+        ⚠️ <strong style="color:var(--orange);">发现2处不一致：</strong>
+        <code style="color:#f87171;">ic_tab_recommend_kuromi.png</code> 和 <code style="color:#f87171;">ic_kuromi_splash_pro.png</code> 仍使用库洛米风格，
+        与全套雁宝IP体系不符。建议替换为雁宝兔耳风格图标，保持品牌一致性。
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  const map = {splash:0,home:1,camera:2,editor:3,gallery:4,discovery:5,profile:6};
+  document.querySelectorAll('.nav-btn')[map[id]].classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function toggleAudit() {
+  document.getElementById('auditPanel').classList.toggle('open');
+}
+
+// Populate icon audit
+const icons = [
+  {file:'ic_yanbao_home.png',name:'首页',ok:true},
+  {file:'ic_yanbao_edit.png',name:'编辑',ok:true},
+  {file:'ic_yanbao_recommend.png',name:'推荐',ok:true},
+  {file:'ic_yanbao_profile.png',name:'我的',ok:true},
+  {file:'ic_shutter_paw.png',name:'快门',ok:true},
+  {file:'ic_yanbao_flash.png',name:'闪光灯',ok:true},
+  {file:'ic_yanbao_timer.png',name:'定时',ok:true},
+  {file:'ic_yanbao_settings.png',name:'设置',ok:true},
+  {file:'ic_yanbao_bear.png',name:'熊耳',ok:true},
+  {file:'ic_tab_recommend_kuromi.png',name:'推荐(旧)',ok:false},
+  {file:'ic_kuromi_splash_pro.png',name:'启动(旧)',ok:false},
+  {file:'ic_flip_camera.png',name:'翻转',ok:true},
+];
+const iconAudit = document.getElementById('iconAudit');
+icons.forEach(ic => {
+  iconAudit.innerHTML += `
+    <div class="icon-item ${ic.ok?'ok':'warn'}">
+      <img src="assets/icons/${ic.file}" alt="${ic.name}" onerror="this.style.display='none'">
+      <p>${ic.name}</p>
+      <p style="color:${ic.ok?'#4ade80':'#f97316'}">${ic.ok?'✅':'⚠️'}</p>
+    </div>`;
+});
+
+// Splash progress counter
+let pct = 0;
+const fill = document.getElementById('splash-fill');
+const pctEl = document.getElementById('splash-pct');
+const timer = setInterval(() => {
+  pct = Math.min(100, pct + Math.random() * 8);
+  if(fill) fill.style.width = pct + '%';
+  if(pctEl) pctEl.textContent = Math.floor(pct) + '%';
+  if(pct >= 100) { clearInterval(timer); setTimeout(()=>showScreen('home'), 500); }
+}, 150);
+
+// Range slider live update
+document.querySelectorAll('input[type=range]').forEach(r => {
+  r.addEventListener('input', function() {
+    const next = this.nextElementSibling;
+    if(next) next.textContent = this.value;
+  });
+});
+</script>
+</body>
+</html>
