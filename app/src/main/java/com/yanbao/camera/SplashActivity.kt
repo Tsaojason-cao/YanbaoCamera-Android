@@ -41,8 +41,10 @@ import kotlinx.coroutines.delay
  * 设计规范：
  * - 背景：纯黑 #0A0A0A（曜石黑）
  * - 中心：雁宝 IP 形象（手持相机）
- * - 品牌字：「摄颜」白色 + 粉色霓虹外发光
- * - 进度条：胡萝卜橙 #F97316，进度头为粉色熊掌
+ * - 品牌字：「摄颜 SheYan」白色大字 + 粉色霓虹外发光
+ * - 副标题：「AI 相机 · 雁宝记忆」品牌粉
+ * - 进度条：胡萝卜橙 #F97316，细线样式，底部
+ * - 版权：「© 2026 SheYan」底部居中
  * - 逻辑：执行环境检查（数据库加载、权限检查）
  */
 class SplashActivity : ComponentActivity() {
@@ -98,8 +100,6 @@ class SplashActivity : ComponentActivity() {
 fun YanbaoSplashScreen(onTimeout: () -> Unit = {}) {
     // 进度状态（0f → 1f）
     var progress by remember { mutableStateOf(0f) }
-    // 当前环境检查步骤文案
-    var checkStep by remember { mutableStateOf("初始化雁宝 AI...") }
 
     val animProgress by animateFloatAsState(
         targetValue   = progress,
@@ -107,37 +107,13 @@ fun YanbaoSplashScreen(onTimeout: () -> Unit = {}) {
         label         = "splash_progress"
     )
 
-    // 启动序列：模拟环境检查步骤
+    // 启动序列：约3秒加载完成
     LaunchedEffect(Unit) {
-        // 步骤 1：初始化数据库（0% → 30%）
-        checkStep = "加载本地数据库..."
-        repeat(30) {
-            delay(18L)
+        repeat(100) {
+            delay(22L)
             progress = (it + 1) / 100f
         }
-
-        // 步骤 2：检查 Git 同步状态（30% → 60%）
-        checkStep = "检查云端同步状态..."
-        repeat(30) {
-            delay(16L)
-            progress = 0.30f + (it + 1) / 100f
-        }
-
-        // 步骤 3：加载 AI 模型（60% → 90%）
-        checkStep = "加载 AI 渲染引擎..."
-        repeat(30) {
-            delay(14L)
-            progress = 0.60f + (it + 1) / 100f
-        }
-
-        // 步骤 4：完成（90% → 100%）
-        checkStep = "雁宝已就绪！"
-        repeat(10) {
-            delay(20L)
-            progress = 0.90f + (it + 1) / 100f
-        }
-
-        delay(400L)
+        delay(300L)
         onTimeout()
     }
 
@@ -167,39 +143,69 @@ fun YanbaoSplashScreen(onTimeout: () -> Unit = {}) {
 
             Spacer(modifier = Modifier.height(28.dp))
 
-            // ── 品牌字：「摄颜」白色 + 粉色霓虹外发光 ─────────────────────
+            // ── 品牌字：「摄颜 SheYan」白色大字 + 粉色霓虹外发光 ───────────
             Text(
-                text  = "摄颜",
+                text  = "摄颜 SheYan",
                 style = TextStyle(
                     color      = Color.White,
-                    fontSize   = 52.sp,
+                    fontSize   = 44.sp,
                     fontWeight = FontWeight.ExtraBold,
                     fontFamily = FontFamily.SansSerif,
                     shadow     = Shadow(
                         color      = Color(0xCCEC4899),   // 品牌粉霓虹发光
                         offset     = Offset(0f, 0f),
-                        blurRadius = 32f
+                        blurRadius = 40f
                     )
-                )
-            )
-
-            Spacer(modifier = Modifier.height(6.dp))
-
-            // ── 副标语 ──────────────────────────────────────────────────────
-            Text(
-                text      = "yanbao AI",
-                fontSize  = 14.sp,
-                color     = Color(0xFFEC4899).copy(alpha = 0.75f),
-                fontWeight = FontWeight.SemiBold,
+                ),
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(56.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
-            // ── 胡萝卜橙进度条（进度头为粉色熊掌） ──────────────────────────
-            CarrotProgressBar(
-                progress  = animProgress,
-                checkStep = checkStep
+            // ── 副标题：「AI 相机 · 雁宝记忆」─────────────────────────────────
+            Text(
+                text       = "AI 相机 · 雁宝记忆",
+                fontSize   = 15.sp,
+                color      = Color(0xFFEC4899).copy(alpha = 0.85f),
+                fontWeight = FontWeight.Medium,
+                textAlign  = TextAlign.Center,
+                fontFamily = FontFamily.SansSerif
+            )
+        }
+
+        // ── 底部：胡萝卜橙进度条（细线）+ 版权 ──────────────────────────────
+        Column(
+            modifier            = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .padding(bottom = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.80f)
+                    .height(3.dp)
+                    .clip(RoundedCornerShape(50))
+                    .background(Color(0x33FFFFFF))
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(animProgress)
+                        .fillMaxHeight()
+                        .clip(RoundedCornerShape(50))
+                        .background(
+                            Brush.horizontalGradient(
+                                colors = listOf(Color(0xFFF97316), Color(0xFFFF8C00))
+                            )
+                        )
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text      = "\u00a9 2026 SheYan",
+                fontSize  = 11.sp,
+                color     = Color.White.copy(alpha = 0.35f),
+                textAlign = TextAlign.Center
             )
         }
     }
