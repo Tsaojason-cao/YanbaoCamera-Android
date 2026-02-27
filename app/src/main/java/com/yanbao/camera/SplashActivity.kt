@@ -123,52 +123,91 @@ fun YanbaoSplashScreen(onTimeout: () -> Unit = {}) {
             .fillMaxSize()
             .background(Color(0xFF0A0A0A))   // 曜石黑
     ) {
-        // 主内容列：雁宝IP居中 + 「摄颜」大字
+        // 背景散景光点（粉色光晕）
+        SplashBokehCanvas()
+
+        // 主内容列
         Column(
             modifier            = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // ── 雁宝 IP 形象（手持相机，占满中心区域） ────────────────────
+            // ── 雁宝 IP 形象（手持相机，62% 宽度）───────────────────────
+            // 重要：不得改动雁宝IP形象，保持原始62%宽度
             Image(
                 painter            = painterResource(id = R.drawable.yanbao_jk_uniform),
                 contentDescription = "雁宝 AI 相机",
                 modifier           = Modifier
-                    .fillMaxWidth(0.80f)
+                    .fillMaxWidth(0.62f)
                     .wrapContentHeight()
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(28.dp))
 
             // ── 品牌字：「摄颜」白色大字 + 粉色霓虹外发光 ─────────────────
-            // 设计图确认：只显示「摄颜」两个大字，无副标题
+            // 设计图确认：只显示「摄颜」两个大字，无「SheYan」英文
             Text(
                 text  = "摄颜",
                 style = TextStyle(
                     color      = Color.White,
-                    fontSize   = 72.sp,
+                    fontSize   = 44.sp,
                     fontWeight = FontWeight.ExtraBold,
                     fontFamily = FontFamily.SansSerif,
                     shadow     = Shadow(
                         color      = Color(0xCCEC4899),   // 品牌粉霓虹发光
                         offset     = Offset(0f, 0f),
-                        blurRadius = 48f
+                        blurRadius = 40f
                     )
                 ),
                 textAlign = TextAlign.Center
             )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // ── 副标题：「AI 相机 · 雁宝记忆」─────────────────────────────────
+            Text(
+                text       = "AI 相机 · 雁宝记忆",
+                fontSize   = 15.sp,
+                color      = Color(0xFFEC4899).copy(alpha = 0.85f),
+                fontWeight = FontWeight.Medium,
+                textAlign  = TextAlign.Center,
+                fontFamily = FontFamily.SansSerif
+            )
         }
 
-        // ── 底部：胡萝卜橙宽进度条 + 熊掌图标 ────────────────────────────
-        // 设计图规格：宽条（20dp高），右端带粉色熊掌圆形图标
-        Box(
-            modifier = Modifier
+        // ── 底部：胡萝卜橙进度条（细线）+ 版权 ──────────────────────────────
+        Column(
+            modifier            = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp, vertical = 40.dp)
+                .padding(bottom = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            CarrotProgressBar(
-                progress = animProgress
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(0.80f)
+                    .height(3.dp)
+                    .clip(RoundedCornerShape(50))
+                    .background(Color(0x33FFFFFF))
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(animProgress)
+                        .fillMaxHeight()
+                        .clip(RoundedCornerShape(50))
+                        .background(
+                            Brush.horizontalGradient(
+                                colors = listOf(Color(0xFFF97316), Color(0xFFFF8C00))
+                            )
+                        )
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text      = "\u00a9 2026 SheYan",
+                fontSize  = 11.sp,
+                color     = Color.White.copy(alpha = 0.35f),
+                textAlign = TextAlign.Center
             )
         }
     }
