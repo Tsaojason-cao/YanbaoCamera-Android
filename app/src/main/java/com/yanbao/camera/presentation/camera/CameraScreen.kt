@@ -162,6 +162,21 @@ fun CameraScreen(
 
                 // ── 模式专属控制面板 ───────────────────────────────────
                 when (selectedMode) {
+                    CameraMode.MASTER -> {
+                        MasterWheel(viewModel = viewModel)
+                    }
+                    CameraMode.PARAM29D -> {
+                        Render29DPanel()
+                    }
+                    CameraMode.BEAUTY -> {
+                        BeautyShapeModePanel()
+                    }
+                    CameraMode.MEMORY -> {
+                        MemoryModePanel(
+                            onApplyMemory = {},
+                            onSelectOtherPhoto = { onNavigateToMemory() }
+                        )
+                    }
                     CameraMode.PARALLAX -> {
                         Param2_9DPanel(
                             parallaxStrength = parallaxStrength,
@@ -171,13 +186,25 @@ fun CameraScreen(
                         )
                     }
                     CameraMode.VIDEO -> {
+                        if (viewModel.isRecordingState) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(Color(0xFFCC0000).copy(alpha = 0.85f), RoundedCornerShape(8.dp))
+                                    .padding(horizontal = 12.dp, vertical = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                                    Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(Color.Red))
+                                    Text("录制中", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                }
+                                Text("00:03:24", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                Text("4K 60FPS", color = Color(0xFFF97316), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                            }
+                        }
                         VideoMasterPanel(
-                            selectedFps = selectedFps,
-                            onFpsSelect = { viewModel.setFps(it) },
-                            timelapseInterval = timelapseInterval,
-                            onTimelapseIntervalChange = { viewModel.setTimelapseInterval(it) },
-                            totalDuration = totalDuration,
-                            onTotalDurationChange = { viewModel.setTotalDuration(it) }
+                            isRecording = viewModel.isRecordingState
                         )
                     }
                     CameraMode.AR -> {
@@ -216,7 +243,12 @@ fun CameraScreen(
                                     .clickable { onNavigateToGallery() },
                                 contentAlignment = Alignment.Center
                             ) {
-                                Text("相册", color = Color.White.copy(alpha = 0.7f), fontSize = 10.sp)
+                                Icon(
+                                    painter = painterResource(R.drawable.ic_yanbao_gallery),
+                                    contentDescription = "相册",
+                                    tint = Color.White.copy(alpha = 0.85f),
+                                    modifier = Modifier.size(28.dp)
+                                )
                             }
                             ShutterButton(
                                 onClick = { viewModel.triggerCapture() },
@@ -243,11 +275,15 @@ fun CameraScreen(
                     }
                 }
 
-                // ── 模式专属快门行（PARALLAX / VIDEO / AR / NATIVE） ───
+                // ── 模式专属快门行（PARALLAX / VIDEO / AR / NATIVE / MASTER / PARAM29D / BEAUTY / MEMORY） ───
                 if (selectedMode == CameraMode.PARALLAX ||
                     selectedMode == CameraMode.VIDEO ||
                     selectedMode == CameraMode.AR ||
-                    selectedMode == CameraMode.NATIVE) {
+                    selectedMode == CameraMode.NATIVE ||
+                    selectedMode == CameraMode.MASTER ||
+                    selectedMode == CameraMode.PARAM29D ||
+                    selectedMode == CameraMode.BEAUTY ||
+                    selectedMode == CameraMode.MEMORY) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
@@ -261,7 +297,12 @@ fun CameraScreen(
                                 .clickable { onNavigateToGallery() },
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("相册", color = Color.White.copy(alpha = 0.7f), fontSize = 10.sp)
+                            Icon(
+                                painter = painterResource(R.drawable.ic_yanbao_gallery),
+                                contentDescription = "相册",
+                                tint = Color.White.copy(alpha = 0.85f),
+                                modifier = Modifier.size(28.dp)
+                            )
                         }
                         ShutterButton(
                             onClick = {

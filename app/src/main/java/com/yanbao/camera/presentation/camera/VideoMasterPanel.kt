@@ -1,12 +1,11 @@
 package com.yanbao.camera.presentation.camera
 
-import android.util.Log
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
@@ -16,211 +15,209 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.yanbao.camera.ui.theme.KUROMI_PINK
-import com.yanbao.camera.ui.theme.KUROMI_PURPLE
 
 /**
- * 视频大师控制面板 — 严格按照 19_camera_video_master.png 底部区域还原
+ * 视频大师面板 — 严格 1:1 还原 CAM_07_video.png
  *
- * 布局（底部 25% 毛玻璃面板）：
- *  - 标题：「视频大师」
- *  - 帧率选择：30fps / 60fps / 120fps（三按钮，选中粉色边框）
- *  - 延时间隔滑块（0.5s ~ 10s，默认 2s）
- *  - 总时长滑块（1min ~ 30min，默认 5min）
+ * 布局（底部 28% 曜石黑毛玻璃面板内）：
+ *  - 分辨率+帧率选择行（6个胶囊）：
+ *    4K(粉色选中) / 1080P / 720P  |  24fps / 30fps / 60fps(粉色选中)
+ *  - 3个参数滑块（粉色轨道）：
+ *    电影模式 开启 / 防抖级别 80 / 音量 65
  *
- * 审计日志：AUDIT_VIDEO: fps=60, timelapse_interval=2s, duration=5min
+ * 颜色规范：
+ *  - 选中胶囊：品牌粉 #EC4899 实心
+ *  - 未选中胶囊：深色 #2A2A2A
+ *  - 滑块轨道：品牌粉 #EC4899
+ *  - 参数数值：粉色 #EC4899
  */
 @Composable
 fun VideoMasterPanel(
-    selectedFps: Int,
-    onFpsSelect: (Int) -> Unit,
-    timelapseInterval: Float,
-    onTimelapseIntervalChange: (Float) -> Unit,
-    totalDuration: Float,
-    onTotalDurationChange: (Float) -> Unit,
+    isRecording: Boolean = false,
     modifier: Modifier = Modifier
 ) {
+    val brandPink = Color(0xFFEC4899)
+
+    val resolutions = listOf("4K", "1080P", "720P")
+    val frameRates = listOf("24fps", "30fps", "60fps")
+    var selectedRes by remember { mutableStateOf(0) }    // 4K 默认
+    var selectedFps by remember { mutableStateOf(2) }    // 60fps 默认
+
+    var cinemaMode by remember { mutableStateOf(0.80f) }  // 电影模式 开启 (高值=开启)
+    var stabilizer by remember { mutableStateOf(0.80f) }  // 防抖级别 80
+    var volume by remember { mutableStateOf(0.65f) }      // 音量 65
+
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+            .padding(horizontal = 12.dp, vertical = 6.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        // ── 标题 ─────────────────────────────────────────────────────────────
-        Text(
-            text = "视频大师",
-            color = Color.White,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
-
-        // ── 帧率选择 ──────────────────────────────────────────────────────────
-        val fpsList = listOf(30, 60, 120)
+        // ── 分辨率 + 帧率选择行 ──────────────────────────────────────────────
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            fpsList.forEach { fps ->
-                val isSelected = selectedFps == fps
+            // 分辨率（3个）
+            resolutions.forEachIndexed { index, label ->
+                val isSelected = selectedRes == index
                 Box(
                     modifier = Modifier
-                        .weight(1f)
-                        .height(44.dp)
-                        .clip(RoundedCornerShape(22.dp))
-                        .background(
-                            if (isSelected) KUROMI_PINK.copy(alpha = 0.18f)
-                            else Color.White.copy(alpha = 0.06f)
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(if (isSelected) brandPink else Color(0xFF2A2A2A))
+                        .border(
+                            width = if (isSelected) 0.dp else 1.dp,
+                            color = Color.White.copy(alpha = 0.15f),
+                            shape = RoundedCornerShape(20.dp)
                         )
-                        .clickable {
-                            onFpsSelect(fps)
-                            Log.i("AUDIT_VIDEO", "fps=$fps")
-                        },
+                        .clickable { selectedRes = index }
+                        .padding(horizontal = 12.dp, vertical = 6.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Canvas(modifier = Modifier.fillMaxSize()) {
-                        drawRoundRect(
-                            color = if (isSelected) KUROMI_PINK else Color.White.copy(alpha = 0.25f),
-                            cornerRadius = CornerRadius(22.dp.toPx()),
-                            style = Stroke(width = if (isSelected) 2.dp.toPx() else 1.dp.toPx())
-                        )
-                    }
                     Text(
-                        text = "${fps}fps",
-                        color = if (isSelected) KUROMI_PINK else Color.White.copy(alpha = 0.7f),
-                        fontSize = 15.sp,
+                        text = label,
+                        color = Color.White,
+                        fontSize = 12.sp,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            // 帧率（3个）
+            frameRates.forEachIndexed { index, label ->
+                val isSelected = selectedFps == index
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(if (isSelected) brandPink else Color(0xFF2A2A2A))
+                        .border(
+                            width = if (isSelected) 0.dp else 1.dp,
+                            color = Color.White.copy(alpha = 0.15f),
+                            shape = RoundedCornerShape(20.dp)
+                        )
+                        .clickable { selectedFps = index }
+                        .padding(horizontal = 10.dp, vertical = 6.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = label,
+                        color = Color.White,
+                        fontSize = 12.sp,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                     )
                 }
             }
         }
 
-        // ── 延时间隔滑块 ──────────────────────────────────────────────────────
-        VideoParamSlider(
-            label = "延时间隔",
-            valueText = "${String.format("%.1f", timelapseInterval)}s",
-            value = (timelapseInterval - 0.5f) / 9.5f,
-            onValueChange = { ratio ->
-                val newVal = 0.5f + ratio * 9.5f
-                onTimelapseIntervalChange(newVal)
-                Log.i("AUDIT_VIDEO", "timelapse_interval=${String.format("%.1f", newVal)}s")
-            }
-        )
-
-        // ── 总时长滑块 ────────────────────────────────────────────────────────
-        VideoParamSlider(
-            label = "总时长",
-            valueText = "${totalDuration.toInt()}min",
-            value = (totalDuration - 1f) / 29f,
-            onValueChange = { ratio ->
-                val newVal = 1f + ratio * 29f
-                onTotalDurationChange(newVal)
-                Log.i("AUDIT_VIDEO", "duration=${newVal.toInt()}min")
-            }
-        )
+        // ── 3个参数滑块（横向排列）──────────────────────────────────────────
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            VideoParamSlider(
+                label = "电影模式",
+                value = cinemaMode,
+                valueLabel = if (cinemaMode > 0.5f) "开启" else "关闭",
+                onValueChange = { cinemaMode = it },
+                modifier = Modifier.weight(1f)
+            )
+            VideoParamSlider(
+                label = "防抖级别",
+                value = stabilizer,
+                valueLabel = "${(stabilizer * 100).toInt()}",
+                onValueChange = { stabilizer = it },
+                modifier = Modifier.weight(1f)
+            )
+            VideoParamSlider(
+                label = "音量",
+                value = volume,
+                valueLabel = "${(volume * 100).toInt()}",
+                onValueChange = { volume = it },
+                modifier = Modifier.weight(1f)
+            )
+        }
     }
 }
 
 /**
- * 视频参数滑块（机械刻度尺风格）
+ * 视频参数滑块（标签+粉色数值+粉色轨道）
  */
 @Composable
 fun VideoParamSlider(
     label: String,
-    valueText: String,
     value: Float,
+    valueLabel: String,
     onValueChange: (Float) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var trackWidth by remember { mutableFloatStateOf(0f) }
+    val brandPink = Color(0xFFEC4899)
+    var sliderWidth by remember { mutableFloatStateOf(0f) }
 
-    Column(modifier = modifier.fillMaxWidth()) {
+    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        // 标签行：电影模式 开启
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Text(
                 text = label,
-                color = Color.White,
-                fontSize = 14.sp,
+                color = Color.White.copy(alpha = 0.85f),
+                fontSize = 11.sp,
                 fontWeight = FontWeight.Medium
             )
             Text(
-                text = valueText,
-                color = KUROMI_PINK,
-                fontSize = 14.sp,
+                text = valueLabel,
+                color = brandPink,
+                fontSize = 11.sp,
                 fontWeight = FontWeight.Bold
             )
         }
-        Spacer(modifier = Modifier.height(4.dp))
-        Box(
+
+        // 粉色滑块
+        Canvas(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(32.dp)
+                .height(22.dp)
                 .pointerInput(Unit) {
                     detectHorizontalDragGestures { change, _ ->
-                        if (trackWidth > 0f) {
-                            val newVal = (change.position.x / trackWidth).coerceIn(0f, 1f)
-                            onValueChange(newVal)
+                        if (sliderWidth > 0f) {
+                            onValueChange((change.position.x / sliderWidth).coerceIn(0f, 1f))
                         }
                     }
                 }
         ) {
-            Canvas(modifier = Modifier.fillMaxSize()) {
-                trackWidth = size.width
-                val trackY = size.height / 2f
-                val trackH = 8.dp.toPx()
-                val thumbR = 12.dp.toPx()
+            sliderWidth = size.width
+            val cy = size.height / 2f
+            val tx = value * size.width
+            val th = 3.dp.toPx()
+            val tr = 8.dp.toPx()
 
-                // 背景轨道
+            // 背景轨道
+            drawRoundRect(
+                brandPink.copy(alpha = 0.2f),
+                Offset(0f, cy - th / 2f),
+                Size(size.width, th),
+                CornerRadius(th / 2f)
+            )
+            // 填充轨道（粉色）
+            if (tx > 0f) {
                 drawRoundRect(
-                    color = Color.White.copy(alpha = 0.15f),
-                    topLeft = Offset(0f, trackY - trackH / 2),
-                    size = Size(size.width, trackH),
-                    cornerRadius = CornerRadius(trackH / 2)
+                    brandPink,
+                    Offset(0f, cy - th / 2f),
+                    Size(tx, th),
+                    CornerRadius(th / 2f)
                 )
-                // 填充轨道
-                val fillWidth = size.width * value
-                if (fillWidth > 0f) {
-                    drawRoundRect(
-                        brush = Brush.horizontalGradient(
-                            colors = listOf(KUROMI_PINK, KUROMI_PURPLE),
-                            startX = 0f,
-                            endX = fillWidth
-                        ),
-                        topLeft = Offset(0f, trackY - trackH / 2),
-                        size = Size(fillWidth, trackH),
-                        cornerRadius = CornerRadius(trackH / 2)
-                    )
-                }
-                // 刻度线
-                for (i in 0..20) {
-                    val tickX = size.width * i / 20f
-                    val isMajor = i % 5 == 0
-                    val tickH = if (isMajor) 12.dp.toPx() else 7.dp.toPx()
-                    val tickColor = if (i.toFloat() / 20f <= value) KUROMI_PINK else Color.White.copy(alpha = 0.3f)
-                    drawLine(
-                        color = tickColor,
-                        start = Offset(tickX, trackY - trackH / 2 - 3.dp.toPx() - tickH),
-                        end = Offset(tickX, trackY - trackH / 2 - 3.dp.toPx()),
-                        strokeWidth = if (isMajor) 2.dp.toPx() else 1.dp.toPx(),
-                        cap = StrokeCap.Round
-                    )
-                }
-                // 拇指
-                val thumbX = size.width * value
-                drawCircle(color = KUROMI_PINK, radius = thumbR, center = Offset(thumbX, trackY))
-                drawCircle(color = Color.White, radius = thumbR - 3.dp.toPx(), center = Offset(thumbX, trackY))
             }
+            // Thumb（白色外圈 + 粉色内圈）
+            drawCircle(Color.White.copy(alpha = 0.9f), tr + 2.dp.toPx(), Offset(tx, cy))
+            drawCircle(brandPink, tr, Offset(tx, cy))
         }
     }
 }
