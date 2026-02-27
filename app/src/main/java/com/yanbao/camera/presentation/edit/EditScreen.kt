@@ -6,11 +6,14 @@ import android.net.Uri
 import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -86,15 +89,17 @@ fun EditScreen(
     Box(modifier = Modifier
         .fillMaxSize()
         .background(Color.Black)) {
-
-        // ─── Layer 0: 预览区（真实照片加载）──────────────────────────────
+        // ─── Layer 0: 预览区（真实照片加载）────────────────────────────────
+        // 设计图：预览区有粉色霓虹边框
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(previewHeight)
+                .padding(horizontal = 12.dp, vertical = 8.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .border(2.dp, KUROMI_PINK, RoundedCornerShape(16.dp))
                 .background(Color(0xFF1A1A1A))
-        ) {
-            if (currentPhotoUri != null) {
+        ) {            if (currentPhotoUri != null) {
                 // 真实照片：通过 Coil 加载 content:// 或 file:// URI
                 AsyncImage(
                     model = Uri.parse(currentPhotoUri),
@@ -212,6 +217,11 @@ fun EditScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
 
+                // 设计图：滚动滤镜缩略图行（原图/雁宝精致/大师渲染/2.9D视差/美颜塑形/游侠风）
+                FilterPreviewRow(selectedCategory = selectedCategory)
+
+                Spacer(modifier = Modifier.height(8.dp))
+
                 // 分类导航
                 CategoryTabs(
                     categories = ToolCategory.values().toList(),
@@ -257,7 +267,7 @@ fun EditScreen(
             }
         }
 
-        // ─── Layer 2: 雁宝记忆弹窗 ───────────────────────────────────────
+        // ─── Layer 2: 雁宝记忆弹窗 ──────────────────────────────────────
         if (showMemoryPanel) {
             MemoryPanel(
                 memories = memories,
@@ -265,6 +275,11 @@ fun EditScreen(
                 onMemorySelect = { memoryId -> viewModel.applyMemory(memoryId) }
             )
         }
+
+        // ─── Layer 3: 底部导航栏（设计图：首页/相机/[熊掌FAB]/相册/推荐）─────────────────────
+        EditBottomNav(
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }
 
@@ -272,8 +287,10 @@ fun EditScreen(
 private fun TopToolbar(
     onBackClick: () -> Unit,
     onPickPhoto: () -> Unit,
-    onMemoryClick: () -> Unit
+    onMemoryClick: () -> Unit,
+    onExportClick: () -> Unit = {}
 ) {
+    // 设计图：< 编辑 [导出]（粉色胶囊按鈕）
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -292,21 +309,15 @@ private fun TopToolbar(
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold
         )
-        Row {
-            IconButton(onClick = onPickPhoto) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_yanbao_gallery),
-                    contentDescription = "选择照片",
-                    tint = Color.White
-                )
-            }
-            IconButton(onClick = onMemoryClick) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_yanbao_memory),
-                    contentDescription = "雁宝记忆",
-                    tint = KUROMI_PINK
-                )
-            }
+        // 设计图：导出粉色胶囊按鈕
+        Box(
+            modifier = Modifier
+                .clip(RoundedCornerShape(20.dp))
+                .background(KUROMI_PINK)
+                .clickable { onExportClick() }
+                .padding(horizontal = 20.dp, vertical = 8.dp)
+        ) {
+            Text(text = "导出", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
         }
     }
 }
@@ -691,5 +702,162 @@ private fun MemoryCard(
             tint = KUROMI_PINK,
             modifier = Modifier.size(20.dp)
         )
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 滤镜缩略图预览行（设计图：原图/雁宝精致/大师渲染/2.9D视差/美颜塑形/游侠风）
+// ─────────────────────────────────────────────────────────────────────────────
+@Composable
+private fun FilterPreviewRow(
+    selectedCategory: ToolCategory
+) {
+    data class FilterItem(val name: String, val imgRes: Int, val hasCrown: Boolean = false)
+    val filters = listOf(
+        FilterItem("原图",     R.drawable.sample_photo_01),
+        FilterItem("雁宝精致", R.drawable.sample_photo_02),
+        FilterItem("大师渲染", R.drawable.sample_photo_03, hasCrown = true),
+        FilterItem("2.9D视差", R.drawable.sample_photo_04),
+        FilterItem("美颜塑形", R.drawable.sample_photo_01),
+        FilterItem("游侠风",   R.drawable.sample_photo_02)
+    )
+    var selectedIndex by remember { mutableStateOf(0) }
+
+    LazyRow(
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        contentPadding = PaddingValues(horizontal = 4.dp)
+    ) {
+        items(filters.size) { index ->
+            val f = filters[index]
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.clickable { selectedIndex = index }
+            ) {
+                Box {
+                    Image(
+                        painter = painterResource(f.imgRes),
+                        contentDescription = f.name,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .size(64.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .then(
+                                if (index == selectedIndex)
+                                    Modifier.border(2.dp, KUROMI_PINK, RoundedCornerShape(10.dp))
+                                else Modifier
+                            )
+                    )
+                    // 皇冠标识（大师渲染）
+                    if (f.hasCrown) {
+                        Text(
+                            text = "♛",
+                            color = Color(0xFFFFC107),
+                            fontSize = 12.sp,
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(2.dp)
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = f.name,
+                    fontSize = 10.sp,
+                    color = if (index == selectedIndex) KUROMI_PINK else Color.White.copy(alpha = 0.7f),
+                    fontWeight = if (index == selectedIndex) FontWeight.Bold else FontWeight.Normal
+                )
+            }
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 编辑模块底部导航栏（设计图：首页/相机/[熊掌FAB]/相册/推荐/我的，编辑tab高亮）
+// ─────────────────────────────────────────────────────────────────────────────
+@Composable
+fun EditBottomNav(
+    onHomeClick:    () -> Unit = {},
+    onCameraClick:  () -> Unit = {},
+    onGalleryClick: () -> Unit = {},
+    onRecommendClick: () -> Unit = {},
+    onProfileClick: () -> Unit = {},
+    modifier: Modifier = Modifier
+) {
+    val brandPink    = Color(0xFFEC4899)
+    val carrotOrange = Color(0xFFF97316)
+    val navGray      = Color(0xFF666666)
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(72.dp)
+            .background(Color(0xFF0A0A0A))
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(0.5.dp)
+                .background(Color.White.copy(alpha = 0.10f))
+                .align(Alignment.TopCenter)
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 8.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // 首页
+            EditNavItem(R.drawable.ic_yanbao_home, "首页", false, brandPink, navGray, onHomeClick)
+            // 相机
+            EditNavItem(R.drawable.ic_yanbao_camera, "相机", false, brandPink, navGray, onCameraClick)
+            // 中间熊掌FAB（胡萝卜橙，带相机镜头icon）
+            Box(modifier = Modifier.size(64.dp), contentAlignment = Alignment.Center) {
+                Box(
+                    modifier = Modifier
+                        .size(64.dp)
+                        .background(
+                            Brush.radialGradient(listOf(carrotOrange.copy(alpha = 0.3f), Color.Transparent)),
+                            CircleShape
+                        )
+                )
+                Box(
+                    modifier = Modifier
+                        .size(52.dp)
+                        .background(carrotOrange, CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_shutter_paw),
+                        contentDescription = "相机",
+                        tint = Color.White,
+                        modifier = Modifier.size(26.dp)
+                    )
+                }
+            }
+            // 相册
+            EditNavItem(R.drawable.ic_yanbao_gallery, "相册", false, brandPink, navGray, onGalleryClick)
+            // 推荐
+            EditNavItem(R.drawable.ic_yanbao_recommend, "推荐", false, brandPink, navGray, onRecommendClick)
+        }
+    }
+}
+
+@Composable
+private fun EditNavItem(iconRes: Int, label: String, selected: Boolean, brandPink: Color, navGray: Color, onClick: () -> Unit) {
+    Column(
+        modifier = Modifier.clickable { onClick() }.padding(horizontal = 4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            painter = painterResource(iconRes),
+            contentDescription = label,
+            tint = if (selected) brandPink else navGray,
+            modifier = Modifier.size(22.dp)
+        )
+        Spacer(Modifier.height(2.dp))
+        Text(label, fontSize = 10.sp, color = if (selected) brandPink else navGray,
+            fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal)
     }
 }

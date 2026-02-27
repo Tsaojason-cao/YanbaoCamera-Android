@@ -81,107 +81,67 @@ fun ProfileScreen(
             .fillMaxSize()
             .background(OBSIDIAN_BLACK)
     ) {
-        // ─── 顶部背景墙 + 头像 ───────────────────────────────────────────
+        // ─── 设计图：顶部栏（设置 | 我的 | 分享）无背景墙 ───────────────────────────
         item {
-            Box(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(280.dp)
+                    .padding(horizontal = 16.dp)
+                    .padding(top = 48.dp, bottom = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                // 背景墙
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            Brush.verticalGradient(
-                                listOf(Color(0xFF7C3AED), Color(0xFFEC4899))
-                            )
-                        )
-                        .clickable { backgroundLauncher.launch("image/*") }
-                ) {
-                    profile.backgroundUri?.let { uri ->
-                        Image(
-                            painter = rememberAsyncImagePainter(uri),
-                            contentDescription = "背景",
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
-                    }
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Black.copy(alpha = 0.25f))
-                    )
-                }
-
-                // 返回按钮
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(16.dp)
-                        .padding(top = 32.dp)
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .background(Color.Black.copy(alpha = 0.4f))
-                        .clickable { onBack(); onBackClick() },
-                    contentAlignment = Alignment.Center
-                ) {
+                IconButton(onClick = { onEditProfile() }) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_yanbao_back),
-                        contentDescription = "返回",
+                        painter = painterResource(R.drawable.ic_yanbao_settings),
+                        contentDescription = "设置",
                         tint = Color.White,
-                        modifier = Modifier.size(18.dp)
+                        modifier = Modifier.size(24.dp)
                     )
                 }
-
-                // 品牌标识（顶部居中）
-                YanbaoBrandTitle(
-                    modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .padding(top = 48.dp)
+                Text(
+                    text = "我的",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
                 )
-
-                // 编辑资料按钮（右上角）
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(16.dp)
-                        .padding(top = 32.dp)
-                        .size(36.dp)
-                        .clip(CircleShape)
-                        .background(Color.Black.copy(alpha = 0.4f))
-                        .clickable { onEditProfile() },
-                    contentAlignment = Alignment.Center
-                ) {
+                IconButton(onClick = { android.util.Log.d("ProfileScreen", "分享") }) {
                     Icon(
-                        painter = painterResource(R.drawable.ic_yanbao_edit),
-                        contentDescription = "编辑资料",
+                        painter = painterResource(R.drawable.ic_yanbao_recommend),
+                        contentDescription = "分享",
                         tint = Color.White,
-                        modifier = Modifier.size(18.dp)
+                        modifier = Modifier.size(24.dp)
                     )
                 }
+            }
+        }
 
-                // 头像（底部居中，向下偏移）
+        // ─── 设计图：头像（左）+ 用户名/签名/会员标签（右）───────────────────────────
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // 头像（左侧，粉色光晕）
                 Box(
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .offset(y = 50.dp)
+                    modifier = Modifier.size(90.dp),
+                    contentAlignment = Alignment.Center
                 ) {
-                    // 粉色光晕
                     Box(
                         modifier = Modifier
-                            .size(100.dp)
+                            .size(90.dp)
                             .clip(CircleShape)
                             .background(
                                 Brush.radialGradient(
-                                    listOf(KUROMI_PINK.copy(alpha = 0.4f), Color.Transparent)
+                                    listOf(KUROMI_PINK.copy(alpha = 0.5f), Color.Transparent)
                                 )
                             )
                     )
                     Box(
                         modifier = Modifier
-                            .size(88.dp)
-                            .align(Alignment.Center)
+                            .size(80.dp)
                             .clip(CircleShape)
                             .border(3.dp, KUROMI_PINK, CircleShape)
                             .background(Color(0xFF2A2A2A))
@@ -197,7 +157,7 @@ fun ProfileScreen(
                             )
                         } else {
                             Icon(
-                                painter = painterResource(R.drawable.ic_yanbao_camera),
+                                painter = painterResource(R.drawable.ic_yanbao_profile),
                                 contentDescription = "头像",
                                 tint = Color.White.copy(alpha = 0.5f),
                                 modifier = Modifier.size(36.dp)
@@ -205,80 +165,117 @@ fun ProfileScreen(
                         }
                     }
                 }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                // 用户名 + 签名 + 会员标签
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = profile.userName,
+                        fontSize = 22.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "用雁宝记忆拍下每一个美好瞬间",
+                        fontSize = 13.sp,
+                        color = Color.White.copy(alpha = 0.7f)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    // 设计图：雁宝会员 Lv.3 粉色胶囊
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(KUROMI_PINK)
+                            .padding(horizontal = 12.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = "雁宝会员 Lv.3",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                    }
+                }
             }
         }
 
-        // ─── 用户信息区 ───────────────────────────────────────────────────
+        // ─── 设计图：作品网格（3列，第2列有粉色选中边框）────────────────────────────
         item {
+            Spacer(modifier = Modifier.height(16.dp))
+            // 3列作品网格（使用LazyRow模拟，因LazyColumn内不能嵌套LazyVerticalGrid）
+            val samplePhotos = listOf(
+                R.drawable.sample_photo_01,
+                R.drawable.sample_photo_02,
+                R.drawable.sample_photo_03,
+                R.drawable.sample_photo_04,
+                R.drawable.sample_photo_01,
+                R.drawable.sample_photo_02
+            )
+            var selectedWorkIndex by remember { mutableStateOf(1) }
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 60.dp, bottom = 16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                    .padding(horizontal = 2.dp),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
-                Text(
-                    text = profile.userName,
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
-                )
-                Spacer(modifier = Modifier.height(6.dp))
+                // 第一行（3张）
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.clickable { showIdDialog = true }
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(2.dp)
                 ) {
-                    Text(
-                        text = profile.userId,
-                        fontSize = 14.sp,
-                        color = Color.White.copy(alpha = 0.65f)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Icon(
-                        painter = painterResource(R.drawable.ic_yanbao_edit),
-                        contentDescription = "编辑ID",
-                        tint = Color.White.copy(alpha = 0.4f),
-                        modifier = Modifier.size(12.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // 会员信息卡片
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 24.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = CARD_BG)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 24.dp, vertical = 14.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Column {
-                            Text("会员号", fontSize = 11.sp, color = Color.White.copy(alpha = 0.5f))
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                profile.memberNumber,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = KUROMI_PINK
+                    for (i in 0..2) {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .aspectRatio(1f)
+                                .clip(RoundedCornerShape(4.dp))
+                                .then(
+                                    if (i == selectedWorkIndex)
+                                        Modifier.border(2.dp, KUROMI_PINK, RoundedCornerShape(4.dp))
+                                    else Modifier
+                                )
+                                .clickable { selectedWorkIndex = i }
+                        ) {
+                            Image(
+                                painter = painterResource(samplePhotos[i]),
+                                contentDescription = "作品",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize()
                             )
                         }
-                        Column(horizontalAlignment = Alignment.End) {
-                            Text("与雁宝同行", fontSize = 11.sp, color = Color.White.copy(alpha = 0.5f))
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                "${profile.daysWithYanbao} 天",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFF10B981)
+                    }
+                }
+                // 第二行（3张）
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(2.dp)
+                ) {
+                    for (i in 3..5) {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .aspectRatio(1f)
+                                .clip(RoundedCornerShape(4.dp))
+                                .then(
+                                    if (i == selectedWorkIndex)
+                                        Modifier.border(2.dp, KUROMI_PINK, RoundedCornerShape(4.dp))
+                                    else Modifier
+                                )
+                                .clickable { selectedWorkIndex = i }
+                        ) {
+                            Image(
+                                painter = painterResource(samplePhotos[i]),
+                                contentDescription = "作品",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize()
                             )
                         }
                     }
                 }
             }
+            Spacer(modifier = Modifier.height(16.dp))
         }
 
         // ─── 统计数据卡片 ─────────────────────────────────────────────────
@@ -745,38 +742,33 @@ fun YanbaoGardenEntryCard(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // 标题行
+            // 设计图：雁宝花园 | 查看更多 >
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = "🌿 雁宝花园",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(6.dp))
-                            .background(Color(0xFFF97316).copy(alpha = 0.2f))
-                            .padding(horizontal = 8.dp, vertical = 3.dp)
-                    ) {
-                        Text(
-                            text = "450 积分",
-                            fontSize = 11.sp,
-                            color = Color(0xFFF97316),
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
                 Text(
-                    text = "今日可喂 3 次",
-                    fontSize = 11.sp,
-                    color = Color.White.copy(alpha = 0.5f)
+                    text = "雁宝花园",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
                 )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable { onEnterGarden() }
+                ) {
+                    Text(
+                        text = "查看更多",
+                        fontSize = 12.sp,
+                        color = Color.White.copy(alpha = 0.6f)
+                    )
+                    Text(
+                        text = " >",
+                        fontSize = 12.sp,
+                        color = Color.White.copy(alpha = 0.6f)
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -830,14 +822,24 @@ fun YanbaoGardenEntryCard(
                     }
                 }
 
-                // 雁宝站在草地上（右侧）
+                // 设计图：右上角"🥕 胡萝卜×12"标签
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color.Black.copy(alpha = 0.6f))
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Text(text = "🥕 胡萝卜×12", fontSize = 11.sp, color = Color.White)
+                }
+                // 雁宝站在草地中央
                 Image(
                     painter = painterResource(R.drawable.yanbao_jk_uniform),
                     contentDescription = "雁宝",
                     modifier = Modifier
-                        .size(72.dp)
-                        .align(Alignment.BottomEnd)
-                        .padding(end = 12.dp, bottom = 4.dp),
+                        .size(80.dp)
+                        .align(Alignment.BottomCenter),
                     contentScale = ContentScale.Fit
                 )
             }

@@ -159,8 +159,9 @@ private fun HomeTopBar(
         verticalAlignment     = Alignment.CenterVertically
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
+            // 设计图：雁宝小头像（黑兔+粉蝶结）+ 品牌字
             Image(
-                painter            = painterResource(R.drawable.yanbao_jk_uniform),
+                painter            = painterResource(R.drawable.ic_kuromi_small),
                 contentDescription = "摄颜",
                 modifier           = Modifier
                     .size(44.dp)
@@ -219,23 +220,28 @@ private fun QuickEntryRow(
         contentPadding        = PaddingValues(horizontal = 16.dp)
     ) {
         items(entries) { e ->
-            Box(
+                // 设计图：标题在上、icon在下
+                Box(
                 modifier = Modifier
-                    .size(width = 100.dp, height = 100.dp)
-                    .clip(RoundedCornerShape(16.dp))
+                    .size(width = 120.dp, height = 120.dp)
+                    .clip(RoundedCornerShape(20.dp))
                     .background(Brush.verticalGradient(listOf(e.gs, e.ge)))
                     .clickable { e.action() },
                 contentAlignment = Alignment.Center
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = Modifier.padding(12.dp)
+                ) {
+                    Text(text = e.title, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = Color.White, textAlign = TextAlign.Center)
+                    Spacer(modifier = Modifier.height(10.dp))
                     Image(
                         painter            = painterResource(e.iconRes),
                         contentDescription = e.title,
-                        modifier           = Modifier.size(40.dp),
+                        modifier           = Modifier.size(44.dp),
                         contentScale       = ContentScale.Fit
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(text = e.title, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Color.White, textAlign = TextAlign.Center)
                 }
             }
         }
@@ -351,11 +357,12 @@ private fun HomeBottomNav(
                         .clickable { onCameraClick() },
                     contentAlignment = Alignment.Center
                 ) {
+                    // 设计图：熊掌图标+粉色霓虹圈
                     Icon(
-                        painter = painterResource(R.drawable.ic_yanbao_camera),
+                        painter = painterResource(R.drawable.ic_shutter_paw),
                         contentDescription = "进入相机",
                         tint = BRAND_PINK,
-                        modifier = Modifier.size(26.dp)
+                        modifier = Modifier.size(28.dp)
                     )
                 }
             }

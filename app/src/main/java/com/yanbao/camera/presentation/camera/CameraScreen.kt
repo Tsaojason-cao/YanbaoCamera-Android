@@ -431,7 +431,7 @@ fun ShutterRow(
             isVideoMode = selectedMode == CameraMode.VIDEO && isRecording
         )
 
-        // 右：相机切换（前后摄）
+        // 右：相机切换（前后摄）— 设计图专用翻转icon
         IconButton(
             onClick = onFlipClick,
             modifier = Modifier
@@ -439,7 +439,7 @@ fun ShutterRow(
                 .background(Color.White.copy(alpha = 0.10f), CircleShape)
         ) {
             Icon(
-                painter = painterResource(R.drawable.ic_yanbao_camera),
+                painter = painterResource(R.drawable.ic_flip_camera),
                 contentDescription = "切换镜头",
                 tint = Color.White,
                 modifier = Modifier.size(28.dp)
@@ -513,8 +513,9 @@ fun BottomNavBar(
                         .border(2.dp, BRAND_PINK, CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
+                    // 设计图：熊掌图标（当前页标识）
                     Icon(
-                        painter = painterResource(R.drawable.ic_yanbao_camera),
+                        painter = painterResource(R.drawable.ic_shutter_paw),
                         contentDescription = "相机模块",
                         tint = BRAND_PINK,
                         modifier = Modifier.size(26.dp)

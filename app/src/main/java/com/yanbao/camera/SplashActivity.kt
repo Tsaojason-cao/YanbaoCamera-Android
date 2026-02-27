@@ -21,7 +21,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.res.painterResource
@@ -144,13 +143,13 @@ fun YanbaoSplashScreen(onTimeout: () -> Unit = {}) {
 
             Spacer(modifier = Modifier.height(28.dp))
 
-            // ── 品牌字：「摄颜」白色大字 + 粉色霓虹外发光 ─────────────────
-            // 设计图确认：只显示「摄颜」两个大字，无「SheYan」英文
+            // ── 品牌字：「摄颜 SheYan」白色大字 + 粉色霓虹外发光 ─────────────────
+            // 设计图确认：「摄颜 SheYan」中英文同行
             Text(
-                text  = "摄颜",
+                text  = "摄颜 SheYan",
                 style = TextStyle(
                     color      = Color.White,
-                    fontSize   = 44.sp,
+                    fontSize   = 40.sp,
                     fontWeight = FontWeight.ExtraBold,
                     fontFamily = FontFamily.SansSerif,
                     shadow     = Shadow(
@@ -196,7 +195,7 @@ fun YanbaoSplashScreen(onTimeout: () -> Unit = {}) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 胡萝卜橙进度条（规范：胡萝卜橙 #F97316，进度头为粉色熊掌印）
+// 胡萝卜橙进度条（设计图规范：细线4dp，胡萝卜橙 #F97316，无熊掌头）
 // ─────────────────────────────────────────────────────────────────────────────
 @Composable
 fun CarrotProgressBar(
@@ -204,11 +203,10 @@ fun CarrotProgressBar(
     checkStep: String = ""
 ) {
     val carrotOrange = Color(0xFFF97316)
-    val brandPink    = Color(0xFFEC4899)
     val clampedProg  = progress.coerceIn(0f, 1f)
 
     Column(
-        modifier            = Modifier.fillMaxWidth(0.74f),
+        modifier            = Modifier.fillMaxWidth(0.80f),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // 检查步骤文案
@@ -225,15 +223,15 @@ fun CarrotProgressBar(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentHeight()
+                .height(4.dp)
         ) {
-            // 轨道背景（深灰，40% 透明）
+            // 轨道背景（深灰，30% 透明）
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(20.dp)
+                    .height(4.dp)
                     .clip(RoundedCornerShape(50))
-                    .background(Color(0x66333333))
+                    .background(Color(0x4DFFFFFF))
             )
 
             // 胡萝卜橙填充进度
@@ -241,74 +239,49 @@ fun CarrotProgressBar(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth(clampedProg)
-                        .height(20.dp)
+                        .height(4.dp)
                         .clip(RoundedCornerShape(50))
                         .background(
                             Brush.horizontalGradient(
                                 colors = listOf(
                                     carrotOrange,
-                                    Color(0xFFFF6B00)   // 深橙
+                                    Color(0xFFFF6B00)
                                 )
                             )
                         )
                 )
-                // 顶部高光
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(clampedProg)
-                        .height(8.dp)
-                        .clip(RoundedCornerShape(topStart = 50.dp, topEnd = 50.dp))
-                        .background(Color(0x44FFFFFF))
-                )
-            }
-
-            // 进度头：粉色熊掌印圆形（在进度条末端）
-            if (clampedProg > 0.02f) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(clampedProg)
-                        .height(20.dp),
-                    contentAlignment = Alignment.CenterEnd
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(28.dp)
-                            .shadow(6.dp, CircleShape, spotColor = brandPink)
-                            .clip(CircleShape)
-                            .background(brandPink),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        // 熊掌印图标（白色）
-                        androidx.compose.material3.Icon(
-                            painter            = painterResource(R.drawable.ic_shutter_paw),
-                            contentDescription = null,
-                            tint               = Color.White,
-                            modifier           = Modifier.size(16.dp)
-                        )
-                    }
-                }
             }
         }
     }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 散景光点 Canvas（粉色 + 橙色光晕，曜石黑背景上的氛围感）
+// 樱花粒子 + 散景光点 Canvas（设计图风格：粉色樱花飘落 + 星点氛围）
 // ─────────────────────────────────────────────────────────────────────────────
 @Composable
 private fun SplashBokehCanvas() {
-    androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
-        data class Bokeh(val fx: Float, val fy: Float, val r: Float, val color: Color)
+    val infiniteTransition = rememberInfiniteTransition(label = "sakura")
+    val offsetY by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue  = 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(6000, easing = LinearEasing),
+            repeatMode = RepeatMode.Restart
+        ),
+        label = "sakura_fall"
+    )
 
+    androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
+        // 散景光晕
+        data class Bokeh(val fx: Float, val fy: Float, val r: Float, val color: Color)
         val bokehList = listOf(
-            Bokeh(0.10f, 0.08f, 90f,  Color(0x22EC4899)),   // 品牌粉
-            Bokeh(0.88f, 0.06f, 70f,  Color(0x1AEC4899)),
-            Bokeh(0.05f, 0.50f, 100f, Color(0x15F97316)),   // 胡萝卜橙
+            Bokeh(0.10f, 0.08f, 120f, Color(0x22EC4899)),
+            Bokeh(0.88f, 0.06f, 90f,  Color(0x1AEC4899)),
+            Bokeh(0.05f, 0.50f, 110f, Color(0x15F97316)),
             Bokeh(0.92f, 0.42f, 80f,  Color(0x1AEC4899)),
             Bokeh(0.18f, 0.82f, 85f,  Color(0x15F97316)),
             Bokeh(0.78f, 0.88f, 95f,  Color(0x1AEC4899)),
         )
-
         for (b in bokehList) {
             val cx = size.width * b.fx
             val cy = size.height * b.fy
@@ -319,6 +292,31 @@ private fun SplashBokehCanvas() {
                     radius = b.r
                 ),
                 radius = b.r,
+                center = Offset(cx, cy)
+            )
+        }
+
+        // 樱花粒子（固定位置 + 随时间偏移，模拟飘落）
+        data class Petal(val fx: Float, val fy: Float, val r: Float, val phase: Float)
+        val petals = listOf(
+            Petal(0.15f, 0.12f, 6f,  0.0f),
+            Petal(0.72f, 0.08f, 4f,  0.2f),
+            Petal(0.88f, 0.22f, 5f,  0.4f),
+            Petal(0.05f, 0.35f, 4f,  0.6f),
+            Petal(0.92f, 0.55f, 6f,  0.1f),
+            Petal(0.30f, 0.70f, 5f,  0.3f),
+            Petal(0.60f, 0.15f, 4f,  0.7f),
+            Petal(0.45f, 0.05f, 3f,  0.5f),
+            Petal(0.80f, 0.75f, 5f,  0.8f),
+            Petal(0.20f, 0.90f, 4f,  0.9f),
+        )
+        for (p in petals) {
+            val phase = (offsetY + p.phase) % 1f
+            val cx = size.width  * (p.fx + phase * 0.05f)
+            val cy = size.height * ((p.fy + phase * 0.6f) % 1f)
+            drawCircle(
+                color  = Color(0xCCF9A8D4),
+                radius = p.r,
                 center = Offset(cx, cy)
             )
         }
