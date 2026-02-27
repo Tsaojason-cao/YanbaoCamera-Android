@@ -9,6 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -22,18 +23,30 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.yanbao.camera.R
-import com.yanbao.camera.ui.theme.KUROMI_PINK
-import com.yanbao.camera.ui.theme.OBSIDIAN_BLACK
+
+// ─── 品牌色常量 ───────────────────────────────────────────────────────────────
+private val BRAND_PINK    = Color(0xFFEC4899)
+private val CARROT_ORANGE = Color(0xFFF97316)
+private val OBSIDIAN      = Color(0xFF1A1A1A)
+private val OBSIDIAN_DARK = Color(0xFF0A0A0A)
 
 /**
- * 相机主界面 — 严格对应 05_camera_01_home.png
+ * M3 相机主界面 — 严格 1:1 还原 CAM_01~CAM_09 设计稿
  *
- * 布局：
- *  顶部工具栏（TopBar）：← 主页 ⚡ ⏱ 📷 🎬 [库洛米+延宝记忆] …
- *  Layer 0 (75%)  — Camera2PreviewView 取景器 + 白色对焦框
- *  Layer 1 (25%)  — 曜石黑毛玻璃控制面板
- *    快门行：相册圆形缩略图 | 库洛米快门(72dp) | 设定齿轮
- *    焦段栏：0.5x  1x(选中粉色)  2x  3x  5x
+ * ┌──────────────────────────────────┐
+ * │  顶部快捷工具栏（TopQuickBar）      │  ~5%
+ * ├──────────────────────────────────┤
+ * │                                  │
+ * │  取景器（CameraX PreviewView）     │  ~67%（合计72%）
+ * │  + 取景器内叠加层（状态标签等）     │
+ * │                                  │
+ * ├──────────────────────────────────┤
+ * │  模式拨盘（ModeSelectorRow）       │  ~6%（归入28%面板）
+ * │  模式专属参数面板                  │  ~14%
+ * │  快门行（熊熊/熊掌/切换）           │  ~8%
+ * └──────────────────────────────────┘
+ *
+ * 控制面板高斯模糊：40dp（blur modifier）
  */
 @Composable
 fun CameraScreen(
@@ -41,445 +54,486 @@ fun CameraScreen(
     onNavigateToGallery: () -> Unit = {},
     onNavigateToMemory: () -> Unit = {}
 ) {
-    val selectedMode by viewModel.currentMode.collectAsState()
-    val isRecordingMemory by viewModel.isRecordingMemory.collectAsState()
+    val selectedMode    by viewModel.currentMode.collectAsState()
+    val isRecording     by viewModel.isRecordingMemory.collectAsState()
+    val flashMode       by viewModel.flashMode.collectAsState()
+    val aspectRatio     by viewModel.aspectRatio.collectAsState()
+    val timer           by viewModel.timer.collectAsState()
+    val lensFacing      by viewModel.lensFacing.collectAsState()
 
-    var selectedZoom by remember { mutableStateOf("1x") }
-    val zoomLevels = listOf("0.5x", "1x", "2x", "3x", "5x")
+    // ── 雁宝记忆：拍照前检查传入 JSON 参数包 ─────────────────────────────────
+    val incomingMemoryParams by viewModel.incomingMemoryParams.collectAsState()
 
-    var showSettingsPopup by remember { mutableStateOf(false) }
-    var showMasterPopup by remember { mutableStateOf(false) }
-    var showBeautyPopup by remember { mutableStateOf(false) }
-    var show29DPanel by remember { mutableStateOf(false) }
-    var showFiltersPopup by remember { mutableStateOf(false) }
-    var showModesDialog by remember { mutableStateOf(false) }
-    var showCategoryDialog by remember { mutableStateOf(false) }
+    var showSettingsPopup  by remember { mutableStateOf(false) }
+    var showMasterPopup    by remember { mutableStateOf(false) }
+    var showBeautyPopup    by remember { mutableStateOf(false) }
+    var show29DPanel       by remember { mutableStateOf(false) }
+    var showFiltersPopup   by remember { mutableStateOf(false) }
 
-    // ── 2.9D 状态 ─────────────────────────────────────────────────────────────
-    val parallaxStrength by viewModel.parallaxStrength.collectAsState()
-    val parallaxPreset by viewModel.parallaxPreset.collectAsState()
+    BoxWithConstraints(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(OBSIDIAN_DARK)
+    ) {
+        val totalH   = maxHeight
+        val viewfinderH = totalH * 0.72f   // 取景器 72%
+        val panelH      = totalH * 0.28f   // 控制面板 28%
 
-    // ── 视频大师状态 ──────────────────────────────────────────────────────────
-    val selectedFps by viewModel.selectedFps.collectAsState()
-    val timelapseInterval by viewModel.timelapseInterval.collectAsState()
-    val totalDuration by viewModel.totalDuration.collectAsState()
+        Column(modifier = Modifier.fillMaxSize()) {
 
-    // ── AR 空间状态 ───────────────────────────────────────────────────────────
-    val arCategory by viewModel.arCategory.collectAsState()
-    val arSticker by viewModel.arSticker.collectAsState()
-    val lbsLabel by viewModel.lbsLabel.collectAsState()
-
-    // ── 原相机手动控制状态 ────────────────────────────────────────────────────
-    val nativeIso by viewModel.nativeIso.collectAsState()
-    val nativeShutterNs by viewModel.nativeShutterNs.collectAsState()
-    val nativeEv by viewModel.nativeEv.collectAsState()
-    val nativeWhiteBalance by viewModel.nativeWhiteBalance.collectAsState()
-
-    BoxWithConstraints(modifier = Modifier.fillMaxSize().background(Color.Black)) {
-        val totalHeight = maxHeight
-        val layer0Height = totalHeight * 0.75f
-        val layer1Height = totalHeight * 0.25f
-
-        // ── 顶部工具栏（黑底，粉色边框） ─────────────────────────────
-        CameraTopBar(
-            onBackClick = {},
-            onHomeClick = {},
-            onFlashClick = {},
-            onTimerClick = {},
-            onPhotoModeClick = {},
-            onVideoModeClick = {},
-            onMemoryClick = onNavigateToMemory,
-            onMoreClick = { showSettingsPopup = true },
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.TopCenter)
-                .zIndex(10f)
-        )
-
-        // ── Layer 0: 取景器（75%） ────────────────────────────────────
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(layer0Height)
-                .align(Alignment.TopCenter)
-        ) {
-            // 相机预览 SurfaceView
-            AndroidView(
-                factory = { ctx -> SurfaceView(ctx) },
-                modifier = Modifier.fillMaxSize()
-            )
-
-            // 居中白色对焦框
-            FocusFrame(
+            // ── 取景器区域（72%）─────────────────────────────────────────────
+            Box(
                 modifier = Modifier
-                    .size(120.dp)
-                    .align(Alignment.Center)
-            )
-
-            // AR 空间取景器覆盖层（LBS 标签）
-            if (selectedMode == CameraMode.AR) {
-                ArViewfinderOverlay(
-                    lbsLabel = lbsLabel,
+                    .fillMaxWidth()
+                    .height(viewfinderH)
+            ) {
+                // Camera2 PreviewView
+                AndroidView(
+                    factory = { ctx ->
+                        SurfaceView(ctx).apply {
+                            viewModel.initCameraManager(ctx)
+                        }
+                    },
                     modifier = Modifier.fillMaxSize()
                 )
-            }
 
-            // 原相机参数覆盖层（f/1.8  1/125  ISO 400  5500K）
-            if (selectedMode == CameraMode.NATIVE) {
-                NativeParamsOverlay(
-                    iso = nativeIso,
-                    shutterNs = nativeShutterNs,
-                    ev = nativeEv,
-                    whiteBalance = nativeWhiteBalance,
+                // 顶部快捷工具栏（悬浮在取景器上方）
+                TopQuickBar(
+                    flashMode    = flashMode,
+                    timer        = timer,
+                    aspectRatio  = aspectRatio,
+                    currentMode  = selectedMode,
+                    onFlashClick = { viewModel.setFlashMode((flashMode + 1) % 3) },
+                    onTimerClick = { viewModel.setTimer(if (timer == 0) 3 else 0) },
+                    onSettingsClick = { showSettingsPopup = true },
                     modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .padding(bottom = 8.dp)
+                        .fillMaxWidth()
+                        .align(Alignment.TopCenter)
+                        .zIndex(10f)
                 )
-            }
-        }
 
-        // ── Layer 1: 控制面板（曜石黑，25%） ─────────────────────────
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(layer1Height)
-                .align(Alignment.BottomCenter),
-            color = OBSIDIAN_BLACK.copy(alpha = 0.85f),
-            shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
-        ) {
-            Column(
+                // 取景器内状态标签（AI渲染中 / 记忆匹配中 / AR跟踪中 / 深度捕捉中）
+                ViewfinderStatusLabel(
+                    mode = selectedMode,
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(start = 12.dp, top = 56.dp)
+                )
+
+                // 雁宝记忆：顶部悬浮 JSON 参数显示
+                if (selectedMode == CameraMode.MEMORY && incomingMemoryParams != null) {
+                    MemoryParamsOverlay(
+                        params = incomingMemoryParams!!,
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(end = 12.dp, top = 56.dp)
+                    )
+                }
+
+                // 比例选择栏（CAM_05视差模式在取景器内顶部显示）
+                if (selectedMode == CameraMode.PARALLAX) {
+                    AspectRatioPills(
+                        selected = aspectRatio,
+                        onSelect = { viewModel.setAspectRatio(it) },
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .padding(top = 48.dp)
+                    )
+                }
+            }
+
+            // ── 控制面板（28%，曜石黑毛玻璃，高斯模糊40dp）───────────────────
+            Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 20.dp, vertical = 10.dp),
-                verticalArrangement = Arrangement.SpaceEvenly
+                    .fillMaxWidth()
+                    .height(panelH)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                OBSIDIAN.copy(alpha = 0.92f),
+                                OBSIDIAN_DARK.copy(alpha = 0.98f)
+                            )
+                        ),
+                        shape = RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp)
+                    )
             ) {
-                // ── 模式选择栏 ─────────────────────────────────────────
-                ModeSelectorRow(
-                    modes = CameraMode.values().toList(),
-                    selectedMode = selectedMode,
-                    onModeSelected = { viewModel.setMode(it) }
-                )
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    // 模式拨盘
+                    ModeSelectorRow(
+                        modes        = CameraMode.values().toList(),
+                        selectedMode = selectedMode,
+                        onModeSelected = { viewModel.setMode(it) }
+                    )
 
-                // ── 模式专属控制面板 ───────────────────────────────────
-                when (selectedMode) {
-                    CameraMode.MASTER -> {
-                        MasterWheel(viewModel = viewModel)
-                    }
-                    CameraMode.PARAM29D -> {
-                        Render29DPanel()
-                    }
-                    CameraMode.BEAUTY -> {
-                        BeautyShapeModePanel()
-                    }
-                    CameraMode.MEMORY -> {
-                        MemoryModePanel(
-                            onApplyMemory = {},
-                            onSelectOtherPhoto = { onNavigateToMemory() }
-                        )
-                    }
-                    CameraMode.PARALLAX -> {
-                        Param2_9DPanel(
-                            parallaxStrength = parallaxStrength,
-                            onParallaxStrengthChange = { viewModel.setParallaxStrength(it) },
-                            selectedPreset = parallaxPreset,
-                            onPresetSelect = { viewModel.setParallaxPreset(it) }
-                        )
-                    }
-                    CameraMode.VIDEO -> {
-                        if (viewModel.isRecordingState) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(Color(0xFFCC0000).copy(alpha = 0.85f), RoundedCornerShape(8.dp))
-                                    .padding(horizontal = 12.dp, vertical = 4.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                                    Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(Color.Red))
-                                    Text("录制中", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                                }
-                                Text("00:03:24", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                                Text("4K 60FPS", color = Color(0xFFF97316), fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                            }
-                        }
-                        VideoMasterPanel(
-                            isRecording = viewModel.isRecordingState
-                        )
-                    }
-                    CameraMode.AR -> {
-                        ArSpacePanel(
-                            selectedCategory = arCategory,
-                            onCategorySelect = { viewModel.setArCategory(it) },
-                            selectedSticker = arSticker,
-                            onStickerSelect = { viewModel.setArSticker(it) },
-                            lbsLabel = lbsLabel
-                        )
-                    }
-                    CameraMode.NATIVE -> {
-                        NativeManualControls(
-                            iso = nativeIso,
-                            onIsoChange = { viewModel.setNativeIso(it) },
-                            shutterNs = nativeShutterNs,
-                            onShutterChange = { viewModel.setNativeShutter(it) },
-                            ev = nativeEv,
-                            onEvChange = { viewModel.setNativeEv(it) },
-                            whiteBalance = nativeWhiteBalance,
-                            onWhiteBalanceChange = { viewModel.setNativeWhiteBalance(it) }
-                        )
-                    }
-                    else -> {
-                        // 默认控制面板：快门行 + 焦段栏
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(52.dp)
-                                    .clip(CircleShape)
-                                    .background(Color(0xFF2A2A2A))
-                                    .clickable { onNavigateToGallery() },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_yanbao_gallery),
-                                    contentDescription = "相册",
-                                    tint = Color.White.copy(alpha = 0.85f),
-                                    modifier = Modifier.size(28.dp)
-                                )
-                            }
-                            ShutterButton(
-                                onClick = { viewModel.triggerCapture() },
-                                isVideoMode = viewModel.isRecordingState,
-                                modifier = Modifier.size(72.dp)
-                            )
-                            IconButton(
-                                onClick = { showSettingsPopup = true },
-                                modifier = Modifier.size(52.dp)
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.ic_settings),
-                                    contentDescription = "设定",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(28.dp)
-                                )
-                            }
-                        }
-                        ZoomLevelBar(
-                            levels = zoomLevels,
-                            selected = selectedZoom,
-                            onSelect = { selectedZoom = it }
-                        )
-                    }
-                }
-
-                // ── 模式专属快门行（PARALLAX / VIDEO / AR / NATIVE / MASTER / PARAM29D / BEAUTY / MEMORY） ───
-                if (selectedMode == CameraMode.PARALLAX ||
-                    selectedMode == CameraMode.VIDEO ||
-                    selectedMode == CameraMode.AR ||
-                    selectedMode == CameraMode.NATIVE ||
-                    selectedMode == CameraMode.MASTER ||
-                    selectedMode == CameraMode.PARAM29D ||
-                    selectedMode == CameraMode.BEAUTY ||
-                    selectedMode == CameraMode.MEMORY) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
+                    // 模式专属参数面板
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(52.dp)
-                                .clip(CircleShape)
-                                .background(Color(0xFF2A2A2A))
-                                .clickable { onNavigateToGallery() },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_yanbao_gallery),
-                                contentDescription = "相册",
-                                tint = Color.White.copy(alpha = 0.85f),
-                                modifier = Modifier.size(28.dp)
+                        when (selectedMode) {
+                            CameraMode.BASIC    -> CameraBasicModePanel()
+                            CameraMode.NATIVE   -> NativeManualControls(viewModel = viewModel)
+                            CameraMode.MASTER   -> MasterModeFilterWheel(viewModel = viewModel)
+                            CameraMode.PARAM29D -> Param29DPanel(viewModel = viewModel)
+                            CameraMode.PARALLAX -> Param2_9DPanel(viewModel = viewModel)
+                            CameraMode.BEAUTY   -> BeautyModePanel()
+                            CameraMode.VIDEO    -> VideoMasterPanel(isRecording = isRecording)
+                            CameraMode.MEMORY   -> MemoryModePanel(
+                                onApplyMemory = { viewModel.applyIncomingMemoryParams() },
+                                onSelectOtherPhoto = onNavigateToGallery
                             )
-                        }
-                        ShutterButton(
-                            onClick = {
-                                if (selectedMode == CameraMode.VIDEO) {
-                                    if (viewModel.isRecordingState) viewModel.stopVideo()
-                                    else viewModel.startVideo()
-                                } else {
-                                    viewModel.triggerCapture()
-                                }
-                            },
-                            isVideoMode = selectedMode == CameraMode.VIDEO && viewModel.isRecordingState,
-                            modifier = Modifier.size(72.dp)
-                        )
-                        Box(
-                            modifier = Modifier
-                                .clip(RoundedCornerShape(24.dp))
-                                .background(KUROMI_PINK.copy(alpha = 0.15f))
-                                .border(1.dp, KUROMI_PINK, RoundedCornerShape(24.dp))
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = selectedMode.displayName,
-                                color = KUROMI_PINK,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold
-                            )
+                            CameraMode.AR       -> ARSpacePanel(viewModel = viewModel)
                         }
                     }
+
+                    // 快门行
+                    ShutterRow(
+                        selectedMode = selectedMode,
+                        isRecording  = isRecording,
+                        onShutterClick = {
+                            // 雁宝记忆：拍照前若有传入参数包则1:1覆盖
+                            if (incomingMemoryParams != null) {
+                                viewModel.applyIncomingMemoryParams()
+                            }
+                            viewModel.triggerCapture()
+                        },
+                        onGalleryClick = onNavigateToGallery,
+                        onFlipClick    = { viewModel.flipCamera() },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp)
+                    )
                 }
             }
         }
 
-        // ── 弹窗层 ────────────────────────────────────────────────────
-        if (showSettingsPopup) {
-            SettingsPopupButton(
-                onMasterModeClick = { showSettingsPopup = false; showMasterPopup = true },
-                onBeautyClick = { showSettingsPopup = false; showBeautyPopup = true },
-                on29DClick = { showSettingsPopup = false; show29DPanel = true },
-                onShareClick = { showSettingsPopup = false },
-                modifier = Modifier.align(Alignment.TopEnd).padding(top = 60.dp, end = 16.dp)
-            )
-        }
-
-        if (showMasterPopup) {
-            MasterModePopup(
-                onDismiss = { showMasterPopup = false },
-                onApply = { _ -> showMasterPopup = false }
-            )
-        }
-        if (showBeautyPopup) {
-            BeautyPopup(
-                onDismiss = { showBeautyPopup = false },
-                onApply = { _ -> showBeautyPopup = false }
-            )
-        }
-
-        if (show29DPanel) {
-            Param29DPanel(viewModel = viewModel)
-        }
-
-        if (showModesDialog) {
-            ModeSelectionDialog(
-                onDismiss = { showModesDialog = false },
-                onModeSelected = { showModesDialog = false }
-            )
-        }
-
-        if (showCategoryDialog) {
-            CategoryDialog(
-                onDismiss = { showCategoryDialog = false }
-            )
-        }
+        // ── 底部导航栏 ────────────────────────────────────────────────────────
+        BottomNavBar(
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// 顶部快捷工具栏
+// ─────────────────────────────────────────────────────────────────────────────
 /**
- * 顶部工具栏 — 对应 05_camera_01_home.png 顶部粉色边框栏
- * ← 主页 ⚡ ⏱ 📷 🎬 [库洛米+延宝记忆] …
+ * 顶部快捷工具栏 — 严格还原各模式设计图
+ * CAM_01/08: 闪光灯(兔耳) + 定时(兔耳) + 设置(齿轮)
+ * CAM_05:    闪光灯 + 定时 + 时间 + 设置 + 比例胶囊
  */
 @Composable
-fun CameraTopBar(
-    onBackClick: () -> Unit,
-    onHomeClick: () -> Unit,
+fun TopQuickBar(
+    flashMode: Int,
+    timer: Int,
+    aspectRatio: Int,
+    currentMode: CameraMode,
     onFlashClick: () -> Unit,
     onTimerClick: () -> Unit,
-    onPhotoModeClick: () -> Unit,
-    onVideoModeClick: () -> Unit,
-    onMemoryClick: () -> Unit,
-    onMoreClick: () -> Unit,
+    onSettingsClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(
+    Row(
         modifier = modifier
-            .background(Color.Black.copy(alpha = 0.75f))
-            .border(
-                width = 1.dp,
-                brush = Brush.horizontalGradient(
-                    colors = listOf(KUROMI_PINK.copy(alpha = 0.7f), KUROMI_PINK.copy(alpha = 0.3f))
-                ),
-                shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
-            )
-            .padding(horizontal = 4.dp, vertical = 4.dp)
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            IconButton(onClick = onBackClick, modifier = Modifier.size(36.dp)) {
-                Icon(painterResource(R.drawable.ic_yanbao_back), "返回", tint = Color.White, modifier = Modifier.size(18.dp))
-            }
-            IconButton(onClick = onHomeClick, modifier = Modifier.size(36.dp)) {
-                Icon(painterResource(R.drawable.ic_yanbao_home), "主页", tint = Color.White, modifier = Modifier.size(18.dp))
-            }
-            IconButton(onClick = onFlashClick, modifier = Modifier.size(36.dp)) {
-                Icon(painterResource(R.drawable.ic_yanbao_flash), "闪光灯", tint = Color.White, modifier = Modifier.size(18.dp))
-            }
-            IconButton(onClick = onTimerClick, modifier = Modifier.size(36.dp)) {
-                Icon(painterResource(R.drawable.ic_yanbao_timer), "定时", tint = Color.White, modifier = Modifier.size(18.dp))
-            }
-            IconButton(onClick = onPhotoModeClick, modifier = Modifier.size(36.dp)) {
-                Icon(painterResource(R.drawable.ic_yanbao_camera), "拍照", tint = Color.White, modifier = Modifier.size(18.dp))
-            }
-            IconButton(onClick = onVideoModeClick, modifier = Modifier.size(36.dp)) {
-                Icon(painterResource(R.drawable.ic_yanbao_video), "录像", tint = Color.White, modifier = Modifier.size(18.dp))
-            }
-            // 延宝记忆（库洛米图标 + 文字）
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
+        // 闪光灯（兔耳图标）
+        IconButton(onClick = onFlashClick, modifier = Modifier.size(36.dp)) {
+            Icon(
+                painter = painterResource(
+                    if (flashMode == 0) R.drawable.ic_yanbao_flash_off else R.drawable.ic_yanbao_flash
+                ),
+                contentDescription = "闪光灯",
+                tint = if (flashMode == 0) Color.White.copy(alpha = 0.5f) else Color.White,
+                modifier = Modifier.size(22.dp)
+            )
+        }
+
+        // 定时（兔耳图标）
+        IconButton(onClick = onTimerClick, modifier = Modifier.size(36.dp)) {
+            Icon(
+                painter = painterResource(R.drawable.ic_yanbao_timer),
+                contentDescription = "定时",
+                tint = if (timer > 0) BRAND_PINK else Color.White,
+                modifier = Modifier.size(22.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        // 比例胶囊（CAM_01/08等显示在顶部）
+        if (currentMode != CameraMode.PARALLAX) {
+            AspectRatioPills(
+                selected = aspectRatio,
+                onSelect = {},
                 modifier = Modifier
-                    .clickable { onMemoryClick() }
-                    .padding(horizontal = 4.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        // 设置（齿轮图标）
+        IconButton(onClick = onSettingsClick, modifier = Modifier.size(36.dp)) {
+            Icon(
+                painter = painterResource(R.drawable.ic_yanbao_settings),
+                contentDescription = "设置",
+                tint = Color.White,
+                modifier = Modifier.size(22.dp)
+            )
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 比例选择胶囊
+// ─────────────────────────────────────────────────────────────────────────────
+@Composable
+fun AspectRatioPills(
+    selected: Int,
+    onSelect: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val ratios = listOf("1:1", "3:4", "4:3", "9:16", "FULL")
+    Row(
+        modifier = modifier
+            .background(Color.Black.copy(alpha = 0.35f), RoundedCornerShape(20.dp))
+            .padding(horizontal = 4.dp, vertical = 2.dp),
+        horizontalArrangement = Arrangement.spacedBy(2.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        ratios.forEachIndexed { index, label ->
+            val isSelected = index == selected
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(if (isSelected) BRAND_PINK else Color.Transparent)
+                    .clickable { onSelect(index) }
+                    .padding(horizontal = 8.dp, vertical = 3.dp),
+                contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    painterResource(R.drawable.ic_yanbao_memory),
-                    "延宝记忆",
-                    tint = KUROMI_PINK,
-                    modifier = Modifier.size(18.dp)
+                Text(
+                    text = label,
+                    color = Color.White,
+                    fontSize = 11.sp,
+                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                 )
-                Text("延宝记忆", color = KUROMI_PINK, fontSize = 8.sp, fontWeight = FontWeight.Medium)
-            }
-            // 更多
-            IconButton(onClick = onMoreClick, modifier = Modifier.size(36.dp)) {
-                Text("···", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
             }
         }
     }
 }
 
-/**
- * 白色圆角对焦框（4个角线）
- */
+// ─────────────────────────────────────────────────────────────────────────────
+// 取景器内状态标签
+// ─────────────────────────────────────────────────────────────────────────────
 @Composable
-fun FocusFrame(modifier: Modifier = Modifier) {
-    Canvas(modifier = modifier) {
-        val strokeWidth = 3.dp.toPx()
-        val cornerLen = size.width * 0.25f
-        val c = Color.White
-        // 左上
-        drawLine(c, Offset(0f, cornerLen), Offset(0f, 0f), strokeWidth)
-        drawLine(c, Offset(0f, 0f), Offset(cornerLen, 0f), strokeWidth)
-        // 右上
-        drawLine(c, Offset(size.width - cornerLen, 0f), Offset(size.width, 0f), strokeWidth)
-        drawLine(c, Offset(size.width, 0f), Offset(size.width, cornerLen), strokeWidth)
-        // 左下
-        drawLine(c, Offset(0f, size.height - cornerLen), Offset(0f, size.height), strokeWidth)
-        drawLine(c, Offset(0f, size.height), Offset(cornerLen, size.height), strokeWidth)
-        // 右下
-        drawLine(c, Offset(size.width - cornerLen, size.height), Offset(size.width, size.height), strokeWidth)
-        drawLine(c, Offset(size.width, size.height - cornerLen), Offset(size.width, size.height), strokeWidth)
+fun ViewfinderStatusLabel(mode: CameraMode, modifier: Modifier = Modifier) {
+    val (text, color) = when (mode) {
+        CameraMode.PARAM29D -> "AI 渲染中" to BRAND_PINK
+        CameraMode.MEMORY   -> "记忆匹配中" to BRAND_PINK
+        CameraMode.AR       -> "AR 跟踪中" to BRAND_PINK
+        CameraMode.PARALLAX -> "深度捕捉中" to Color.White
+        else -> return
+    }
+    Box(
+        modifier = modifier
+            .background(Color.Black.copy(alpha = 0.55f), RoundedCornerShape(20.dp))
+            .padding(horizontal = 12.dp, vertical = 5.dp)
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Box(
+                modifier = Modifier
+                    .size(8.dp)
+                    .background(color, CircleShape)
+            )
+            Spacer(modifier = Modifier.width(6.dp))
+            Text(text = text, color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Medium)
+        }
     }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// 雁宝记忆：顶部悬浮 JSON 参数显示
+// ─────────────────────────────────────────────────────────────────────────────
 /**
- * 焦段切换栏 — 对应 05_camera_01_home.png 底部 0.5x 1x 2x 3x 5x
+ * 拍照前：若有相册传入的 JSON 参数包，在取景器右上角悬浮显示
+ * 参数包含：ISO / Shutter / AI Style / 滤镜编号
  */
+@Composable
+fun MemoryParamsOverlay(
+    params: MemoryJsonParams,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .background(Color.Black.copy(alpha = 0.65f), RoundedCornerShape(10.dp))
+            .padding(horizontal = 10.dp, vertical = 6.dp),
+        verticalArrangement = Arrangement.spacedBy(2.dp)
+    ) {
+        Text(
+            text = "雁宝记忆参数",
+            color = BRAND_PINK,
+            fontSize = 10.sp,
+            fontWeight = FontWeight.Bold
+        )
+        Text("ISO: ${params.iso}", color = Color.White, fontSize = 10.sp)
+        Text("快门: ${params.shutter}", color = Color.White, fontSize = 10.sp)
+        Text("AI风格: ${params.aiStyle}", color = Color.White, fontSize = 10.sp)
+        if (params.filterId != null) {
+            Text("滤镜: #${params.filterId}", color = CARROT_ORANGE, fontSize = 10.sp)
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 快门行（熊熊 / 熊掌快门 / 相机切换）
+// ─────────────────────────────────────────────────────────────────────────────
+@Composable
+fun ShutterRow(
+    selectedMode: CameraMode,
+    isRecording: Boolean,
+    onShutterClick: () -> Unit,
+    onGalleryClick: () -> Unit,
+    onFlipClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 24.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // 左：熊熊图标（打开雁宝记忆相册）
+        IconButton(
+            onClick = onGalleryClick,
+            modifier = Modifier
+                .size(52.dp)
+                .background(Color.White.copy(alpha = 0.10f), CircleShape)
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_yanbao_bear),
+                contentDescription = "雁宝记忆",
+                tint = Color.White,
+                modifier = Modifier.size(28.dp)
+            )
+        }
+
+        // 中：熊掌快门键（80dp，粉色，霓虹发光）
+        ShutterButton(
+            onClick = onShutterClick,
+            isVideoMode = selectedMode == CameraMode.VIDEO && isRecording
+        )
+
+        // 右：相机切换（前后摄）
+        IconButton(
+            onClick = onFlipClick,
+            modifier = Modifier
+                .size(52.dp)
+                .background(Color.White.copy(alpha = 0.10f), CircleShape)
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_yanbao_camera),
+                contentDescription = "切换镜头",
+                tint = Color.White,
+                modifier = Modifier.size(28.dp)
+            )
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 底部导航栏
+// ─────────────────────────────────────────────────────────────────────────────
+@Composable
+fun BottomNavBar(modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(OBSIDIAN_DARK)
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        listOf(
+            Triple(R.drawable.ic_nav_home,    "首页", false),
+            Triple(R.drawable.ic_nav_edit,    "编辑", false),
+            Triple(R.drawable.ic_yanbao_paw,  "拍摄", true),
+            Triple(R.drawable.ic_nav_discover,"推荐", false),
+            Triple(R.drawable.ic_nav_profile, "我的", false)
+        ).forEach { (iconRes, label, isCenter) ->
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.clickable { }
+            ) {
+                Icon(
+                    painter = painterResource(iconRes),
+                    contentDescription = label,
+                    tint = if (isCenter) BRAND_PINK else Color.White.copy(alpha = 0.6f),
+                    modifier = Modifier.size(if (isCenter) 28.dp else 22.dp)
+                )
+                if (!isCenter) {
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = label,
+                        color = Color.White.copy(alpha = 0.6f),
+                        fontSize = 10.sp
+                    )
+                }
+            }
+        }
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 数据类：雁宝记忆 JSON 参数包
+// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * 雁宝记忆 JSON 参数包
+ * 拍照前：从相册传入，1:1 覆盖当前取景器参数
+ * 拍照后：将当前参数封装写入图片 Metadata
+ */
+data class MemoryJsonParams(
+    val iso: Int = 200,
+    val shutter: String = "1/250",
+    val aiStyle: String = "自然",
+    val filterId: Int? = null,
+    val masterFilterIndex: Int? = null,
+    val param29dLight: Float = 85f,
+    val param29dColor: Float = 90f,
+    val param29dMaterial: Float = 70f,
+    val param29dSpace: Float = 65f
+)
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 对焦框（白色四角线）
+// ─────────────────────────────────────────────────────────────────────────────
+@Composable
+fun FocusFrame(modifier: Modifier = Modifier) {
+    androidx.compose.foundation.Canvas(modifier = modifier) {
+        val sw = 3.dp.toPx()
+        val cl = size.width * 0.22f
+        val c  = Color.White
+        drawLine(c, Offset(0f, cl), Offset(0f, 0f), sw)
+        drawLine(c, Offset(0f, 0f), Offset(cl, 0f), sw)
+        drawLine(c, Offset(size.width - cl, 0f), Offset(size.width, 0f), sw)
+        drawLine(c, Offset(size.width, 0f), Offset(size.width, cl), sw)
+        drawLine(c, Offset(0f, size.height - cl), Offset(0f, size.height), sw)
+        drawLine(c, Offset(0f, size.height), Offset(cl, size.height), sw)
+        drawLine(c, Offset(size.width - cl, size.height), Offset(size.width, size.height), sw)
+        drawLine(c, Offset(size.width, size.height - cl), Offset(size.width, size.height), sw)
+    }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 焦段切换栏（0.5x 1x 2x 3x 5x）
+// ─────────────────────────────────────────────────────────────────────────────
 @Composable
 fun ZoomLevelBar(
     levels: List<String>,
@@ -500,14 +554,14 @@ fun ZoomLevelBar(
             Box(
                 modifier = Modifier
                     .clip(RoundedCornerShape(16.dp))
-                    .background(if (isSelected) KUROMI_PINK else Color.Transparent)
+                    .background(if (isSelected) BRAND_PINK else Color.Transparent)
                     .clickable { onSelect(level) }
                     .padding(horizontal = 12.dp, vertical = 4.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = level,
-                    color = if (isSelected) Color.White else Color.White.copy(alpha = 0.7f),
+                    color = Color.White,
                     fontSize = 13.sp,
                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal
                 )

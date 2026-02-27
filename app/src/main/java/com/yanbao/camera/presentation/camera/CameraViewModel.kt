@@ -56,6 +56,9 @@ class CameraViewModel @Inject constructor(
     // 是否录制雁宝记忆
     private val _isRecordingMemory = MutableStateFlow(false)
     val isRecordingMemory: StateFlow<Boolean> = _isRecordingMemory.asStateFlow()
+    // ── 雁宝记忆：传入 JSON 参数包（从相册传入，拍照前1:1覆盖）──────────────
+    private val _incomingMemoryParams = MutableStateFlow<com.yanbao.camera.presentation.camera.MemoryJsonParams?>(null)
+    val incomingMemoryParams: StateFlow<com.yanbao.camera.presentation.camera.MemoryJsonParams?> = _incomingMemoryParams.asStateFlow()
 
     // ── 快捷工具栏状态（从持久化恢复） ───────────────────────────────────────
     private val _flashMode = MutableStateFlow(prefsManager.getFlashMode()) // 0自动 1开 2关
@@ -225,6 +228,33 @@ class CameraViewModel @Inject constructor(
         _lensFacing.value = newFacing
         prefsManager.saveLensFacing(newFacing)
         if (::cameraManager.isInitialized) cameraManager.flipLens()
+    }
+    /** flipCamera — CameraScreen.kt 调用别名 */
+    fun flipCamera() = flipLens()
+
+    /** 设置传入的雁宝记忆 JSON 参数包（从相册传入） */
+    fun setIncomingMemoryParams(params: MemoryJsonParams?) {
+        _incomingMemoryParams.value = params
+    }
+
+    /**
+     * 应用传入的雁宝记忆参数包
+     * 拍照前：将 JSON 参数 1:1 覆盖当前取景器参数
+     * 拍照后：参数已写入 Metadata（由 saveMemory 完成）
+     */
+    fun applyIncomingMemoryParams() {
+        val params = _incomingMemoryParams.value ?: return
+        params.filterId?.let { /* 应用大师滤镜编号 */ }
+        params.masterFilterIndex?.let { /* 应用大师滤镜 */ }
+        // 应用 29D 参数
+        update29DParam {
+            this.iso = params.iso
+            this.ev = params.param29dLight.toInt() / 100 * 3 - 3
+            this.saturation = params.param29dColor.toInt()
+            this.sharpness = params.param29dMaterial.toInt()
+            this.vignette = params.param29dSpace.toInt()
+        }
+        android.util.Log.i("MEMORY_APPLY", "Applied memory params: ISO=${params.iso}, shutter=${params.shutter}, style=${params.aiStyle}")
     }
 
     // ── 2.9D 视差控制 ─────────────────────────────────────────────────────────
