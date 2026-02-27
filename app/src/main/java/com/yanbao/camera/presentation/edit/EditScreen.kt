@@ -13,6 +13,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -276,10 +277,7 @@ fun EditScreen(
             )
         }
 
-        // ─── Layer 3: 底部导航栏（设计图：首页/相机/[熊掌FAB]/相册/推荐）─────────────────────
-        EditBottomNav(
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
+        // 底部导航由 YanbaoApp.kt 全局 Scaffold 统一管理
     }
 }
 
@@ -458,6 +456,49 @@ private fun ParameterPanel(
                 onValueChange = onFilterIntensityChange,
                 formatValue = { "${(it * 100).toInt()}%" }
             )
+            "sticker" -> {
+                // 设计图M4-09：雁宝IP延展贴纸面板
+                val stickers = listOf(
+                    R.drawable.yanbao_sticker_camera,
+                    R.drawable.yanbao_sticker_sunglasses,
+                    R.drawable.yanbao_sticker_peace,
+                    R.drawable.yanbao_sticker_shy,
+                    R.drawable.yanbao_sticker_photo,
+                    R.drawable.yanbao_sticker_sparkle
+                )
+                var selectedSticker by remember { mutableStateOf(0) }
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    contentPadding = PaddingValues(horizontal = 4.dp)
+                ) {
+                    itemsIndexed(stickers) { idx, stickerRes ->
+                        Box(
+                            modifier = Modifier
+                                .size(56.dp)
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(
+                                    if (idx == selectedSticker) KUROMI_PINK.copy(alpha = 0.2f)
+                                    else Color.White.copy(alpha = 0.05f)
+                                )
+                                .then(
+                                    if (idx == selectedSticker)
+                                        Modifier.border(2.dp, KUROMI_PINK, RoundedCornerShape(8.dp))
+                                    else Modifier
+                                )
+                                .clickable { selectedSticker = idx },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                painter = painterResource(stickerRes),
+                                contentDescription = "雁宝贴纸",
+                                modifier = Modifier.size(48.dp),
+                                contentScale = ContentScale.Fit
+                            )
+                        }
+                    }
+                }
+            }
             else -> {
                 Text(
                     text = selectedTool?.let { "调节 ${it.name}" } ?: "请选择工具",

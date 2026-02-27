@@ -131,17 +131,7 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(24.dp))
         }
 
-        // ─── 底部导航栏（固定底部）─────────────────────────────────────────
-        HomeBottomNav(
-            onHomeClick      = {},
-            onCameraClick    = onCameraClick,
-            onEditorClick    = onEditorClick,
-            onRecommendClick = onRecommendClick,
-            onProfileClick   = onProfileClick,
-            modifier         = Modifier
-                .align(Alignment.BottomCenter)
-                .fillMaxWidth()
-        )
+        // 底部导航由 YanbaoApp.kt 全局 Scaffold 统一管理
     }
 }
 

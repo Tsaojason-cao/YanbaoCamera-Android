@@ -211,10 +211,7 @@ fun CameraScreen(
             }
         }
 
-        // ── 底部导航栏 ────────────────────────────────────────────────────────
-        BottomNavBar(
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
+        // 底部导航由 YanbaoApp.kt 全局 Scaffold 统一管理
     }
 }
 

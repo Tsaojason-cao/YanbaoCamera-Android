@@ -450,10 +450,9 @@ fun YanbaoBottomNavigation(
     // 布局：首页 | 相机 | [🥕胡萝卜橙大按钮] | 相册 | 推荐 | 我的
     val leftTabs = listOf(
         BottomNavItem(label = "首页", iconRes = R.drawable.ic_yanbao_home,   route = "home"),
-        BottomNavItem(label = "相机", iconRes = R.drawable.ic_yanbao_camera, route = "camera")
+        BottomNavItem(label = "编辑", iconRes = R.drawable.ic_yanbao_edit, route = "edit")
     )
     val rightTabs = listOf(
-        BottomNavItem(label = "相册", iconRes = R.drawable.ic_yanbao_gallery,   route = "gallery"),
         BottomNavItem(label = "推荐", iconRes = R.drawable.ic_yanbao_recommend, route = "recommend"),
         BottomNavItem(label = "我的", iconRes = R.drawable.ic_yanbao_profile,   route = "profile")
     )
@@ -529,7 +528,7 @@ fun YanbaoBottomNavigation(
                     contentAlignment = androidx.compose.ui.Alignment.Center
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_yanbao_camera),
+                        painter = painterResource(id = R.drawable.ic_fab_carrot),
                         contentDescription = "拍照",
                         tint = Color.White,
                         modifier = Modifier.size(28.dp)
