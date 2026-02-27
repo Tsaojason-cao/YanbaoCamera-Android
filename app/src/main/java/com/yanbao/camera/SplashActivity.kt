@@ -175,7 +175,7 @@ fun YanbaoSplashScreen(onTimeout: () -> Unit = {}) {
             )
         }
 
-        // ── 底部：胡萝卜橙进度条（细线）+ 版权 ──────────────────────────────
+        // ── 底部：胡萝卜橙宽条进度条（带熊掌图标）+ 版权 ──────────────────────
         Column(
             modifier            = Modifier
                 .align(Alignment.BottomCenter)
@@ -183,25 +183,7 @@ fun YanbaoSplashScreen(onTimeout: () -> Unit = {}) {
                 .padding(bottom = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(0.80f)
-                    .height(3.dp)
-                    .clip(RoundedCornerShape(50))
-                    .background(Color(0x33FFFFFF))
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(animProgress)
-                        .fillMaxHeight()
-                        .clip(RoundedCornerShape(50))
-                        .background(
-                            Brush.horizontalGradient(
-                                colors = listOf(Color(0xFFF97316), Color(0xFFFF8C00))
-                            )
-                        )
-                )
-            }
+            CarrotProgressBar(progress = animProgress)
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text      = "\u00a9 2026 SheYan",

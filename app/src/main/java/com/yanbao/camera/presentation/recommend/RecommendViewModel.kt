@@ -127,7 +127,7 @@ class RecommendViewModel @Inject constructor(
                     rating = location.popularityScore,
                     category = location.category,
                     categoryColor = FilterMapper.getCategoryColor(location.category),
-                    badgeIcon = R.drawable.kuromi,
+                    badgeIcon = R.drawable.yanbao_jk_uniform,
                     distance = location.distanceKm.toFloat(),
                     photoCount = location.photoCount
                 )
@@ -194,7 +194,7 @@ class RecommendViewModel @Inject constructor(
                     rating = 4.8f,
                     category = "城市地标",
                     categoryColor = Color(0xFF6B7FFF),
-                    badgeIcon = R.drawable.kuromi,
+                    badgeIcon = R.drawable.yanbao_jk_uniform,
                     distance = 2.1f,
                     photoCount = 345
                 ),
@@ -207,7 +207,7 @@ class RecommendViewModel @Inject constructor(
                     rating = 4.8f,
                     category = "古色古香",
                     categoryColor = Color(0xFFFF6B6B),
-                    badgeIcon = R.drawable.kuromi_bl,
+                    badgeIcon = R.drawable.yanbao_cool,
                     distance = 12.4f,
                     photoCount = 280
                 ),
@@ -220,7 +220,7 @@ class RecommendViewModel @Inject constructor(
                     rating = 4.8f,
                     category = "自然风光",
                     categoryColor = Color(0xFF4CAF50),
-                    badgeIcon = R.drawable.kuromi_br,
+                    badgeIcon = R.drawable.yanbao_happy,
                     distance = 45.2f,
                     photoCount = 189
                 ),
@@ -233,7 +233,7 @@ class RecommendViewModel @Inject constructor(
                     rating = 4.8f,
                     category = "壮观峡谷",
                     categoryColor = Color(0xFF8BC34A),
-                    badgeIcon = R.drawable.kuromi_tl,
+                    badgeIcon = R.drawable.yanbao_playful,
                     distance = 78.3f,
                     photoCount = 156
                 )
