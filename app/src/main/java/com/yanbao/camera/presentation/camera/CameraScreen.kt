@@ -451,43 +451,106 @@ fun ShutterRow(
 // ─────────────────────────────────────────────────────────────────────────────
 // 底部导航栏
 // ─────────────────────────────────────────────────────────────────────────────
+/**
+ * 底部导航栏 — 与M2 HomeScreen一致
+ * 布局：首页 | 编辑 | [熊掌FAB—当前页，不再是拍照键] | 推荐 | 我的
+ * 注：相机模块内已有ShutterRow作为唯一快门，底部导航FAB仅表示当前页面位置
+ */
 @Composable
-fun BottomNavBar(modifier: Modifier = Modifier) {
-    Row(
+fun BottomNavBar(
+    onHomeClick:      () -> Unit = {},
+    onEditorClick:    () -> Unit = {},
+    onRecommendClick: () -> Unit = {},
+    onProfileClick:   () -> Unit = {},
+    modifier: Modifier = Modifier
+) {
+    Box(
         modifier = modifier
             .fillMaxWidth()
+            .height(72.dp)
             .background(OBSIDIAN_DARK)
-            .padding(vertical = 8.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
     ) {
-        listOf(
-            Triple(R.drawable.ic_nav_home,    "首页", false),
-            Triple(R.drawable.ic_nav_edit,    "编辑", false),
-            Triple(R.drawable.ic_yanbao_paw,  "拍摄", true),
-            Triple(R.drawable.ic_nav_discover,"推荐", false),
-            Triple(R.drawable.ic_nav_profile, "我的", false)
-        ).forEach { (iconRes, label, isCenter) ->
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.clickable { }
+        // 顶部分割线
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(0.5.dp)
+                .background(Color.White.copy(alpha = 0.10f))
+                .align(Alignment.TopCenter)
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 8.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // 首页
+            CamNavItem(R.drawable.ic_yanbao_home, "首页", false, onHomeClick)
+            // 编辑
+            CamNavItem(R.drawable.ic_yanbao_edit, "编辑", false, onEditorClick)
+            // 中间熊掌FAB（当前页标识，粉色发光）
+            Box(
+                modifier = Modifier.size(64.dp),
+                contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    painter = painterResource(iconRes),
-                    contentDescription = label,
-                    tint = if (isCenter) BRAND_PINK else Color.White.copy(alpha = 0.6f),
-                    modifier = Modifier.size(if (isCenter) 28.dp else 22.dp)
+                // 外圈发光
+                Box(
+                    modifier = Modifier
+                        .size(64.dp)
+                        .background(
+                            Brush.radialGradient(
+                                listOf(BRAND_PINK.copy(alpha = 0.25f), Color.Transparent)
+                            ),
+                            CircleShape
+                        )
                 )
-                if (!isCenter) {
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = label,
-                        color = Color.White.copy(alpha = 0.6f),
-                        fontSize = 10.sp
+                // 熊掌圆圈（当前页标识，不可点击）
+                Box(
+                    modifier = Modifier
+                        .size(52.dp)
+                        .background(Color(0xFF1A1A1A), CircleShape)
+                        .border(2.dp, BRAND_PINK, CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_yanbao_camera),
+                        contentDescription = "相机模块",
+                        tint = BRAND_PINK,
+                        modifier = Modifier.size(26.dp)
                     )
                 }
             }
+            // 推荐
+            CamNavItem(R.drawable.ic_yanbao_recommend, "推荐", false, onRecommendClick)
+            // 我的
+            CamNavItem(R.drawable.ic_yanbao_profile, "我的", false, onProfileClick)
         }
+    }
+}
+
+@Composable
+private fun CamNavItem(iconRes: Int, label: String, selected: Boolean, onClick: () -> Unit) {
+    Column(
+        modifier = Modifier.clickable(
+            indication = null,
+            interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
+        ) { onClick() },
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            painter = painterResource(iconRes),
+            contentDescription = label,
+            tint = if (selected) BRAND_PINK else Color.White.copy(alpha = 0.5f),
+            modifier = Modifier.size(22.dp)
+        )
+        Spacer(Modifier.height(2.dp))
+        Text(
+            text = label,
+            color = if (selected) BRAND_PINK else Color.White.copy(alpha = 0.5f),
+            fontSize = 10.sp
+        )
     }
 }
 

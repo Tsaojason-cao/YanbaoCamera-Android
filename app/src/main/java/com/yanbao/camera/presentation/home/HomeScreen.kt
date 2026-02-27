@@ -331,15 +331,15 @@ private fun HomeBottomNav(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment     = Alignment.CenterVertically
         ) {
-            NavItem(R.drawable.ic_tab_home_kuromi,           "首页", true,  onHomeClick)
-            NavItem(R.drawable.ic_tab_edit_kuromi,           "编辑", false, onEditorClick)
-            // 中间熊掌 FAB
+            NavItem(R.drawable.ic_yanbao_home,      "首页", true,  onHomeClick)
+            NavItem(R.drawable.ic_yanbao_edit,      "编辑", false, onEditorClick)
+            // 中间熊掌FAB（进入相机模块）
             Box(modifier = Modifier.size(64.dp), contentAlignment = Alignment.Center) {
                 Box(
                     modifier = Modifier
                         .size(64.dp)
                         .clip(CircleShape)
-                        .background(Brush.radialGradient(listOf(BRAND_PINK.copy(alpha = 0.3f), Color.Transparent)))
+                        .background(Brush.radialGradient(listOf(BRAND_PINK.copy(alpha = 0.25f), Color.Transparent)))
                 )
                 Box(
                     modifier = Modifier
@@ -351,15 +351,16 @@ private fun HomeBottomNav(
                         .clickable { onCameraClick() },
                     contentAlignment = Alignment.Center
                 ) {
-                    Image(
-                        painterResource(R.drawable.ic_shutter_paw), "拍照",
-                        Modifier.size(28.dp),
-                        colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(BRAND_PINK)
+                    Icon(
+                        painter = painterResource(R.drawable.ic_yanbao_camera),
+                        contentDescription = "进入相机",
+                        tint = BRAND_PINK,
+                        modifier = Modifier.size(26.dp)
                     )
                 }
             }
-            NavItem(R.drawable.ic_tab_recommend_kuromi_nobg, "推荐", false, onRecommendClick)
-            NavItem(R.drawable.ic_tab_profile_kuromi,        "我的", false, onProfileClick)
+            NavItem(R.drawable.ic_yanbao_recommend, "推荐", false, onRecommendClick)
+            NavItem(R.drawable.ic_yanbao_profile,   "我的", false, onProfileClick)
         }
     }
 }
